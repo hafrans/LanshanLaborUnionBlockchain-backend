@@ -1,0 +1,7 @@
+[database]
+Type = mysql
+User = lanshan
+Password =lanshan
+Host = 127.0.0.1:3306
+Name = lanshan
+TablePrefix = ls_
