@@ -2,6 +2,13 @@ package models
 
 import "time"
 
+const (
+	USER_TYPE_ADMIN = 1
+	USER_TYPE_LABOR = 2
+	USER_TYPE_FIRM  = 3
+)
+
+
 type User struct {
 	Model
 	UserName          string `json:"username" gorm:"type:varchar(128);unique_index"`
@@ -13,6 +20,7 @@ type User struct {
 	Activated           bool `json:"active" gorm:"not null"`
 	LastLoginTime *time.Time `json:"last_login"`
 	Roles            []*Role `json:"-" gorm:"many2many:user_role"`
+	UserType             int `json:"user_type" gorm:"size:1;not null"`
 }
 
 type UserProfile struct {

@@ -5,3 +5,9 @@ Password =lanshan
 Host = 127.0.0.1:3306
 Name = lanshan
 TablePrefix = ls_
+
+
+[JWT]
+Realm = lanshan
+Key = hafranslanshan123
+IdentityKey = id

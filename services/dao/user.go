@@ -10,7 +10,7 @@ import (
 )
 
 
-func CreateUser(username, password, email, phone string, emailChecked, phoneChecked, active bool) (*models.User, error) {
+func CreateUser(username, password, email, phone string, userType int, emailChecked, phoneChecked, active bool) (*models.User, error) {
 
 	hashedPassword, ok := utils.GenerateHashedPassword(password)
 	if !ok {
@@ -25,6 +25,7 @@ func CreateUser(username, password, email, phone string, emailChecked, phoneChec
 		EmailChecked: emailChecked,
 		Phone:        phone,
 		PhoneChecked: phoneChecked,
+		UserType:     userType,
 	}
 
 	if err := db.Create(user).Error; err != nil {

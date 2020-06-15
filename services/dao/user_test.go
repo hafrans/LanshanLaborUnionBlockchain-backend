@@ -22,7 +22,7 @@ var id int64
 
 func TestCreateUser(t *testing.T) {
 
-	user, err := dao.CreateUser("test", "test", "hafrans@163.com", "13800138000", false, false, true)
+	user, err := dao.CreateUser("test", "test", "hafrans@163.com", "13800138000",models.USER_TYPE_ADMIN, false, false, true)
 
 	if err != nil{
 		t.Error(err)

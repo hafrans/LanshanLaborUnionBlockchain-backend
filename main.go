@@ -3,6 +3,7 @@ package main
 import (
 	_ "RizhaoLanshanLabourUnion/docs"
 	"RizhaoLanshanLabourUnion/routers"
+	"RizhaoLanshanLabourUnion/security"
 	"RizhaoLanshanLabourUnion/services/dao"
 	"RizhaoLanshanLabourUnion/utils"
 	"fmt"
@@ -25,6 +26,7 @@ func main(){
 	utils.InitSettings()
 	dao.InitDB()
 	dao.TryInitializeTables()
+	security.InitRBAC()
 
 
 	// initialize api services
