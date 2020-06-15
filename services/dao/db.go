@@ -57,8 +57,27 @@ func TryInitializeTables(){
 
 func CreateTables(){
 
-	db.DropTable(&models.User{})
+	db.DropTableIfExists(&models.RolePermission{})
+	db.DropTableIfExists(&models.UserRole{})
+
+	db.DropTableIfExists(&models.User{})
+	db.DropTableIfExists(&models.Role{})
+	db.DropTableIfExists(&models.Permission{})
+	db.DropTableIfExists(&models.Department{})
+
+	//========================================
+
+	db.CreateTable(&models.RolePermission{})
+	db.CreateTable(&models.UserRole{})
+
+
+	db.CreateTable(&models.Department{})
 	db.CreateTable(&models.User{})
+	db.CreateTable(&models.Role{})
+	db.CreateTable(&models.Permission{})
+
+
+
 
 
 }

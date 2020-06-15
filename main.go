@@ -44,19 +44,39 @@ func main(){
 	// register routers
 	routers.InitRouter(router)
 
+	/*
+	 * Index
+	 */
 	router.GET("/", func(context *gin.Context) {
 		context.String(200,"BUPT HAFRANS SERVER")
 	})
 
+
+	/*
+	 * server status ping
+	 */
 	router.GET("/ping", pingHandler)
+
+
+	/*
+	 * remain for test
+	 */
 
 	router.GET("/test", func(context *gin.Context) {
 		pendingCaptcha := utils.CreateCaptcha("hello")
 		context.JSON(200,pendingCaptcha)
 	})
 
+
+	/*
+	 * inject swagger
+	 */
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+
+	/*
+	 * run server
+	 */
 	router.Run(":"+port)
 
 }

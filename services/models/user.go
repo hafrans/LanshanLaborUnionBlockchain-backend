@@ -12,6 +12,7 @@ type User struct {
 	Credentials       string `json:"-" gorm:"type:varchar(255);not null"`
 	Activated           bool `json:"active" gorm:"not null"`
 	LastLoginTime *time.Time `json:"last_login"`
+	Roles            []*Role `json:"-" gorm:"many2many:user_role"`
 }
 
 type UserProfile struct {
@@ -25,21 +26,4 @@ type Department struct{
 	Description string `json:"description"`
 }
 
-type Role struct{
-	Model
-	Name        string `json:"name" gorm:"unique_index"`
-	Descriptor  string `json:"descriptor" gorm:"unique_index"`
-	Description string `json:"description"`
-}
 
-type Permission struct{
-	Model
-	Name        string `json:"name" gorm:"unique_index"`
-	Descriptor  string `json:"descriptor" gorm:"unique_index"`
-	Description string `json:"description"`
-}
-
-
-type UserRole struct {
-
-}

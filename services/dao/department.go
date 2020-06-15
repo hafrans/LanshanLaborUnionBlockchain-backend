@@ -2,6 +2,7 @@ package dao
 
 import (
 	"RizhaoLanshanLabourUnion/services/models"
+	"errors"
 	"log"
 )
 
@@ -39,6 +40,7 @@ func DeleteDepartment(department *models.Department) bool {
 	}
 }
 
+
 func DeleteDepartmentById(id int64) bool {
 	result := db.Delete(&models.Department{}, id)
 	if result.Error != nil {
@@ -46,6 +48,20 @@ func DeleteDepartmentById(id int64) bool {
 		return false
 	} else {
 		return true
+	}
+}
+
+func GetDepartmentById(id int64) (*models.Department, error){
+	if id <= 0{
+		return nil, errors.New("invalid id")
+	}
+	var department *models.Department
+	result := db.FirstOrInit(department,id)
+	if result.Error != nil{
+		log.Println(result.Error)
+		return nil, result.Error
+	}else{
+		return department, nil
 	}
 }
 
@@ -78,5 +94,4 @@ func GetDepartmentAllLikedNamePaginated(name string, pageNum, pageCount int) ([]
 	} else {
 		return departments, totalCounts, nil
 	}
-
 }

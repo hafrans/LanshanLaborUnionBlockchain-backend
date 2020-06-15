@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"log"
 	"math"
+	"strconv"
 	"testing"
 	"time"
 )
@@ -73,4 +74,36 @@ func TestDeleteUserById(t *testing.T) {
 }
 
 
+func TestAddRoleToUser(t *testing.T) {
+	user, err := dao.GetUserById(1)
+	if err != nil {
+		t.Error(err)
+	}
+	role, err := dao.GetRoleById(1)
+	if err != nil {
+		t.Error(err)
+	}
+	res := dao.AddRoleToUser(role,user)
+	if !res{
+		t.Error("failed")
+	}
+}
+
+func TestGetRolesFromUser(t *testing.T) {
+	user, err := dao.GetUserById(1)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	res , err := dao.GetRolesFromUser(user)
+
+	if len(res) == 0 {
+		t.Error("NO ROLES")
+	}else{
+		for i, role := range res{
+			t.Log("role"+strconv.Itoa(i)+":"+utils.GetStructJsonString(role))
+		}
+	}
+}
 

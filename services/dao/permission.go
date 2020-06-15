@@ -2,6 +2,7 @@ package dao
 
 import (
 	"RizhaoLanshanLabourUnion/services/models"
+	"errors"
 	"log"
 )
 
@@ -47,6 +48,20 @@ func DeletePermissionById(id int64) bool {
 		return false
 	} else {
 		return true
+	}
+}
+
+func GetPermissionById(id int64) (*models.Permission, error){
+	if id <= 0{
+		return nil, errors.New("invalid id")
+	}
+	var permission *models.Permission = &models.Permission{}
+	result := db.FirstOrInit(permission,id)
+	if result.Error != nil{
+		log.Println(result.Error)
+		return nil, result.Error
+	}else{
+		return permission, nil
 	}
 }
 
