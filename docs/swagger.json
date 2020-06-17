@@ -1,13 +1,121 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "Hello",
-        "title": "区块链仲裁系统",
-        "contact": {},
+        "description": "岚山区劳动争议调解区块链平台，后台采用golang开发，使用gin + gorm + gorbac + jwt开发",
+        "title": "岚山区劳动争议调解区块链平台",
+        "termsOfService": "http://hafrans.com",
+        "contact": {
+            "name": "Chuuka Ro (Hafrans)",
+            "url": "http://hafrans.com/support",
+            "email": "lvzh@hafrans.com"
+        },
         "license": {},
-        "version": "0.0.1"
+        "version": "0.0.2"
     },
     "paths": {
+        "/api/auth/login": {
+            "post": {
+                "description": "用户登录并获得token以及失效日期",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "用户登录",
+                "parameters": [
+                    {
+                        "description": "用户名",
+                        "name": "username",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "密码",
+                        "name": "password",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "验证码",
+                        "name": "captcha_code",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "验证码时间戳 （2006-01-02 15:04:05）",
+                        "name": "captcha_time",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "验证码挑战指令",
+                        "name": "captcha_challenge",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/vo.LoginResult"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/": {
+            "get": {
+                "description": "测试在登录情况下是否可以访问",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "test",
+                    "index"
+                ],
+                "summary": "ApiIndex",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/tags": {
             "post": {
                 "produces": [
@@ -42,6 +150,53 @@
                             "type": "string"
                         }
                     }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "vo.Common": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "unauthorized"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 401
+                },
+                "timestamp": {
+                    "type": "string",
+                    "example": "2048-05-06 12:34:56"
+                }
+            }
+        },
+        "vo.LoginResult": {
+            "type": "object",
+            "properties": {
+                "expire": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "unauthorized"
+                },
+                "refresh_url": {
+                    "type": "string",
+                    "example": "/api/auth/refreshToken"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 401
+                },
+                "timestamp": {
+                    "type": "string",
+                    "example": "2048-05-06 12:34:56"
+                },
+                "token": {
+                    "type": "string",
+                    "example": "asdsadasdasdasd"
                 }
             }
         }

@@ -1,6 +1,8 @@
 package utils
 
-import "time"
+import (
+	"time"
+)
 
 const timeFormat = "2006-01-02 15:04:05"
 
@@ -13,6 +15,17 @@ func (t *Time) UnmarshalJSON(b []byte) error{
 	}
 	*t = Time(tx)
 	return nil
+}
+
+
+func NowTime() *Time{
+	time := Time(time.Now())
+	return &time
+}
+
+func GetTime(t time.Time) *Time{
+	time := Time(t)
+	return &time
 }
 
 func (t *Time) MarshalJSON() ([]byte,error){

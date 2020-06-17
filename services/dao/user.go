@@ -49,7 +49,7 @@ func GetUserById(id int64) (*models.User, error) {
 
 func GetUserByUserName(username string) (*models.User, error) {
 	user := &models.User{}
-	result := db.Where("username = ?", username).First(user)
+	result := db.Where("user_name = ?", username).First(user)
 	if result.Error != nil {
 		log.Println(result.Error)
 		return nil, result.Error

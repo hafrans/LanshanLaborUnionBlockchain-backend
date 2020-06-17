@@ -5,11 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func LoginHandler(ctx *gin.Context){
 
-	ctx.String(200,"UserLogin")
 
-}
 
 
 func GetCaptcha(ctx *gin.Context){

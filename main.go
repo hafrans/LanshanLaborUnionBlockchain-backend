@@ -4,22 +4,25 @@ import (
 	_ "RizhaoLanshanLabourUnion/docs"
 	"RizhaoLanshanLabourUnion/routers"
 	"RizhaoLanshanLabourUnion/security"
+	"RizhaoLanshanLabourUnion/security/jwt"
 	"RizhaoLanshanLabourUnion/services/dao"
 	"RizhaoLanshanLabourUnion/utils"
 	"fmt"
-	_ "github.com/casbin/casbin/v2"
 	"github.com/gin-gonic/gin"
-	_ "github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 	"os"
 	"time"
 )
 
-// @title 区块链仲裁系统
-// @version 0.0.1
-// @description Hello
+// @title 岚山区劳动争议调解区块链平台
+// @version 0.0.2
+// @description 岚山区劳动争议调解区块链平台，后台采用golang开发，使用gin + gorm + gorbac + jwt开发
+// @termsOfService http://hafrans.com
+// @contact.name Chuuka Ro (Hafrans)
+// @contact.url  http://hafrans.com/support
+// @contact.email lvzh@hafrans.com
+
 func main(){
 
 	// init all components
@@ -27,6 +30,7 @@ func main(){
 	dao.InitDB()
 	dao.TryInitializeTables()
 	security.InitRBAC()
+	jwt.InitJwt()
 
 
 	// initialize api services
