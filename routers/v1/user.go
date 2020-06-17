@@ -3,10 +3,21 @@ package v1
 import (
 	"RizhaoLanshanLabourUnion/security/jwt/jwtmodel"
 	"RizhaoLanshanLabourUnion/services/dao"
+	"RizhaoLanshanLabourUnion/services/respcode"
 	"RizhaoLanshanLabourUnion/services/vo"
+	"RizhaoLanshanLabourUnion/utils"
 	"github.com/gin-gonic/gin"
+	"log"
 )
 
+
+// GetUserInfo
+// @Summary 获取用户信息
+// @Description 获取用户信息
+// @Produce json
+// @Success 200 {object} vo.UserData "正常业务处理"
+// @Failure 401 {object} vo.Common "未验证"
+// @Router /api/v1/user/info [get]
 func GetUserInfo(c *gin.Context){
 
 	claims := jwtmodel.ExtractUserClaimsFromGinContext(c)
@@ -18,5 +29,56 @@ func GetUserInfo(c *gin.Context){
 			Claims: claims,
 		},
 	})
+
+}
+
+// ResetUserPassword
+// @Summary 修改密码
+// @Description 用户自行修改密码
+// @Accept json
+// @Produce json
+// @Param old_password body string true  "原始密码"
+// @Param new_password  body string true "新密码，最小长度3 最大长度20"
+// @Param confirm_password  body string true "重新输入密码"
+// @Success 200 {object} vo.Common "正常业务处理"
+// @Failure 401 {object} vo.Common "未验证"
+// @Failure 422 {object} vo.Common "表单绑定失败"
+// @Failure 500 {object} vo.Common "表单绑定失败"
+// @Router /api/v1/user/reset_password [post]
+func ResetUserPassword(ctx *gin.Context){
+
+	claims := jwtmodel.ExtractUserClaimsFromGinContext(ctx)
+	user, err := dao.GetUserById(claims.Id)
+	if err != nil {
+		log.Println("ResetUserPassword,"+err.Error())
+		ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.UserInvalid,"invalid user"))
+		return
+	}
+
+	// get form
+
+	var resetsForm vo.UserResetPassword
+
+	if err := ctx.ShouldBindJSON(&resetsForm); err == nil {
+		// check old password
+
+		if utils.CheckHashedPassword(resetsForm.OldPassword, user.Credentials) {
+
+			user.Credentials, _ = utils.GenerateHashedPassword(resetsForm.NewPassword)
+
+			if dao.UpdateUser(user) {
+				ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericSuccess,"密码修改成功"))
+			}
+
+		}else{
+			ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed,"原密码不正确"))
+		}
+
+
+	}else{
+		log.Println("ResetUserPassword,"+err.Error())
+		ctx.JSON(respcode.HttpBindingFailed, vo.GenerateCommonResponseHead(respcode.FormBindingFailed,"bind form failed"))
+	}
+
 
 }

@@ -38,5 +38,6 @@ func InitApiV1Routers(apiV1 *gin.RouterGroup) {
 
 	apiUser := apiV1.Group("/user")
 	apiUser.GET("/info", v1.GetUserInfo)
+	apiUser.POST("/reset_password",v1.ResetUserPassword)
 
 }

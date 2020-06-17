@@ -3,6 +3,7 @@ package handler
 import (
 	"RizhaoLanshanLabourUnion/security/jwt/jwtmodel"
 	"RizhaoLanshanLabourUnion/services/dao"
+	"RizhaoLanshanLabourUnion/services/respcode"
 	"RizhaoLanshanLabourUnion/services/vo"
 	"RizhaoLanshanLabourUnion/utils"
 	"errors"
@@ -44,6 +45,14 @@ func Authenticator(c *gin.Context) (interface{}, error) {
 			return "", errors.New("用户名或密码错误(1061)")
 		} else {
 			if utils.CheckHashedPassword(login.Password, user.Credentials) {
+				// update login time
+				dao.LoginUser(user)
+
+				// check active
+				if !user.Activated {
+					return "", errors.New("用户已锁定（"+string(respcode.UserLocked)+"）")
+				}
+
 				return jwtmodel.PopulateUserToUserClaims(user), nil
 			} else {
 				return "", errors.New("用户名或密码错误(1062)")

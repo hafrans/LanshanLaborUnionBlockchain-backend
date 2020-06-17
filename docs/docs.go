@@ -169,9 +169,174 @@ var doc = `{
                     }
                 }
             }
+        },
+        "/api/v1/user/info": {
+            "get": {
+                "description": "获取用户信息",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "获取用户信息",
+                "responses": {
+                    "200": {
+                        "description": "正常业务处理",
+                        "schema": {
+                            "$ref": "#/definitions/vo.UserData"
+                        }
+                    },
+                    "401": {
+                        "description": "未验证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/reset_password": {
+            "post": {
+                "description": "用户自行修改密码",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "修改密码",
+                "parameters": [
+                    {
+                        "description": "原始密码",
+                        "name": "old_password",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "新密码，最小长度3 最大长度20",
+                        "name": "new_password",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "重新输入密码",
+                        "name": "confirm_password",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "正常业务处理",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    },
+                    "401": {
+                        "description": "未验证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    },
+                    "422": {
+                        "description": "表单绑定失败",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "jwtmodel.UserClaims": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "iss": {
+                    "type": "string"
+                },
+                "realm": {
+                    "type": "string"
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "type": "object"
+                    }
+                },
+                "sub": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.User": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deleted_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "email_checked": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "last_login": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "phone_checked": {
+                    "type": "boolean"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_type": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UserProfile": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "deleted_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "vo.Common": {
             "type": "object",
             "properties": {
@@ -214,6 +379,35 @@ var doc = `{
                 "token": {
                     "type": "string",
                     "example": "asdsadasdasdasd"
+                }
+            }
+        },
+        "vo.UserData": {
+            "type": "object",
+            "properties": {
+                "claims": {
+                    "type": "object",
+                    "$ref": "#/definitions/jwtmodel.UserClaims"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "unauthorized"
+                },
+                "profile": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.UserProfile"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 401
+                },
+                "timestamp": {
+                    "type": "string",
+                    "example": "2048-05-06 12:34:56"
+                },
+                "user": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.User"
                 }
             }
         }
