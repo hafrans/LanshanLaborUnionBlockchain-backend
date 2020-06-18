@@ -9,19 +9,16 @@ import (
 )
 
 type UserClaims struct {
-	Id   int64         `json:"id"`
+	Id    int64         `json:"id"`
 	Sub   string        `json:"sub"`
 	Roles []interface{} `json:"roles"`
 	Iss   string        `json:"iss"`
 	Realm string        `json:"realm"`
 }
 
-
-
 func ExtractUserClaimsFromGinContext(ctx *gin.Context) *UserClaims {
 
 	claims := jwt.ExtractClaims(ctx)
-
 	return &UserClaims{
 		Id:    int64(claims[utils.JWTSettings.IdentityKey].(float64)),
 		Sub:   claims["sub"].(string),
@@ -36,7 +33,6 @@ func PopulateUserToUserClaims(user *models.User) *UserClaims {
 	if user == nil {
 		return &UserClaims{}
 	}
-
 	var roles []interface{} = make([]interface{}, 0, 4)
 	if rs, err := dao.GetRolesFromUser(user); err == nil {
 		for _, role := range rs {

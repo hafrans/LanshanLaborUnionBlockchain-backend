@@ -42,6 +42,8 @@ func main(){
 
 	router := gin.New()
 
+	router.MaxMultipartMemory = 20 << 20 // 20MiB
+
 	gin.DisableConsoleColor()
 
 	router.Use(gin.Logger())

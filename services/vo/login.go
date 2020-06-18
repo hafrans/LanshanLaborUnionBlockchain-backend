@@ -16,7 +16,6 @@ type TokenResult struct {
 	RefreshUrl string      `json:"refresh_url" example:"/api/auth/refreshToken"`
 }
 
-
 type LoginResult struct {
 	Common
 	TokenResult

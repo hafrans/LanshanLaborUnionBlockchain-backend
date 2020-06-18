@@ -5,12 +5,10 @@ import (
 	"RizhaoLanshanLabourUnion/services/models"
 )
 
-
 type UserData struct {
 	Common
 	UserDataPayload
 }
-
 
 type UserDataPayload struct {
 	User    *models.User         `json:"user"`
@@ -19,10 +17,12 @@ type UserDataPayload struct {
 }
 
 type UserResetPassword struct {
-	OldPassword string 	`json:"old_password" form:"old_password" binding:"required,min=3,max=20" `
-	NewPassword string 	`json:"new_password" form:"new_password" binding:"required,min=3,max=20" `
-	ConfirmPassword string  `json:"confirm_password" form:"confirm_password" binding:"required,min=3,max=20,eqfield=NewPassword" `
+	OldPassword     string `json:"old_password" form:"old_password" binding:"required,min=3,max=20" `
+	NewPassword     string `json:"new_password" form:"new_password" binding:"required,min=3,max=20" `
+	ConfirmPassword string `json:"confirm_password" form:"confirm_password" binding:"required,min=3,max=20,eqfield=NewPassword" `
 }
 
-
-
+type UserUpdateInfo struct {
+	Email string `json:"email" form:"email" binding:"required,email" example:"hafrans@163.com"`
+	Phone string `json:"phone" form:"phone" binding:"required,alpha" example:"test@gov.cn"`
+}

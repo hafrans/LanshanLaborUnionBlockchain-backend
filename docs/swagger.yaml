@@ -105,6 +105,18 @@ definitions:
         $ref: '#/definitions/models.User'
         type: object
     type: object
+  vo.UserUpdateInfo:
+    properties:
+      email:
+        example: hafrans@163.com
+        type: string
+      phone:
+        example: test@gov.cn
+        type: string
+    required:
+    - email
+    - phone
+    type: object
 info:
   contact:
     email: lvzh@hafrans.com
@@ -262,5 +274,41 @@ paths:
           description: 表单绑定失败
           schema:
             $ref: '#/definitions/vo.Common'
+        "500":
+          description: 表单绑定失败
+          schema:
+            $ref: '#/definitions/vo.Common'
       summary: 修改密码
+  /api/v1/user/update_info:
+    post:
+      consumes:
+      - application/json
+      description: 修改用户邮箱和密码
+      parameters:
+      - description: 请求
+        in: body
+        name: email
+        required: true
+        schema:
+          $ref: '#/definitions/vo.UserUpdateInfo'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 正常业务处理
+          schema:
+            $ref: '#/definitions/vo.Common'
+        "401":
+          description: 未验证
+          schema:
+            $ref: '#/definitions/vo.Common'
+        "422":
+          description: 表单绑定失败
+          schema:
+            $ref: '#/definitions/vo.Common'
+        "500":
+          description: 表单绑定失败
+          schema:
+            $ref: '#/definitions/vo.Common'
+      summary: 修改用户基础信息（邮箱和密码）
 swagger: "2.0"

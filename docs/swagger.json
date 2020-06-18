@@ -233,6 +233,61 @@
                         "schema": {
                             "$ref": "#/definitions/vo.Common"
                         }
+                    },
+                    "500": {
+                        "description": "表单绑定失败",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/update_info": {
+            "post": {
+                "description": "修改用户邮箱和密码",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "修改用户基础信息（邮箱和密码）",
+                "parameters": [
+                    {
+                        "description": "请求",
+                        "name": "email",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.UserUpdateInfo"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "正常业务处理",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    },
+                    "401": {
+                        "description": "未验证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    },
+                    "422": {
+                        "description": "表单绑定失败",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    },
+                    "500": {
+                        "description": "表单绑定失败",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
                     }
                 }
             }
@@ -391,6 +446,23 @@
                 "user": {
                     "type": "object",
                     "$ref": "#/definitions/models.User"
+                }
+            }
+        },
+        "vo.UserUpdateInfo": {
+            "type": "object",
+            "required": [
+                "email",
+                "phone"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "hafrans@163.com"
+                },
+                "phone": {
+                    "type": "string",
+                    "example": "test@gov.cn"
                 }
             }
         }

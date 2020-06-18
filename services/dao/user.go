@@ -9,7 +9,6 @@ import (
 	"time"
 )
 
-
 func CreateUser(username, password, email, phone string, userType int, emailChecked, phoneChecked, active bool) (*models.User, error) {
 
 	hashedPassword, ok := utils.GenerateHashedPassword(password)
@@ -18,7 +17,7 @@ func CreateUser(username, password, email, phone string, userType int, emailChec
 		return nil, errors.New("can not generate password")
 	}
 
-	user := &models.User {
+	user := &models.User{
 		UserName:     username,
 		Credentials:  hashedPassword,
 		Email:        email,
@@ -174,11 +173,9 @@ func GetUserAllLikedNamePaginated(name string, pageNum, pageCount int) ([]*model
 	}
 }
 
-
-
 func AddRoleToUser(role *models.Role, user *models.User) bool {
 
-	if role == nil || user == nil{
+	if role == nil || user == nil {
 		log.Println("add role failed, because of nullptr")
 		return false
 	}
@@ -190,24 +187,22 @@ func AddRoleToUser(role *models.Role, user *models.User) bool {
 
 	result := db.Create(userRole)
 
-	if result.Error != nil{
+	if result.Error != nil {
 		log.Println(result.Error)
 		return false
-	}else{
+	} else {
 		return true
 	}
 
-
 }
 
-
-func GetRolesFromUser(user *models.User)([]*models.Role, error){
+func GetRolesFromUser(user *models.User) ([]*models.Role, error) {
 	var roles []*models.Role
 	result := db.Model(user).Related(&roles, "Roles")
-	if result.Error != nil{
+	if result.Error != nil {
 		log.Println(result.Error)
 		return nil, result.Error
-	}else{
+	} else {
 		return roles, nil
 	}
 }

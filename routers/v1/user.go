@@ -61,24 +61,67 @@ func ResetUserPassword(ctx *gin.Context){
 
 	if err := ctx.ShouldBindJSON(&resetsForm); err == nil {
 		// check old password
-
 		if utils.CheckHashedPassword(resetsForm.OldPassword, user.Credentials) {
-
 			user.Credentials, _ = utils.GenerateHashedPassword(resetsForm.NewPassword)
-
 			if dao.UpdateUser(user) {
 				ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericSuccess,"密码修改成功"))
 			}
-
 		}else{
 			ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed,"原密码不正确"))
 		}
+	}else{
+		log.Println("ResetUserPassword,"+err.Error())
+		ctx.JSON(respcode.HttpBindingFailed, vo.GenerateCommonResponseHead(respcode.FormBindingFailed,"bind form failed"))
+	}
 
+}
+
+
+// UpdateUserBasicInfo
+// @Summary 修改用户基础信息（邮箱和密码）
+// @Description 修改用户邮箱和密码
+// @Accept json
+// @Produce json
+// @Param email body vo.UserUpdateInfo true  "请求"
+// @Success 200 {object} vo.Common "正常业务处理"
+// @Failure 401 {object} vo.Common "未验证"
+// @Failure 422 {object} vo.Common "表单绑定失败"
+// @Failure 500 {object} vo.Common "表单绑定失败"
+// @Router /api/v1/user/update_info [post]
+func UpdateUserInfo(ctx *gin.Context) {
+	claims := jwtmodel.ExtractUserClaimsFromGinContext(ctx)
+	user, err := dao.GetUserById(claims.Id)
+	if err != nil || !user.Activated{
+		log.Println("UpdateUserInfo,"+err.Error())
+		ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.UserInvalid,"invalid user"))
+		return
+	}
+
+	var userInfoVO vo.UserUpdateInfo
+
+	if err := ctx.ShouldBindJSON(&userInfoVO) ; err == nil {
+
+		if user.Email != userInfoVO.Email {
+			user.Email = userInfoVO.Email
+			user.EmailChecked = false
+		}
+
+		if user.Phone != userInfoVO.Phone {
+			user.Phone = userInfoVO.Phone
+			user.PhoneChecked = false
+		}
+
+		// save
+		if dao.UpdateUser(user) {
+			ctx.JSON(respcode.HttpOK,vo.GenerateCommonResponseHead(respcode.GenericSuccess, "更新信息成功"))
+		}
 
 	}else{
 		log.Println("ResetUserPassword,"+err.Error())
 		ctx.JSON(respcode.HttpBindingFailed, vo.GenerateCommonResponseHead(respcode.FormBindingFailed,"bind form failed"))
 	}
+
+
 
 
 }

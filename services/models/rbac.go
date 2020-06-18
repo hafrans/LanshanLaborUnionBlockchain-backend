@@ -1,15 +1,14 @@
 package models
 
-
-type Role struct{
+type Role struct {
 	Model
-	Name        string `json:"name" gorm:"unique_index"`
-	Descriptor  string `json:"descriptor" gorm:"unique_index"`
-	Description string `json:"description"`
+	Name        string        `json:"name" gorm:"unique_index"`
+	Descriptor  string        `json:"descriptor" gorm:"unique_index"`
+	Description string        `json:"description"`
 	Permissions []*Permission `json:"-" gorm:"many2many:role_permission"`
 }
 
-type Permission struct{
+type Permission struct {
 	Model
 	Name        string  `json:"name" gorm:"unique_index"`
 	Descriptor  string  `json:"descriptor" gorm:"unique_index"`
@@ -17,10 +16,9 @@ type Permission struct{
 	Roles       []*Role `json:"-" gorm:"many2many:role_permission"`
 }
 
-
 type RolePermission struct {
 	Model
-	RoleID int64
+	RoleID       int64
 	PermissionID int64
 }
 
