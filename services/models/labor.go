@@ -2,6 +2,7 @@ package models
 
 import "RizhaoLanshanLabourUnion/utils"
 
+
 // 类型/调解事项
 type Category struct {
 	Model
@@ -12,12 +13,12 @@ type Category struct {
 // 申请调解人
 type Applicant struct {
 	Model
-	Name           string     `json:"applicant_name" form:"applicant_name" gorm:"type:varchar(128);not null"`
-	Birthday       utils.Time `json:"applicant_birth" form:"applicant_birth"`
-	Nationality    string     `json:"applicant_nationality" form:"applicant_nationality" gorm:"type:varchar(32);not null"`
-	IdentityNumber string     `json:"applicant_id" form:"applicant_id" gorm:"type:varchar(20);not null;unique_index"`
-	Contact        string     `json:"applicant_contact" form:"applicant_contact" gorm:"type:varchar(32)"`
-	Address        string     `json:"applicant_address" form:"applicant_address" gorm:"type:varchar(255)"`
+	Name           string      `json:"applicant_name" form:"applicant_name" gorm:"type:varchar(128);not null"`
+	Birthday       *utils.Time `json:"applicant_birth" form:"applicant_birth" gorm:"type:datetime"`
+	Nationality    string      `json:"applicant_nationality" form:"applicant_nationality" gorm:"type:varchar(32);not null"`
+	IdentityNumber string      `json:"applicant_id" form:"applicant_id" gorm:"type:varchar(20);not null;unique_index"`
+	Contact        string      `json:"applicant_contact" form:"applicant_contact" gorm:"type:varchar(32)"`
+	Address        string      `json:"applicant_address" form:"applicant_address" gorm:"type:varchar(255)"`
 }
 
 // 用人单位
@@ -29,3 +30,7 @@ type Employer struct {
 	Contact                 string `json:"employer_contact" form:"employer_contact" gorm:"type:varchar(32)"`
 	Address                 string `json:"employer_address" form:"employer_address" gorm:"type:varchar(255)"`
 }
+
+
+
+
