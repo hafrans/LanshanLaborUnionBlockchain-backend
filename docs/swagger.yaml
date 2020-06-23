@@ -64,6 +64,20 @@ definitions:
         example: "2048-05-06 12:34:56"
         type: string
     type: object
+  vo.CommonData:
+    properties:
+      data:
+        type: object
+      message:
+        example: unauthorized
+        type: string
+      status:
+        example: 401
+        type: integer
+      timestamp:
+        example: "2048-05-06 12:34:56"
+        type: string
+    type: object
   vo.LoginResult:
     properties:
       expire:
@@ -179,8 +193,14 @@ paths:
   /api/v1/:
     get:
       consumes:
-      - application/json
-      description: 测试在登录情况下是否可以访问
+      - multipart/form-data
+      description: 上传资源 ，支持 pdf,doc,docx,pdfx,txt,mp3,zip,jpg,gif,jpeg,png格式
+      parameters:
+      - description: 要上传的资源
+        in: query
+        name: file
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -192,10 +212,29 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/vo.Common'
-      summary: ApiIndex
+      summary: 上传资源
       tags:
       - test
       - index
+  /api/v1/labor/arbitration_instructor:
+    post:
+      description: 获取劳动争议表单模板
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/vo.CommonData'
+        "401":
+          description: 未验证
+          schema:
+            $ref: '#/definitions/vo.Common'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/vo.Common'
+      summary: 获取劳动争议表单模板
   /api/v1/tags:
     post:
       parameters:

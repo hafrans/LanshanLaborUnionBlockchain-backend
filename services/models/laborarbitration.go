@@ -2,14 +2,14 @@ package models
 
 import "RizhaoLanshanLabourUnion/utils"
 
-type LaborArbitrationForm struct {
+type LaborArbitration struct {
 	Model
 
 	// 1. 主体性质
-	Subject int `json:"subject" form:"subject" gorm:"type:tinyint(1);not null" example:"1"`
+	Subject int `json:"subject" form:"subject" gorm:"type:tinyint(1);not null" example:"1" binding:"required"`
 
 	// 2. 入职时间
-	HireDate *utils.Date `json:"hire_date" form:"hire_date" example:"1999-12-31" time_format:"2006-01-02" gorm:"type:date"  example:"1999-12-31"`
+	HireDate *utils.Date `json:"hire_date" form:"hire_date" example:"1999-12-31" time_format:"2006-01-02" gorm:"type:date" binding:"required"`
 
 	// 3. 是否签订书面劳动合同以及次数
 	LaborContractSigned       bool        `json:"labor_contract_signed" form:"labor_contract_signed" binding:"required"`
@@ -26,26 +26,28 @@ type LaborArbitrationForm struct {
 	LaborContractNotSignedEnd   *utils.Date `json:"labor_contract_not_signed_end" form:"labor_contract_not_signed_end" gorm:"type:date" example:"1999-12-31" time_format:"2006-01-02"`
 
 	// 6. 劳动合同约定的工作岗位
-	Job string `json:"job_name" form:"job_name" gorm:"type:varchar(255)"`
+	Job *string `json:"job_name" form:"job_name" gorm:"type:varchar(255)"`
 
 	// 7. 劳动合同约定的工作地点
-	WorkPlace string `json:"job_work_place" form:"job_work_place"`
+	WorkPlace *string `json:"job_work_place" form:"job_work_place"`
 
 	// 8. 劳动合同约定的月工资数、工资构成、工时制
-	ContractWage          string  `json:"contract_wage" form:"contract_wage" gorm:"type:varchar(64);default:'0.00'" binding:"number"`
+	ContractWage          *string `json:"contract_wage" form:"contract_wage" gorm:"type:varchar(64);default:'0.00'"`
 	ContractWageComponent *string `json:"contract_wage_component" form:"contract_wage_component"`
 	ContractWageType      *int    `json:"contract_wage_type" form:"contract_wage_type" gorm:"type:tinyint(1)"`
 
 	// 9. 实发月工资数及工资构成、发放形式、发放周期
-	PaymentType int    `json:"payment_type" form:"payment_type" gorm:"type:tinyint(1)"`
-	Wage        string `json:"wage" form:"wage" gorm:"default:'0.00'"  binding:"number"`
+	PaymentType   int     `json:"payment_type" form:"payment_type" gorm:"type:tinyint(1)" binding:"alpha,required"`
+	PaymentCycle  int     `json:"payment_cycle" form:"payment_cycle"  gorm:"type:tinyint(1)" binding:"alpha,required"`
+	Wage          float64 `json:"wage" form:"wage" gorm:"default:0"  binding:"number,required"`
+	WageComponent string  `json:"wage_component" form:"wage_component" binding:"required"`
 
 	// 10. 最后一次支付工资时间
 	LastPayment *utils.DateMonth `json:"last_payment" form:"last_payment" gorm:"type:date" time_format:"2006-01" example:"2010-01"`
 
 	// 11. 欠发工资及加班费数额
-	UnpaidWage         string `json:"unpaid_wage" form:"unpaid_wage" gorm:"default:'0.00'"  binding:"number"`
-	UnpaidOvertimeWage string `json:"unpaid_overtime_wage" form:"unpaid_overtime_wage" gorm:"default:'0.00'"  binding:"number"`
+	UnpaidWage         float64 `json:"unpaid_wage" form:"unpaid_wage" gorm:"default:0"  binding:"number"`
+	UnpaidOvertimeWage float64 `json:"unpaid_overtime_wage" form:"unpaid_overtime_wage" gorm:"default:0"  binding:"number"`
 
 	// 12.办理社会保险及险种
 	SocialInsuranceApply bool             `json:"social_insurance_apply" form:"social_insurance_apply" binding:"required"`
@@ -113,28 +115,31 @@ type LaborArbitrationForm struct {
 	SeverLaborRelationshipDate *utils.Date `json:"sever_labor_relationship_date" form:"sever_labor_relationship_date" gorm:"type:date" example:"2020-01-02"`
 
 	// 27. 已办理劳动合同解除手续是□否□
-	SeveredLaborRelationship bool `json:"severed_labor_relationship" form:"severed_labor_relationship" gorm:"type:tinyint(1)" binding:"required"`
+	SeveredLaborRelationship *bool `json:"severed_labor_relationship" form:"severed_labor_relationship" gorm:"type:tinyint(1)"`
 
 	// 28. 申请仲裁时间年月日
 	LaborArbitrationDate *utils.Date `json:"labor_arbitration_date" form:"labor_arbitration_date" gorm:"type:date" example:"2020-01-02" binding:"required"`
 
 	// 29. 涉及群体性是□否□
 	MassDisturbance bool `json:"mass_disturbance" form:"mass_disturbance" gorm:"type:tinyint(1)" binding:"required"`
+
+	// 30. 本表遗漏的其他项目
+	Other string `json:"other_information" form:"other_information"`
 }
 
 // 需支付的工伤待遇项目及数额
 type WorkRelatedTreatmentAmount struct {
 
 	// 1. 医疗费
-	WorkRelatedTreatmentAmountYiliaofei *float64 `json:"work_related_treatment_yl" form:"work_related_treatment_ylf" gorm:"default:0;comment:'医疗费'"`
+	WorkRelatedTreatmentAmountYiliaofei *float64 `json:"work_related_treatment_yl" form:"work_related_treatment_yl" gorm:"default:0;comment:'医疗费'"`
 	// 2. 假肢安装费
-	WorkRelatedTreatmentAmountJiazhianzhuang *float64 `json:"work_related_treatment_jzaz" form:"work_related_treatment_jzazf" gorm:"default:0;comment:'假肢安装费'"`
+	WorkRelatedTreatmentAmountJiazhianzhuang *float64 `json:"work_related_treatment_jzaz" form:"work_related_treatment_jzaz" gorm:"default:0;comment:'假肢安装费'"`
 	// 3. 住院期间伙食补助
 	WorkRelatedTreatmentAmountHuoshibuzhu *float64 `json:"work_related_treatment_hsbz" form:"work_related_treatment_hsbz" gorm:"default:0;comment:'住院期间伙食补助费'"`
 	// 4. 交通费
 	WorkRelatedTreatmentAmountJiaotong *float64 `json:"work_related_treatment_jt" form:"work_related_treatment_jt" gorm:"default:0;comment:'交通费'"`
 	// 5. 陪护费
-	WorkRelatedTreatmentAmountPeihu *float64 `json:"work_related_treatment_jt" form:"work_related_treatment_jt" gorm:"default:0;comment:'陪护费'"`
+	WorkRelatedTreatmentAmountPeihu *float64 `json:"work_related_treatment_ph" form:"work_related_treatment_ph" gorm:"default:0;comment:'陪护费'"`
 	// 6. 生活护理费
 	WorkRelatedTreatmentAmountShenghuohuli *float64 `json:"work_related_treatment_shhl" form:"work_related_treatment_shhl" gorm:"default:0;comment:'生活护理费'"`
 	// 7. 伤残津贴

@@ -105,9 +105,9 @@ var doc = `{
         },
         "/api/v1/": {
             "get": {
-                "description": "测试在登录情况下是否可以访问",
+                "description": "上传资源 ，支持 pdf,doc,docx,pdfx,txt,mp3,zip,jpg,gif,jpeg,png格式",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -116,7 +116,16 @@ var doc = `{
                     "test",
                     "index"
                 ],
-                "summary": "ApiIndex",
+                "summary": "上传资源",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "要上传的资源",
+                        "name": "file",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -126,6 +135,35 @@ var doc = `{
                     },
                     "401": {
                         "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/labor/arbitration_instructor": {
+            "post": {
+                "description": "获取劳动争议表单模板",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "获取劳动争议表单模板",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/vo.CommonData"
+                        }
+                    },
+                    "401": {
+                        "description": "未验证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
                         "schema": {
                             "$ref": "#/definitions/vo.Common"
                         }
@@ -395,6 +433,26 @@ var doc = `{
         "vo.Common": {
             "type": "object",
             "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "unauthorized"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 401
+                },
+                "timestamp": {
+                    "type": "string",
+                    "example": "2048-05-06 12:34:56"
+                }
+            }
+        },
+        "vo.CommonData": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "object"
+                },
                 "message": {
                     "type": "string",
                     "example": "unauthorized"

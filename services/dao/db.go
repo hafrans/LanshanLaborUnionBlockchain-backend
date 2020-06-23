@@ -58,7 +58,7 @@ func TryInitializeTables(){
 func CreateTables(){
 
 	
-	db.DropTableIfExists(&models.LaborArbitrationForm{})
+	db.DropTableIfExists(&models.LaborArbitration{})
 	
 	db.DropTableIfExists(&models.RolePermission{})
 	db.DropTableIfExists(&models.UserRole{})
@@ -79,7 +79,7 @@ func CreateTables(){
 	db.CreateTable(&models.Role{})
 	db.CreateTable(&models.Permission{})
 
-	db.CreateTable(&models.LaborArbitrationForm{})
+	db.CreateTable(&models.LaborArbitration{})
 
 
 
