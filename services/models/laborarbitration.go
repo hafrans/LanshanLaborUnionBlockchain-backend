@@ -35,8 +35,8 @@ type LaborArbitration struct {
 
 	// 8. 劳动合同约定的月工资数、工资构成、工时制
 	ContractWage          *float64 `json:"contract_wage" form:"contract_wage" gorm:"type:varchar(64);default:'0.00'"`
-	ContractWageComponent *string `json:"contract_wage_component" form:"contract_wage_component"`
-	ContractWageType      *int    `json:"contract_wage_type" form:"contract_wage_type" gorm:"type:tinyint(1)"`
+	ContractWageComponent *string  `json:"contract_wage_component" form:"contract_wage_component"`
+	ContractWageType      *int     `json:"contract_wage_type" form:"contract_wage_type" gorm:"type:tinyint(1)"`
 
 	// 9. 实发月工资数及工资构成、发放形式、发放周期
 	PaymentType   int     `json:"payment_type" form:"payment_type" gorm:"type:tinyint(1)" binding:"alpha,required"`
@@ -100,7 +100,7 @@ type LaborArbitration struct {
 	PaidAnnualLeaveNotLeaveDayNotLeave *int `json:"paid_annual_leave_not_leave_day_not_leave" form:"paid_annual_leave_not_leave_day_not_leave"` // 未休
 
 	// 23. 扣除加班工资后十二个月劳动者月平均工资数额
-	NoOvertimeAvgWage      *float64    `json:"no_overtime_avg_wage" form:no_overtime_avg_wage" example:"1"`
+	NoOvertimeAvgWage      *float64    `json:"no_overtime_avg_wage" form:"no_overtime_avg_wage" example:"1"`
 	NoOvertimeAvgWageStart *utils.Date `json:"no_overtime_avg_wage_start" form:"no_overtime_avg_wage_start" gorm:"type:date" example:"2020-01-02"`
 	NoOvertimeAvgWageEnd   *utils.Date `json:"no_overtime_avg_wage_end" form:"no_overtime_avg_wage_end" gorm:"type:date" example:"2020-01-02"`
 
@@ -155,5 +155,3 @@ type WorkRelatedTreatmentAmount struct {
 	// 11. 其他
 	WorkRelatedTreatmentAmountOther *float64 `json:"work_related_treatment_other" form:"work_related_treatment_other" gorm:"default:0;comment:'其他'"`
 }
-
-
