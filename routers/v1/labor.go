@@ -101,6 +101,7 @@ func LaborArbitrationFormInstructor(ctx *gin.Context) {
 				LaborArbitrationDate:                              utils.NowDateDay(),
 				MassDisturbance:                                   false,
 				Other:                                             "无",
+				LaborContractType:                                 &lcsc,
 			},
 		})
 	}

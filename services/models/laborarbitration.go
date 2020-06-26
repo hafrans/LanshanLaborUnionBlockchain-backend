@@ -1,6 +1,8 @@
 package models
 
-import "RizhaoLanshanLabourUnion/utils"
+import (
+	"RizhaoLanshanLabourUnion/utils"
+)
 
 type LaborArbitration struct {
 	Model
@@ -32,7 +34,7 @@ type LaborArbitration struct {
 	WorkPlace *string `json:"job_work_place" form:"job_work_place"`
 
 	// 8. 劳动合同约定的月工资数、工资构成、工时制
-	ContractWage          *string `json:"contract_wage" form:"contract_wage" gorm:"type:varchar(64);default:'0.00'"`
+	ContractWage          *float64 `json:"contract_wage" form:"contract_wage" gorm:"type:varchar(64);default:'0.00'"`
 	ContractWageComponent *string `json:"contract_wage_component" form:"contract_wage_component"`
 	ContractWageType      *int    `json:"contract_wage_type" form:"contract_wage_type" gorm:"type:tinyint(1)"`
 
@@ -153,3 +155,5 @@ type WorkRelatedTreatmentAmount struct {
 	// 11. 其他
 	WorkRelatedTreatmentAmountOther *float64 `json:"work_related_treatment_other" form:"work_related_treatment_other" gorm:"default:0;comment:'其他'"`
 }
+
+

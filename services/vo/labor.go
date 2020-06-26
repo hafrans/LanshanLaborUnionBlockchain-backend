@@ -17,6 +17,7 @@ type LaborArbitrationForm struct {
 	LaborContractSigningCount *int `json:"number" binding:"omitempty,number,gte=0"`
 
 	// 4.劳动合同起止时间
+	LaborContractType  *int        `json:"labor_contract_type" binding:"omitempty,number,gte=0"`
 	LaborContractRange [2]*utils.Date `json:"labor_contract" time_format:"2006-01-02" binding:"omitempty"`
 
 	// 5. 未签书面劳动合同工作期间
@@ -157,3 +158,5 @@ type LaborArbitrationForm struct {
 	// 30. 本表遗漏的其他项目
 	Other string `json:"other_information" form:"other_information"`
 }
+
+
