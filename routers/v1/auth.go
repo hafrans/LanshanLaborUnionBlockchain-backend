@@ -8,7 +8,15 @@ import (
 
 
 
-
+// Get Captcha
+// @Summary 获得验证码
+// @Description 获取验证码
+// @Tags captcha
+// @Produce json
+// @Param id path string true "验证码id"
+// @Success 200 {object} vo.CommonData "同时返回验证码的时间戳、base64化图片、验证码challenge指令"
+// @Failure 401 {object} vo.Common
+// @Router /api/auth/captcha/:id [get]
 func GetCaptcha(ctx *gin.Context){
 
 	captchaId := ctx.Param("id")

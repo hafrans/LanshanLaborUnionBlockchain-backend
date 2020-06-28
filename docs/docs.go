@@ -30,6 +30,41 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/auth/captcha/:id": {
+            "get": {
+                "description": "获取验证码",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "captcha"
+                ],
+                "summary": "获得验证码",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "验证码id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "同时返回验证码的时间戳、base64化图片、验证码challenge指令",
+                        "schema": {
+                            "$ref": "#/definitions/vo.CommonData"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
         "/api/auth/login": {
             "post": {
                 "description": "用户登录并获得token以及失效日期",
@@ -113,8 +148,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "test",
-                    "index"
+                    "utils"
                 ],
                 "summary": "上传资源",
                 "parameters": [
@@ -214,6 +248,9 @@ var doc = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "user"
+                ],
                 "summary": "获取用户信息",
                 "responses": {
                     "200": {
@@ -239,6 +276,9 @@ var doc = `{
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "user"
                 ],
                 "summary": "修改密码",
                 "parameters": [
@@ -306,6 +346,9 @@ var doc = `{
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "user"
                 ],
                 "summary": "修改用户基础信息（邮箱和密码）",
                 "parameters": [

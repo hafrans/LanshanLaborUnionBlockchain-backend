@@ -14,6 +14,7 @@ import (
 // GetUserInfo
 // @Summary 获取用户信息
 // @Description 获取用户信息
+// @Tags user
 // @Produce json
 // @Success 200 {object} vo.UserData "正常业务处理"
 // @Failure 401 {object} vo.Common "未验证"
@@ -35,6 +36,7 @@ func GetUserInfo(c *gin.Context){
 // ResetUserPassword
 // @Summary 修改密码
 // @Description 用户自行修改密码
+// @Tags user
 // @Accept json
 // @Produce json
 // @Param old_password body string true  "原始密码"
@@ -80,6 +82,7 @@ func ResetUserPassword(ctx *gin.Context){
 // UpdateUserBasicInfo
 // @Summary 修改用户基础信息（邮箱和密码）
 // @Description 修改用户邮箱和密码
+// @Tags user
 // @Accept json
 // @Produce json
 // @Param email body vo.UserUpdateInfo true  "请求"

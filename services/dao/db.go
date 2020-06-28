@@ -63,6 +63,8 @@ func CreateTables() {
 	db.DropTableIfExists(&models.Permission{})
 	db.DropTableIfExists(&models.Department{})
 	db.DropTableIfExists(&models.Category{})
+	db.DropTableIfExists(&models.Applicant{})
+	db.DropTableIfExists(&models.Employer{})
 
 	//========================================
 
@@ -74,6 +76,8 @@ func CreateTables() {
 	db.CreateTable(&models.Role{})
 	db.CreateTable(&models.Permission{})
 	db.CreateTable(&models.Category{})
+	db.CreateTable(&models.Employer{})
+	db.CreateTable(&models.Applicant{})
 
 	db.CreateTable(&models.LaborArbitration{})
 

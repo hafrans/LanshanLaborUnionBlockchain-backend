@@ -142,6 +142,29 @@ info:
   title: 岚山区劳动争议调解区块链平台
   version: 0.0.2
 paths:
+  /api/auth/captcha/:id:
+    get:
+      description: 获取验证码
+      parameters:
+      - description: 验证码id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 同时返回验证码的时间戳、base64化图片、验证码challenge指令
+          schema:
+            $ref: '#/definitions/vo.CommonData'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/vo.Common'
+      summary: 获得验证码
+      tags:
+      - captcha
   /api/auth/login:
     post:
       consumes:
@@ -214,8 +237,7 @@ paths:
             $ref: '#/definitions/vo.Common'
       summary: 上传资源
       tags:
-      - test
-      - index
+      - utils
   /api/v1/labor/arbitration_instructor:
     post:
       description: 获取劳动争议表单模板
@@ -274,6 +296,8 @@ paths:
           schema:
             $ref: '#/definitions/vo.Common'
       summary: 获取用户信息
+      tags:
+      - user
   /api/v1/user/reset_password:
     post:
       consumes:
@@ -318,6 +342,8 @@ paths:
           schema:
             $ref: '#/definitions/vo.Common'
       summary: 修改密码
+      tags:
+      - user
   /api/v1/user/update_info:
     post:
       consumes:
@@ -350,4 +376,6 @@ paths:
           schema:
             $ref: '#/definitions/vo.Common'
       summary: 修改用户基础信息（邮箱和密码）
+      tags:
+      - user
 swagger: "2.0"

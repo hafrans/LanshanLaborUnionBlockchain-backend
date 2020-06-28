@@ -47,7 +47,7 @@ func ApiIndexHandler(ctx *gin.Context) {
 // Upload Assets
 // @Summary 上传资源
 // @Description 上传资源 ，支持 pdf,doc,docx,pdfx,txt,mp3,zip,jpg,gif,jpeg,png格式
-// @Tags test,index
+// @Tags utils
 // @Accept mpfd
 // @Produce json
 // @Param file query string true "要上传的资源"

@@ -20,9 +20,7 @@ func InitCategory() {
 	categories["其他"] = "其他正义类型"
 
 	for k, v := range categories {
-
 		CreateCategory(k, v)
-
 	}
 
 }
@@ -62,8 +60,8 @@ func UpdateCategory(category *models.Category) bool {
 
 }
 
-func DeleteCategory(department *models.Category) bool {
-	result := db.Delete(department)
+func DeleteCategory(category *models.Category) bool {
+	result := db.Delete(category)
 	if result.Error != nil {
 		log.Println(result.Error)
 		return false
@@ -86,13 +84,13 @@ func GetCategoryById(id int64) (*models.Category, error) {
 	if id <= 0 {
 		return nil, errors.New("invalid id")
 	}
-	var department *models.Category
-	result := db.FirstOrInit(department, id)
+	var category *models.Category
+	result := db.FirstOrInit(category, id)
 	if result.Error != nil {
 		log.Println(result.Error)
 		return nil, result.Error
 	} else {
-		return department, nil
+		return category, nil
 	}
 }
 

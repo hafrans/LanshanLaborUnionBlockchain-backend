@@ -29,62 +29,57 @@ const (
 	StdHeight = 80
 )
 
-
 var (
 	ErrNotFound = errors.New("captcha: id not found")
 )
 
-
-type PendingCaptcha struct{
-
+type PendingCaptcha struct {
 	Challenge string `json:"challenge"`
-	Time *Time `json:"timestamp"`
+	Time      *Time  `json:"timestamp"`
 	ImageData string `json:"image"`
-	digits []byte `json:"-"`
+	digits    []byte `json:"-"`
 	PlainText string `json:"-"`
-
 }
 
-
-func parseDigitsToString(digits []byte) string{
+func parseDigitsToString(digits []byte) string {
 	buf := bytes.NewBuffer([]byte(""))
 	var i byte
-	for _, i = range digits{
-		buf.WriteByte(byte(i+48))
+	for _, i = range digits {
+		buf.WriteByte(byte(i + 48))
 	}
 	return buf.String()
 }
 
-func formatStringToDigits(str string) []byte{
+func formatStringToDigits(str string) []byte {
 	reader := bytes.NewReader([]byte(str))
 	buffer := bytes.NewBuffer([]byte(""))
 	for {
 		b, err := reader.ReadByte()
 		if err == nil {
-			buffer.WriteByte(b-48)
-		}else{
+			buffer.WriteByte(b - 48)
+		} else {
 			break
 		}
 	}
 	return buffer.Bytes()
 }
 
-func CreateCaptcha(id string) *PendingCaptcha{
+func CreateCaptcha(id string) *PendingCaptcha {
 	digits := captcha.RandomDigits(6)
 	now := Time(time.Now())
 	pendingCaptcha := &PendingCaptcha{
 		Challenge: "",
-		Time: &now,
+		Time:      &now,
 		ImageData: "",
-		digits: digits,
+		digits:    digits,
 		PlainText: parseDigitsToString(digits),
 	}
 
 	timeStr, _ := pendingCaptcha.Time.MarshalJSON()
 
 	image := captcha.NewImage(string(timeStr),
-		                      pendingCaptcha.digits,
-		                      StdWidth,StdHeight)
+		pendingCaptcha.digits,
+		StdWidth, StdHeight)
 
 	buf := bytes.NewBuffer([]byte(""))
 	buffWriter := bufio.NewWriter(buf)
@@ -92,24 +87,23 @@ func CreateCaptcha(id string) *PendingCaptcha{
 	image.WriteTo(buffWriter)
 	buffWriter.Flush()
 
-	imageHexData := fmt.Sprintf("data:image/png;base64,%s",base64.StdEncoding.EncodeToString(buf.Bytes()))
+	imageHexData := fmt.Sprintf("data:image/png;base64,%s", base64.StdEncoding.EncodeToString(buf.Bytes()))
 
 	pendingCaptcha.ImageData = imageHexData
-	pendingCaptcha.Challenge = fmt.Sprintf("%x",sha256.Sum256([]byte(pendingCaptcha.PlainText+id+string(timeStr))))
+	pendingCaptcha.Challenge = fmt.Sprintf("%x", sha256.Sum256([]byte(pendingCaptcha.PlainText+id+string(timeStr))))
 	//log.Println(pendingCaptcha.PlainText+id+string(timeStr))
 
 	return pendingCaptcha
 }
 
-
-func CheckCaptcha(id, plainText, timeStr, challenge string) bool{
-	tx, err := time.ParseInLocation(timeFormat,timeStr,time.Local)
-	if err != nil{
+func CheckCaptcha(id, plainText, timeStr, challenge string) bool {
+	tx, err := time.ParseInLocation(timeFormat, timeStr, time.Local)
+	if err != nil {
 		return false
 	}
 	if math.Abs(time.Now().Sub(tx).Minutes()) > 1 {
-		log.Println("some one use expired captcha", CurrentTimeString(), Time(tx).FormattedString(),time.Now().Sub(tx).String())
+		log.Println("some one use expired captcha", CurrentTimeString(), Time(tx).FormattedString(), time.Now().Sub(tx).String())
 		return false
 	}
-	return challenge == fmt.Sprintf("%x",sha256.Sum256([]byte(plainText+id+"\""+timeStr+"\"")))
+	return challenge == fmt.Sprintf("%x", sha256.Sum256([]byte(plainText+id+"\""+timeStr+"\"")))
 }
