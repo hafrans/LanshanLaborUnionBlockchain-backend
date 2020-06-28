@@ -6,12 +6,11 @@ import (
 	"log"
 )
 
-func CreateMaterial(name, path, description string, caseId string) (*models.Material, error) {
+func CreateMaterial(name, path string, caseId string) (*models.Material, error) {
 
 	material := &models.Material{
 		Name: name,
 		Path: &path,
-		Description: &description,
 		CaseId: caseId,
 	}
 

@@ -32,3 +32,22 @@ func GetAllCategories(ctx *gin.Context){
 		Data: list,
 	})
 }
+
+
+// Create New Case By Applicant
+// @Summary 创建新调解案件
+// @Description 由申请人填写创建新调解案件
+// @Tags case
+// @Accept json
+// @Produce json
+// @Param case body vo.CaseFirstSubmitForm true "提交表单"
+// @Success 200 {object} vo.CommonData "成功"
+// @Failure 422 {object} vo.Common "绑定失败"
+// @Failure 401 {object} vo.Common "没有认证"
+// @Router /api/v1/case/create [get]
+func CreateNewCaseByApplicant(ctx *gin.Context){
+
+
+
+
+}

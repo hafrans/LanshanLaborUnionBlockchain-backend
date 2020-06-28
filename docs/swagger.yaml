@@ -14,11 +14,55 @@ definitions:
       sub:
         type: string
     type: object
+  models.Applicant:
+    properties:
+      applicant_address:
+        type: string
+      applicant_birth:
+        type: string
+      applicant_contact:
+        type: string
+      applicant_id:
+        type: string
+      applicant_name:
+        type: string
+      applicant_nationality:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  models.Employer:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      employer_address:
+        type: string
+      employer_contact:
+        type: string
+      employer_faren:
+        type: string
+      employer_name:
+        type: string
+      employer_uscc:
+        type: string
+      id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
   models.User:
     properties:
       active:
         type: boolean
-      createdAt:
+      created_at:
         type: string
       deleted_at:
         type: string
@@ -43,7 +87,7 @@ definitions:
     type: object
   models.UserProfile:
     properties:
-      createdAt:
+      created_at:
         type: string
       deleted_at:
         type: string
@@ -51,6 +95,40 @@ definitions:
         type: integer
       updated_at:
         type: string
+    type: object
+  vo.CaseFirstSubmitForm:
+    properties:
+      applicant:
+        $ref: '#/definitions/models.Applicant'
+        description: 1.申请人
+        type: object
+      category_id:
+        description: 类型id
+        type: integer
+      content:
+        description: 4.调解事项所依据的事实与理由
+        type: string
+      form_id:
+        description: 5.劳动者填写的表单 id
+        type: integer
+      materials:
+        description: 6. 证据材料 各种id
+        items:
+          type: integer
+        type: array
+      respondent:
+        $ref: '#/definitions/models.Employer'
+        description: 2.被申请人
+        type: object
+      title:
+        description: 3.调解事项
+        type: string
+    required:
+    - applicant
+    - content
+    - form_id
+    - respondent
+    - title
     type: object
   vo.Common:
     properties:
@@ -479,6 +557,36 @@ paths:
       summary: 上传资源
       tags:
       - utils
+  /api/v1/case/create:
+    get:
+      consumes:
+      - application/json
+      description: 由申请人填写创建新调解案件
+      parameters:
+      - description: 提交表单
+        in: body
+        name: case
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CaseFirstSubmitForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/vo.CommonData'
+        "401":
+          description: 没有认证
+          schema:
+            $ref: '#/definitions/vo.Common'
+        "422":
+          description: 绑定失败
+          schema:
+            $ref: '#/definitions/vo.Common'
+      summary: 创建新调解案件
+      tags:
+      - case
   /api/v1/category:
     get:
       description: 获取所有类型
