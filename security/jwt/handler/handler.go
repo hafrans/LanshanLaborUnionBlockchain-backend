@@ -16,6 +16,7 @@ import (
 // User Login
 // @Summary 用户登录
 // @Description 用户登录并获得token以及失效日期
+// @Tags user
 // @Accept json
 // @Produce json
 // @Param username body string true  "用户名"

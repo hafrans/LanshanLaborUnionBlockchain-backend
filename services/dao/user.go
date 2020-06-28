@@ -25,6 +25,7 @@ func CreateUser(username, password, email, phone string, userType int, emailChec
 		Phone:        phone,
 		PhoneChecked: phoneChecked,
 		UserType:     userType,
+		Activated:    active,
 	}
 
 	if err := db.Create(user).Error; err != nil {

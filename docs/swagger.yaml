@@ -78,6 +78,245 @@ definitions:
         example: "2048-05-06 12:34:56"
         type: string
     type: object
+  vo.LaborArbitrationForm:
+    properties:
+      arbitration_time:
+        description: 28. 申请仲裁时间年月日
+        type: string
+      before_sever_labor_relationship_avg_wage:
+        description: 20. 双方解除或终止劳动关系前12个月劳动者月平均工资额
+        example: 1
+        type: number
+      before_sever_labor_relationship_range:
+        items:
+          type: string
+        type: array
+      contract_wage:
+        description: |-
+          8. 劳动合同约定的月工资数、工资构成、工时制
+          8.1 劳动合同约定的月工资数
+        type: number
+      contract_wage_component:
+        description: 8.2 劳动合同约定的工资构成
+        type: string
+      contract_wage_type:
+        description: 8.3 工时制
+        type: integer
+      disability_rating_time:
+        description: |-
+          15. 伤残等级鉴定时间及结果
+          15.1 伤残等级鉴定时间
+        type: string
+      disable_results:
+        description: 15.2 伤残等级鉴定结果
+        type: integer
+      employer_time:
+        description: 16.2 用人单位
+        example: 1
+        type: number
+      hire_date:
+        description: 2. 入职时间
+        type: string
+      hospitalization_time:
+        description: 14. 住院起止时间
+        items:
+          type: string
+        type: array
+      industrial_injury:
+        description: 13.2 是否经过工伤认定
+        type: boolean
+      injury_time:
+        description: |-
+          13. 发生工伤时间、工伤认定情况
+          13.1 发生工伤时间
+        type: string
+      involve_group:
+        description: 29. 涉及群体性是□否□
+        type: boolean
+      job_name:
+        description: 6. 劳动合同约定的工作岗位
+        type: string
+      job_work_place:
+        description: 7. 劳动合同约定的工作地点
+        type: string
+      labor_contract:
+        items:
+          type: string
+        type: array
+      labor_contract_completed:
+        description: 27. 已办理劳动合同解除手续
+        type: boolean
+      labor_contract_not_signed:
+        description: 5. 未签书面劳动合同工作期间
+        items:
+          type: string
+        type: array
+      labor_contract_signed:
+        description: 3.1 是否签订书面劳动合同
+        type: boolean
+      labor_contract_signing_date:
+        description: 3.2 签订时间
+        type: string
+      labor_contract_type:
+        description: 4.劳动合同起止时间
+        type: integer
+      laborer_time:
+        description: |-
+          16. 停工留薪期限时间  //格式都不对
+          16.1 劳动者
+        example: 1
+        type: number
+      last_payment:
+        description: 10. 最后一次支付工资时间
+        example: 2010-01
+        type: string
+      main:
+        description: 1. 主体性质
+        type: integer
+      no_overtime_avg_wage:
+        description: 23. 扣除加班工资后十二个月劳动者月平均工资数额
+        example: 1
+        type: number
+      no_overtime_avg_wage_range:
+        items:
+          type: string
+        type: array
+      normal_overtime:
+        description: 18. 加班时间
+        example: 10
+        type: number
+      not_take_days:
+        description: 未休
+        type: integer
+      number:
+        description: 3.3 签订次数
+        type: integer
+      other_information:
+        description: 30. 本表遗漏的其他项目
+        type: string
+      overtime_bonus:
+        description: 11.2 欠发加班费奖金
+        type: number
+      overtime_wage_base:
+        description: 19. 加班工资计算基数
+        example: 2
+        type: number
+      paid_annual_leave_not_leave_day:
+        description: 22. 未休带薪年休假天数
+        type: boolean
+      parties_dispute_time:
+        description: 24.双方发生劳动争议时间
+        example: "2020-01-02"
+        type: string
+      payment_cycle:
+        description: 9.4 发放周期
+        type: integer
+      payment_type:
+        description: 9.3 发放形式
+        type: integer
+      real_rest:
+        description: 实休
+        type: integer
+      sever_labor_relationship_date:
+        description: 26.解除或终止劳动关系时间年月日
+        example: "2020-01-02"
+        type: string
+      sever_labor_relationship_employer:
+        description: 25. 双方解除或终止劳动关系的原因
+        type: boolean
+      sever_labor_relationship_employer_reason:
+        type: string
+      sever_labor_relationship_labor:
+        type: boolean
+      sever_labor_relationship_labor_reason:
+        type: string
+      should_rest:
+        description: 应休
+        type: integer
+      social_insurance:
+        description: |-
+          12.办理社会保险及险种
+          12.1 是否进行社会保险
+        type: boolean
+      social_insurance_payment_time:
+        description: 12.3 社会保险缴险时间
+        items:
+          type: string
+        type: array
+      social_insurance_type:
+        description: 12.2 社会保险险种
+        type: integer
+      statutory_holidays:
+        description: 法定节假日加班小时
+        example: 10
+        type: number
+      statutory_rest:
+        description: 法定休息日加班小时
+        example: 10
+        type: number
+      unpaid_wages:
+        description: |-
+          11. 欠发工资及加班费数额
+          11.1 欠发工资数
+        type: number
+      wage:
+        description: |-
+          9. 实发月工资数及工资构成、发放形式、发放周期
+          9.1 月工资数
+        type: number
+      wage_component:
+        description: 9.2 工资构成
+        type: string
+      work_related_treatment_gsylbz:
+        description: 17.9. 一次性工伤医疗补助金
+        type: number
+      work_related_treatment_hsbz:
+        description: 17.3 住院期间伙食补助
+        type: number
+      work_related_treatment_jt:
+        description: 17.4 交通费
+        type: number
+      work_related_treatment_jzaz:
+        description: 17.2 假肢安装费
+        type: number
+      work_related_treatment_other:
+        description: 17.11. 其他
+        type: number
+      work_related_treatment_ph:
+        description: 17.5 陪护费
+        type: number
+      work_related_treatment_scbz:
+        description: 17.8 一次性伤残补助金
+        type: number
+      work_related_treatment_scjt:
+        description: 17.7 伤残津贴
+        type: number
+      work_related_treatment_scjybz:
+        description: 17.10. 一次性伤残就业补助金
+        type: number
+      work_related_treatment_shhl:
+        description: 17.6 生活护理费
+        type: number
+      work_related_treatment_ylf:
+        description: |-
+          17.需支付的工伤待遇项目及数额
+          17.1 医疗费
+        type: number
+      work_year:
+        description: 21. 劳动者在本单位工作年限
+        type: integer
+    required:
+    - arbitration_time
+    - hire_date
+    - main
+    - not_take_days
+    - parties_dispute_time
+    - payment_cycle
+    - payment_type
+    - real_rest
+    - should_rest
+    - wage
+    type: object
   vo.LoginResult:
     properties:
       expire:
@@ -213,6 +452,8 @@ paths:
           schema:
             $ref: '#/definitions/vo.Common'
       summary: 用户登录
+      tags:
+      - user
   /api/v1/:
     get:
       consumes:
@@ -238,6 +479,113 @@ paths:
       summary: 上传资源
       tags:
       - utils
+  /api/v1/category:
+    get:
+      description: 获取所有类型
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/vo.CommonData'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/vo.Common'
+      summary: 获得所有类型
+      tags:
+      - category
+      - case
+  /api/v1/labor/arbitration/:
+    get:
+      consumes:
+      - application/json
+      description: 劳动争议案件审判要素表列表
+      parameters:
+      - description: 页码
+        in: query
+        name: page
+        required: true
+        type: number
+      - description: 页大小
+        in: query
+        name: pageSize
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 正常业务处理
+          schema:
+            $ref: '#/definitions/vo.CommonData'
+        "401":
+          description: 未验证
+          schema:
+            $ref: '#/definitions/vo.Common'
+      summary: 获取自己所有的劳动争议案件审判要素表
+      tags:
+      - labor
+  /api/v1/labor/arbitration/:id:
+    get:
+      consumes:
+      - application/json
+      description: 劳动争议案件审判要素表获取，非管理员只能看自己的。
+      parameters:
+      - description: 表单id
+        in: path
+        name: id
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 正常业务处理
+          schema:
+            $ref: '#/definitions/vo.CommonData'
+        "401":
+          description: 未验证
+          schema:
+            $ref: '#/definitions/vo.Common'
+      summary: 获取指定劳动争议案件审判要素表列表
+      tags:
+      - labor
+  /api/v1/labor/arbitration/create:
+    post:
+      consumes:
+      - application/json
+      description: 劳动争议案件审判要素表新建
+      parameters:
+      - description: 表单
+        in: body
+        name: email
+        required: true
+        schema:
+          $ref: '#/definitions/vo.LaborArbitrationForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 正常业务处理
+          schema:
+            $ref: '#/definitions/vo.CommonData'
+        "401":
+          description: 未验证
+          schema:
+            $ref: '#/definitions/vo.Common'
+        "422":
+          description: 表单绑定失败
+          schema:
+            $ref: '#/definitions/vo.Common'
+        "500":
+          description: 表单绑定失败
+          schema:
+            $ref: '#/definitions/vo.Common'
+      summary: 创建劳动争议案件审判要素表
+      tags:
+      - labor
   /api/v1/labor/arbitration_instructor:
     post:
       description: 获取劳动争议表单模板
@@ -257,30 +605,9 @@ paths:
           schema:
             $ref: '#/definitions/vo.Common'
       summary: 获取劳动争议表单模板
-  /api/v1/tags:
-    post:
-      parameters:
-      - description: Name
-        in: query
-        name: name
-        required: true
-        type: string
-      - description: State
-        in: query
-        name: state
-        type: integer
-      - description: CreatedBy
-        in: query
-        name: created_by
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: '{"code":200,"data":{},"msg":"ok"}'
-          schema:
-            type: string
-      summary: 新增文章标签
+      tags:
+      - test
+      - labor
   /api/v1/user/info:
     get:
       description: 获取用户信息

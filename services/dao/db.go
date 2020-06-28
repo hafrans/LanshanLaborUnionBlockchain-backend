@@ -34,6 +34,8 @@ func InitDB() {
 	db.DB().SetMaxIdleConns(10)
 	db.DB().SetMaxOpenConns(20)
 
+	db.LogMode(true)
+
 }
 
 func TryInitializeTables() {
@@ -53,8 +55,8 @@ func TryInitializeTables() {
 
 func CreateTables() {
 
-	db.DropTableIfExists(&models.LaborArbitration{})
 
+	// 有many to many 的先删除
 	db.DropTableIfExists(&models.RolePermission{})
 	db.DropTableIfExists(&models.UserRole{})
 
@@ -62,12 +64,18 @@ func CreateTables() {
 	db.DropTableIfExists(&models.Role{})
 	db.DropTableIfExists(&models.Permission{})
 	db.DropTableIfExists(&models.Department{})
+
+	db.DropTableIfExists(&models.LaborArbitration{})
 	db.DropTableIfExists(&models.Category{})
 	db.DropTableIfExists(&models.Applicant{})
 	db.DropTableIfExists(&models.Employer{})
-
+	db.DropTableIfExists(&models.Case{})
+	db.DropTableIfExists(&models.Suggestion{})
+	db.DropTableIfExists(&models.Material{})
+	db.DropTableIfExists(&models.Record{})
 	//========================================
 
+	// 有many to many 的先创建
 	db.CreateTable(&models.RolePermission{})
 	db.CreateTable(&models.UserRole{})
 
@@ -75,9 +83,15 @@ func CreateTables() {
 	db.CreateTable(&models.User{})
 	db.CreateTable(&models.Role{})
 	db.CreateTable(&models.Permission{})
+
 	db.CreateTable(&models.Category{})
 	db.CreateTable(&models.Employer{})
 	db.CreateTable(&models.Applicant{})
+	db.CreateTable(&models.Record{})
+	db.CreateTable(&models.Material{})
+	db.CreateTable(&models.Suggestion{})
+	db.CreateTable(&models.Case{})
+
 
 	db.CreateTable(&models.LaborArbitration{})
 

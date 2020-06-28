@@ -10,7 +10,7 @@ type LaborArbitrationForm struct {
 	HireDate *utils.Date `json:"hire_date" time_format:"2006-01-02" binding:"required"`
 
 	// 3.1 是否签订书面劳动合同
-	LaborContractSigned bool `json:"labor_contract_signed" binding:"required"`
+	LaborContractSigned bool `json:"labor_contract_signed""`
 	// 3.2 签订时间
 	LaborContractSigningTime *utils.Date `json:"labor_contract_signing_date" json:"omitempty"` // 没找到
 	// 3.3 签订次数
@@ -41,11 +41,11 @@ type LaborArbitrationForm struct {
 	// 9.1 月工资数
 	Wage float64 `json:"wage" binding:"number,required,gte=0"`
 	// 9.2 工资构成
-	WageComponent string `json:"wage_component" form:"wage_component" binding:"required"`
+	WageComponent string `json:"wage_component" form:"wage_component"`
 	// 9.3 发放形式
-	PaymentType int `json:"payment_type" binding:"alpha,required,gte=0,lte=2"`
+	PaymentType int `json:"payment_type" binding:"required,gte=0,lte=2"`
 	// 9.4 发放周期
-	PaymentCycle int `json:"payment_cycle" binding:"alpha,required,gte=0,lte=2"` // 没找到
+	PaymentCycle int `json:"payment_cycle" binding:"required,gte=0,lte=2"` // 没找到
 
 	// 10. 最后一次支付工资时间
 	LastPayment *utils.DateMonth `json:"last_payment" time_format:"2006-01" example:"2010-01"` //格式不对
@@ -58,7 +58,7 @@ type LaborArbitrationForm struct {
 
 	// 12.办理社会保险及险种
 	// 12.1 是否进行社会保险
-	SocialInsuranceApply bool `json:"social_insurance" binding:"required"`
+	SocialInsuranceApply bool `json:"social_insurance"`
 	// 12.2 社会保险险种
 	SocialInsuranceType *int `json:"social_insurance_type" binding:"omitempty,gte=0,lte=1"`
 	// 12.3 社会保险缴险时间
@@ -125,7 +125,7 @@ type LaborArbitrationForm struct {
 	WorkYear *int `json:"work_year" form:"work_year" binding:"number,gte=0"`
 
 	// 22. 未休带薪年休假天数
-	PaidAnnualLeaveNotLeaveDay         bool `json:"paid_annual_leave_not_leave_day" binding:"required"`
+	PaidAnnualLeaveNotLeaveDay         bool `json:"paid_annual_leave_not_leave_day"`
 	PaidAnnualLeaveNotLeaveDayShould   *int `json:"should_rest"  binding:"required,number,gte=0"`   // 应休
 	PaidAnnualLeaveNotLeaveDayActual   *int `json:"real_rest" binding:"required,number,gte=0" `     // 实休
 	PaidAnnualLeaveNotLeaveDayNotLeave *int `json:"not_take_days" binding:"required,number,gte=0" ` // 未休
@@ -153,7 +153,7 @@ type LaborArbitrationForm struct {
 	LaborArbitrationDate *utils.Date `json:"arbitration_time" binding:"required"`
 
 	// 29. 涉及群体性是□否□
-	MassDisturbance bool `json:"involve_group" binding:"required"`
+	MassDisturbance bool `json:"involve_group"`
 
 	// 30. 本表遗漏的其他项目
 	Other string `json:"other_information" form:"other_information"`

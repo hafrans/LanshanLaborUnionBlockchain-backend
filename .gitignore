@@ -4,4 +4,5 @@ gin-bin.exe
 *.lock
 *.tmp
 *.txt
+gin-bin.exe~
 /runtime/static/**

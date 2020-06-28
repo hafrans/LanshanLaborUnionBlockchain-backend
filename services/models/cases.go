@@ -45,7 +45,7 @@ type Suggestion struct {
 	Model
 	Department string `json:"suggestion_department"` // 部门名称
 	Content    string `suggestion_content`           // 意见
-	CaseId string `json:"case_id"`
+	CaseId     string `json:"case_id"`
 }
 
 // 案件 many to many
@@ -53,6 +53,8 @@ type Case struct {
 	Model
 
 	CaseId string `json:"case_id" gorm:"type:varchar(32);unique_index"` // case id //要自己定
+
+	Status int `json:"status" gorm:"type:tinyint(1)"`
 
 	UserId int64 `json:"user_id"` // 归属用户
 

@@ -17,7 +17,7 @@ func InitCategory() {
 	categories["工伤"] = "劳动者履行职务过程中发生工伤，因工伤赔偿待遇引起的争议类型"
 	categories["赔偿金"] = "因用人单位违法解除劳动关系引起的赔偿争议"
 	categories["劳动关系"] = "职工在履行职务过程中严重违反公司管理制度、存在营私舞弊等法定情形用人单位依法解除劳动关系引起的争议类型或劳动者需要与用人单位确认劳动关系的争议类型"
-	categories["其他"] = "其他正义类型"
+	categories["其他"] = "其他争议类型"
 
 	for k, v := range categories {
 		CreateCategory(k, v)
@@ -96,26 +96,11 @@ func GetCategoryById(id int64) (*models.Category, error) {
 
 func GetCategoryAllPaginated(pageNum, pageCount int) ([]*models.Category, int, error) {
 	var categories []*models.Category
-	if pageNum < 0 {
-		pageNum = 0
+	if pageNum < 1 {
+		pageNum = 1
 	}
 	totalCounts := 0
-	result := db.Limit(pageCount).Offset(pageCount * pageNum).Order("id desc").Find(&categories).Count(&totalCounts)
-	if result.Error != nil {
-		log.Println(result.Error)
-		return nil, 0, result.Error
-	} else {
-		return categories, totalCounts, nil
-	}
-}
-
-func GetCategoryAllLikedNamePaginated(name string, pageNum, pageCount int) ([]*models.Category, int, error) {
-	var categories []*models.Category
-	if pageNum < 0 {
-		pageNum = 0
-	}
-	totalCounts := 0
-	result := db.Where("name like ? ", "%"+name+"%").Limit(pageCount).Offset(pageCount * pageNum).Order("id desc").Find(&categories).Count(&totalCounts)
+	result := db.Model(&models.Category{}).Count(&totalCounts).Limit(pageCount).Offset(pageCount * (pageNum - 1)).Find(&categories)
 	if result.Error != nil {
 		log.Println(result.Error)
 		return nil, 0, result.Error

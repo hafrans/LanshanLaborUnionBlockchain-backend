@@ -7,6 +7,8 @@ import (
 type LaborArbitration struct {
 	Model
 
+	Owner int64 `json:"owner"` // 创建者
+
 	// 1. 主体性质
 	Subject int `json:"subject" form:"subject" gorm:"type:tinyint(1);not null" example:"1" binding:"required"`
 
