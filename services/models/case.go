@@ -62,7 +62,7 @@ type Suggestion struct {
 	// 部门名称
 	Department string `json:"suggestion_department"`
 	// 意见
-	Content string `suggestion_content`
+	Content string `json:"suggestion_content"`
 	// caseID， 新建表单时不要上传该信息
 	CaseId string `json:"case_id"`
 }
