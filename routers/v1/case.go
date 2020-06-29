@@ -1,14 +1,14 @@
 package v1
 
 import (
+	"RizhaoLanshanLabourUnion/security/jwt/jwtmodel"
 	"RizhaoLanshanLabourUnion/services/dao"
+	"RizhaoLanshanLabourUnion/services/models/utils"
 	"RizhaoLanshanLabourUnion/services/respcode"
 	"RizhaoLanshanLabourUnion/services/vo"
 	"github.com/gin-gonic/gin"
 	"log"
 )
-
-
 
 // Get All Categories
 // @Summary 获得所有类型
@@ -18,21 +18,20 @@ import (
 // @Success 200 {object} vo.CommonData
 // @Failure 401 {object} vo.Common
 // @Router /api/v1/category [get]
-func GetAllCategories(ctx *gin.Context){
+func GetAllCategories(ctx *gin.Context) {
 
-	list, _, err := dao.GetCategoryAllPaginated(0,50)
+	list, _, err := dao.GetCategoryAllPaginated(0, 50)
 	if err != nil {
 		log.Println(err)
-		ctx.JSON(respcode.HttpOK,vo.GenerateCommonResponseHead(respcode.GenericFailed, "出现错误："+err.Error()))
+		ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "出现错误："+err.Error()))
 		return
 	}
 
 	ctx.JSON(respcode.HttpOK, vo.CommonData{
 		Common: vo.GenerateCommonResponseHead(respcode.GenericSuccess, "success"),
-		Data: list,
+		Data:   list,
 	})
 }
-
 
 // Create New Case By Applicant
 // @Summary 创建新调解案件
@@ -45,9 +44,19 @@ func GetAllCategories(ctx *gin.Context){
 // @Failure 422 {object} vo.Common "绑定失败"
 // @Failure 401 {object} vo.Common "没有认证"
 // @Router /api/v1/case/create [get]
-func CreateNewCaseByApplicant(ctx *gin.Context){
+func CreateNewCaseByApplicant(ctx *gin.Context) {
 
+	claims := jwtmodel.ExtractUserClaimsFromGinContext(ctx)
 
+	var form vo.CaseFirstSubmitForm
+
+	if err := ctx.ShouldBindJSON(&form); err != nil {
+		// 表单绑定失败
+		ctx.JSON(respcode.HttpBindingFailed, vo.GenerateCommonResponseHead(respcode.GenericFailed, err.Error()))
+		return
+	}
+
+	_ = utils.PopulateCaseBasicFromFormToModel(&form, claims.Id, "371100")
 
 
 }

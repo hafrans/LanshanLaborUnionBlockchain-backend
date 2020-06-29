@@ -1,6 +1,8 @@
 package vo
 
-import "RizhaoLanshanLabourUnion/utils"
+import (
+	"RizhaoLanshanLabourUnion/utils"
+)
 
 type LaborArbitrationForm struct {
 
@@ -157,4 +159,12 @@ type LaborArbitrationForm struct {
 
 	// 30. 本表遗漏的其他项目
 	Other string `json:"other_information" form:"other_information"`
+}
+
+
+type SimplifiedLaborArbitrationResult struct {
+	ID        int64       `json:"id"`
+	CreatedAt *utils.Time `json:"created_at"`
+	UpdatedAt *utils.Time `json:"updated_at"`
+	Owner     int64       `json:"owner"`
 }

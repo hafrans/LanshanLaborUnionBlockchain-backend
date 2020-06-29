@@ -6,32 +6,32 @@ import "RizhaoLanshanLabourUnion/utils"
 type Applicant struct {
 	Model
 	// 姓名
-	Name string `json:"applicant_name" form:"applicant_name" gorm:"type:varchar(128);not null"`
+	ApplicantName string `json:"applicant_name" form:"applicant_name" gorm:"type:varchar(128);not null"`
 	// 生日
-	Birthday *utils.Date `json:"applicant_birth" form:"applicant_birth" gorm:"type:date"`
+	ApplicantBirthday *utils.Date `json:"applicant_birth" form:"applicant_birth" gorm:"type:date"`
 	// 民族
-	Nationality string `json:"applicant_nationality" form:"applicant_nationality" gorm:"type:varchar(32);not null"`
+	ApplicantNationality string `json:"applicant_nationality" form:"applicant_nationality" gorm:"type:varchar(32);not null"`
 	// 身份证号
-	IdentityNumber string `json:"applicant_id" form:"applicant_id" gorm:"type:varchar(20);not null"`
+	ApplicantIdentityNumber string `json:"applicant_id" form:"applicant_id" gorm:"type:varchar(20);not null;unique_index"`
 	// 联系方式
-	Contact string `json:"applicant_contact" form:"applicant_contact" gorm:"type:varchar(32)"`
+	ApplicantContact string `json:"applicant_contact" form:"applicant_contact" gorm:"type:varchar(32)"`
 	// 地址
-	Address string `json:"applicant_address" form:"applicant_address" gorm:"type:varchar(255)"`
+	ApplicantAddress string `json:"applicant_address" form:"applicant_address" gorm:"type:varchar(255)"`
 }
 
 // 用人单位
 type Employer struct {
 	Model
 	// 公司名
-	Name string `json:"employer_name" form:"employer_name" gorm:"type:varchar(255);not null"`
+	EmployerName string `json:"employer_name" form:"employer_name" gorm:"type:varchar(255);not null"`
 	// 法人
-	LegalRepresentative string `json:"employer_faren" form:"employer_faren" gorm:"type:varchar(128);not null"`
+	EmployerLegalRepresentative string `json:"employer_faren" form:"employer_faren" gorm:"type:varchar(128);not null"`
 	// 识别号
-	UniformSocialCreditCode string `json:"employer_uscc" form:"employer_uscc" gorm:"type:varchar(32);not null"`
+	EmployerUniformSocialCreditCode string `json:"employer_uscc" form:"employer_uscc" gorm:"type:varchar(32);not null;unique_index"`
 	// 联系方式
-	Contact string `json:"employer_contact" form:"employer_contact" gorm:"type:varchar(32)"`
+	EmployerContact string `json:"employer_contact" form:"employer_contact" gorm:"type:varchar(32)"`
 	// 地址
-	Address string `json:"employer_address" form:"employer_address" gorm:"type:varchar(255)"`
+	EmployerAddress string `json:"employer_address" form:"employer_address" gorm:"type:varchar(255)"`
 }
 
 // 相关证据材料
@@ -80,11 +80,15 @@ type Case struct {
 	CategoryId int64    `json:"-"` // 争议类型
 	Category   Category `json:"category"`
 
-	Applicant   Applicant `json:"applicant"` // 申请人
-	ApplicantId int64     `json:"-"`
+	//Applicant   Applicant `json:"applicant"` // 申请人
+	//ApplicantId int64     `json:"-"`
+	//
+	//Respondent   Employer `json:"respondent" gorm:"foreignkey:RespondentId"` // 被申请用工单位
+	//RespondentId int64    `json:"-"`
 
-	Respondent   Employer `json:"respondent" gorm:"foreignkey:RespondentId"` // 被申请用工单位
-	RespondentId int64    `json:"-"`
+	Applicant // 申请人
+
+	Employer // 用工单位
 
 	Title string `json:"title" binding:"required"` // 调解事项
 

@@ -147,7 +147,7 @@ func CreateLaborArbitrationForm(ctx *gin.Context) {
 		} else {
 			ctx.JSON(respcode.HttpOK, vo.CommonData{
 				Common: vo.GenerateCommonResponseHead(respcode.GenericSuccess, "success"),
-				Data:   model,
+				Data:   utils2.PopulateLaborArbitrationModelToForm(model),
 			})
 		}
 
@@ -199,7 +199,7 @@ func GetMyLaborArbitrationForms(ctx *gin.Context) {
 		ctx.JSON(200, vo.CommonData{
 			Common: vo.GenerateCommonResponseHead(respcode.GenericSuccess, "success"),
 			Data: gin.H{
-				"list":  list,
+				"list":  utils2.SimplifyLaborArbitrationResult(list),
 				"total": total,
 				"size":  pageCount,
 				"page":  pageNum,
@@ -237,7 +237,7 @@ func GetOneLaborArbitrationFormById(ctx *gin.Context) {
 
 			ctx.JSON(respcode.HttpOK, vo.CommonData{
 				Common: vo.GenerateCommonResponseHead(respcode.GenericSuccess, "success"),
-				Data:   model,
+				Data:   utils2.PopulateLaborArbitrationModelToForm(model),
 			})
 			return
 		}
@@ -245,6 +245,3 @@ func GetOneLaborArbitrationFormById(ctx *gin.Context) {
 	}
 
 }
-
-
-

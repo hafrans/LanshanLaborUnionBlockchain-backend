@@ -9,11 +9,11 @@ import (
 func CreateEmployer(name, lr, uscc, contact, address string) (*models.Employer, error) {
 
 	employer := &models.Employer{
-		Name:                    name,
-		LegalRepresentative:     lr,
-		Address:                 address,
-		Contact:                 contact,
-		UniformSocialCreditCode: uscc,
+		EmployerName:                    name,
+		EmployerLegalRepresentative:     lr,
+		EmployerAddress:                 address,
+		EmployerContact:                 contact,
+		EmployerUniformSocialCreditCode: uscc,
 	}
 
 	result := db.Create(employer)
@@ -23,6 +23,19 @@ func CreateEmployer(name, lr, uscc, contact, address string) (*models.Employer, 
 		return nil, result.Error
 	} else {
 		return employer, nil
+	}
+
+}
+
+func FirstOrCreateEmployer(model *models.Employer) (*models.Employer, error) {
+
+	// 纳税识别号
+	result := db.Where(models.Employer{EmployerUniformSocialCreditCode: model.EmployerUniformSocialCreditCode}).FirstOrCreate(model)
+	if result.Error != nil {
+		log.Println(result.Error)
+		return nil, result.Error
+	} else {
+		return model, nil
 	}
 
 }
@@ -99,7 +112,7 @@ func GetEmployerAllLikedNamePaginated(name string, pageNum, pageCount int) ([]*m
 		pageNum = 0
 	}
 	totalCounts := 0
-	result := db.Where("name like ? ", "%"+name+"%").Limit(pageCount).Offset(pageCount * pageNum).Order("id desc").Find(&employers).Count(&totalCounts)
+	result := db.Where("employer_name like ? ", "%"+name+"%").Limit(pageCount).Offset(pageCount * pageNum).Order("id desc").Find(&employers).Count(&totalCounts)
 	if result.Error != nil {
 		log.Println(result.Error)
 		return nil, 0, result.Error

@@ -10,12 +10,12 @@ import (
 func CreateApplicant(name, nationality, idNumber, contact, address string, birth *utils.Date) (*models.Applicant, error) {
 
 	applicant := &models.Applicant{
-		Name: name,
-		Nationality: nationality,
-		Address: address,
-		Contact: contact,
-		Birthday: birth,
-		IdentityNumber: idNumber,
+		ApplicantName:           name,
+		ApplicantNationality:    nationality,
+		ApplicantAddress:        address,
+		ApplicantContact:        contact,
+		ApplicantBirthday:       birth,
+		ApplicantIdentityNumber: idNumber,
 	}
 
 	result := db.Create(applicant)
@@ -25,6 +25,19 @@ func CreateApplicant(name, nationality, idNumber, contact, address string, birth
 		return nil, result.Error
 	} else {
 		return applicant, nil
+	}
+
+}
+
+func FirstOrCreateApplicant(model *models.Applicant) (*models.Applicant, error) {
+
+	// 身份证唯一，现在以身份证
+	result := db.Where(models.Applicant{ApplicantIdentityNumber: model.ApplicantIdentityNumber}).FirstOrCreate(model)
+	if result.Error != nil {
+		log.Println(result.Error)
+		return nil, result.Error
+	} else {
+		return model, nil
 	}
 
 }
@@ -101,7 +114,7 @@ func GetApplicantAllLikedNamePaginated(name string, pageNum, pageCount int) ([]*
 		pageNum = 0
 	}
 	totalCounts := 0
-	result := db.Where("name like ? ", "%"+name+"%").Limit(pageCount).Offset(pageCount * pageNum).Order("id desc").Find(&applicants).Count(&totalCounts)
+	result := db.Where("applicant_name like ? ", "%"+name+"%").Limit(pageCount).Offset(pageCount * pageNum).Order("id desc").Find(&applicants).Count(&totalCounts)
 	if result.Error != nil {
 		log.Println(result.Error)
 		return nil, 0, result.Error

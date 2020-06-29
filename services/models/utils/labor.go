@@ -92,10 +92,8 @@ func PopulateLaborArbitrationFormToModel(form *vo.LaborArbitrationForm) (*models
 
 }
 
-func PopulateLaborArbitrationModelToForm(model *models.LaborArbitration) (*vo.LaborArbitrationForm, error) {
-	if model == nil {
-		return nil, errors.New("no model found")
-	}
+func PopulateLaborArbitrationModelToForm(model *models.LaborArbitration) *vo.LaborArbitrationForm {
+
 
 	form := &vo.LaborArbitrationForm{
 		LaborContractType:                                 model.LaborContractType,
@@ -168,6 +166,30 @@ func PopulateLaborArbitrationModelToForm(model *models.LaborArbitration) (*vo.La
 		BeforeSeverLaborRelationshipRange:    [2]*utils.Date{model.BeforeSeverLaborRelationshipAvgWageStart, model.BeforeSeverLaborRelationshipAvgWageEnd},
 	}
 
-	return form, nil
+	return form
 
 }
+
+
+func SimplifyLaborArbitrationResult(list []*models.LaborArbitration) []*vo.SimplifiedLaborArbitrationResult{
+
+	length := len(list)
+	result := make([]*vo.SimplifiedLaborArbitrationResult,0,length)
+
+	for _, v := range list {
+
+		tmp := new(vo.SimplifiedLaborArbitrationResult)
+		tmp.Owner = v.Owner
+		tmp.ID = v.ID
+		d := utils.Time(v.CreatedAt)
+		tmp.CreatedAt = &d
+		t := utils.Time(v.UpdatedAt)
+		tmp.UpdatedAt = &t
+
+		result = append(result,tmp)
+	}
+
+	return result
+}
+
+

@@ -1,6 +1,63 @@
 package vo
 
-import "RizhaoLanshanLabourUnion/services/models"
+import (
+	"RizhaoLanshanLabourUnion/utils"
+)
+
+// 申请调解人
+type Applicant struct {
+	// 姓名
+	Name string `json:"applicant_name" form:"applicant_name" gorm:"type:varchar(128);not null"`
+	// 生日
+	Birthday *utils.Date `json:"applicant_birth" form:"applicant_birth" gorm:"type:date"`
+	// 民族
+	Nationality string `json:"applicant_nationality" form:"applicant_nationality" gorm:"type:varchar(32);not null"`
+	// 身份证号
+	IdentityNumber string `json:"applicant_id" form:"applicant_id" gorm:"type:varchar(20);not null"`
+	// 联系方式
+	Contact string `json:"applicant_contact" form:"applicant_contact" gorm:"type:varchar(32)"`
+	// 地址
+	Address string `json:"applicant_address" form:"applicant_address" gorm:"type:varchar(255)"`
+}
+
+// 用人单位
+type Employer struct {
+	// 公司名
+	Name string `json:"employer_name" form:"employer_name" gorm:"type:varchar(255);not null"`
+	// 法人
+	LegalRepresentative string `json:"employer_faren" form:"employer_faren" gorm:"type:varchar(128);not null"`
+	// 识别号
+	UniformSocialCreditCode string `json:"employer_uscc" form:"employer_uscc" gorm:"type:varchar(32);not null"`
+	// 联系方式
+	Contact string `json:"employer_contact" form:"employer_contact" gorm:"type:varchar(32)"`
+	// 地址
+	Address string `json:"employer_address" form:"employer_address" gorm:"type:varchar(255)"`
+}
+
+// 相关证据材料
+type Material struct {
+	// 材料介绍
+	Name string `json:"name" binding:"required"`
+	// 材料资源path
+	Path *string `json:"path" binding:"omitempty"`
+}
+
+// 调解笔录
+type Record struct {
+	// 记录介绍
+	Name string `json:"record_name"`
+
+	// 截图/材料等地址
+	Path string `json:"record_path"`
+}
+
+// 部门调解意见
+type Suggestion struct {
+	// 部门名称
+	Department string `json:"suggestion_department"`
+	// 意见
+	Content string `json:"suggestion_content"`
+}
 
 type CaseFirstSubmitForm struct {
 
@@ -8,10 +65,10 @@ type CaseFirstSubmitForm struct {
 	CategoryId int64 `json:"category_id"`
 
 	// 1.申请人
-	Applicant *models.Applicant `json:"applicant" binding:"required,dive"`
+	Applicant Applicant `json:"applicant" binding:"required,dive"`
 
 	// 2.被申请人
-	Respondent *models.Employer `json:"respondent" binding:"required,dive"`
+	Respondent Employer `json:"respondent" binding:"required,dive"`
 
 	// 3.调解事项
 	Title string `json:"title" binding:"required"`
@@ -22,8 +79,8 @@ type CaseFirstSubmitForm struct {
 	// 5.劳动者填写的表单 id
 	FormId int64 `json:"form_id" binding:"required"`
 
-	// 6. 证据材料 各种id
-	Materials []int64 `json:"materials"`
+	// 6. 证据材料
+	Materials []*Material `json:"materials"`
 
 	// 7.调解笔录， 8. 调解意见 不用填写
 

@@ -593,73 +593,6 @@ var doc = `{
                 }
             }
         },
-        "models.Applicant": {
-            "type": "object",
-            "properties": {
-                "applicant_address": {
-                    "type": "string"
-                },
-                "applicant_birth": {
-                    "type": "string"
-                },
-                "applicant_contact": {
-                    "type": "string"
-                },
-                "applicant_id": {
-                    "type": "string"
-                },
-                "applicant_name": {
-                    "type": "string"
-                },
-                "applicant_nationality": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "deleted_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.Employer": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "deleted_at": {
-                    "type": "string"
-                },
-                "employer_address": {
-                    "type": "string"
-                },
-                "employer_contact": {
-                    "type": "string"
-                },
-                "employer_faren": {
-                    "type": "string"
-                },
-                "employer_name": {
-                    "type": "string"
-                },
-                "employer_uscc": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
         "models.User": {
             "type": "object",
             "properties": {
@@ -667,9 +600,11 @@ var doc = `{
                     "type": "boolean"
                 },
                 "created_at": {
+                    "description": "创建日期，提交表单时不要上传该信息",
                     "type": "string"
                 },
                 "deleted_at": {
+                    "description": "删除日期 提交表单时不要上传该信息",
                     "type": "string"
                 },
                 "email": {
@@ -679,6 +614,7 @@ var doc = `{
                     "type": "boolean"
                 },
                 "id": {
+                    "description": "模型ID，提交表单时不要上传该信息",
                     "type": "integer"
                 },
                 "last_login": {
@@ -691,6 +627,7 @@ var doc = `{
                     "type": "boolean"
                 },
                 "updated_at": {
+                    "description": "更新日期，提交表单时不要上传该信息",
                     "type": "string"
                 },
                 "user_type": {
@@ -705,15 +642,48 @@ var doc = `{
             "type": "object",
             "properties": {
                 "created_at": {
+                    "description": "创建日期，提交表单时不要上传该信息",
                     "type": "string"
                 },
                 "deleted_at": {
+                    "description": "删除日期 提交表单时不要上传该信息",
                     "type": "string"
                 },
                 "id": {
+                    "description": "模型ID，提交表单时不要上传该信息",
                     "type": "integer"
                 },
                 "updated_at": {
+                    "description": "更新日期，提交表单时不要上传该信息",
+                    "type": "string"
+                }
+            }
+        },
+        "vo.Applicant": {
+            "type": "object",
+            "properties": {
+                "applicant_address": {
+                    "description": "地址",
+                    "type": "string"
+                },
+                "applicant_birth": {
+                    "description": "生日",
+                    "type": "string"
+                },
+                "applicant_contact": {
+                    "description": "联系方式",
+                    "type": "string"
+                },
+                "applicant_id": {
+                    "description": "身份证号",
+                    "type": "string"
+                },
+                "applicant_name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "applicant_nationality": {
+                    "description": "民族",
                     "type": "string"
                 }
             }
@@ -731,7 +701,7 @@ var doc = `{
                 "applicant": {
                     "description": "1.申请人",
                     "type": "object",
-                    "$ref": "#/definitions/models.Applicant"
+                    "$ref": "#/definitions/vo.Applicant"
                 },
                 "category_id": {
                     "description": "类型id",
@@ -746,16 +716,16 @@ var doc = `{
                     "type": "integer"
                 },
                 "materials": {
-                    "description": "6. 证据材料 各种id",
+                    "description": "6. 证据材料",
                     "type": "array",
                     "items": {
-                        "type": "integer"
+                        "$ref": "#/definitions/vo.Material"
                     }
                 },
                 "respondent": {
                     "description": "2.被申请人",
                     "type": "object",
-                    "$ref": "#/definitions/models.Employer"
+                    "$ref": "#/definitions/vo.Employer"
                 },
                 "title": {
                     "description": "3.调解事项",
@@ -797,6 +767,31 @@ var doc = `{
                 "timestamp": {
                     "type": "string",
                     "example": "2048-05-06 12:34:56"
+                }
+            }
+        },
+        "vo.Employer": {
+            "type": "object",
+            "properties": {
+                "employer_address": {
+                    "description": "地址",
+                    "type": "string"
+                },
+                "employer_contact": {
+                    "description": "联系方式",
+                    "type": "string"
+                },
+                "employer_faren": {
+                    "description": "法人",
+                    "type": "string"
+                },
+                "employer_name": {
+                    "description": "公司名",
+                    "type": "string"
+                },
+                "employer_uscc": {
+                    "description": "识别号",
+                    "type": "string"
                 }
             }
         },
@@ -1121,6 +1116,26 @@ var doc = `{
                 "token": {
                     "type": "string",
                     "example": "asdsadasdasdasd"
+                }
+            }
+        },
+        "vo.Material": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "case_id": {
+                    "description": "caseID， 新建表单时不要上传该信息",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "材料介绍",
+                    "type": "string"
+                },
+                "path": {
+                    "description": "材料资源path",
+                    "type": "string"
                 }
             }
         },
