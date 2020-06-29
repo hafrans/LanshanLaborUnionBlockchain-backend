@@ -4,7 +4,7 @@ import "RizhaoLanshanLabourUnion/utils"
 
 // 申请调解人
 type Applicant struct {
-	Model
+	//Model
 	// 姓名
 	ApplicantName string `json:"applicant_name" form:"applicant_name" gorm:"type:varchar(128);not null"`
 	// 生日
@@ -12,7 +12,7 @@ type Applicant struct {
 	// 民族
 	ApplicantNationality string `json:"applicant_nationality" form:"applicant_nationality" gorm:"type:varchar(32);not null"`
 	// 身份证号
-	ApplicantIdentityNumber string `json:"applicant_id" form:"applicant_id" gorm:"type:varchar(20);not null;unique_index"`
+	ApplicantIdentityNumber string `json:"applicant_id" form:"applicant_id" gorm:"type:varchar(20);not null"`
 	// 联系方式
 	ApplicantContact string `json:"applicant_contact" form:"applicant_contact" gorm:"type:varchar(32)"`
 	// 地址
@@ -21,13 +21,13 @@ type Applicant struct {
 
 // 用人单位
 type Employer struct {
-	Model
+	//Model
 	// 公司名
 	EmployerName string `json:"employer_name" form:"employer_name" gorm:"type:varchar(255);not null"`
 	// 法人
 	EmployerLegalRepresentative string `json:"employer_faren" form:"employer_faren" gorm:"type:varchar(128);not null"`
 	// 识别号
-	EmployerUniformSocialCreditCode string `json:"employer_uscc" form:"employer_uscc" gorm:"type:varchar(32);not null;unique_index"`
+	EmployerUniformSocialCreditCode string `json:"employer_uscc" form:"employer_uscc" gorm:"type:varchar(32);not null"`
 	// 联系方式
 	EmployerContact string `json:"employer_contact" form:"employer_contact" gorm:"type:varchar(32)"`
 	// 地址
@@ -42,7 +42,7 @@ type Material struct {
 	// 材料资源path
 	Path *string `json:"path" binding:"omitempty"`
 	// caseID， 新建表单时不要上传该信息
-	CaseId string `json:"case_id"`
+	CaseID string `json:"case_id"`
 }
 
 // 调解笔录
@@ -51,7 +51,7 @@ type Record struct {
 	// 记录介绍
 	Name string `json:"record_name"`
 	// caseID， 新建表单时不要上传该信息
-	CaseId string `json:"case_id"`
+	CaseID string `json:"case_id"`
 	// 截图/材料等地址
 	Path string `json:"record_path"`
 }
@@ -64,26 +64,26 @@ type Suggestion struct {
 	// 意见
 	Content string `json:"suggestion_content"`
 	// caseID， 新建表单时不要上传该信息
-	CaseId string `json:"case_id"`
+	CaseID string `json:"case_id"`
 }
 
 // 案件 many to many
 type Case struct {
 	Model
 
-	CaseId string `json:"case_id" gorm:"type:varchar(32);unique_index"` // case id //要自己定
+	CaseID string `json:"case_id" gorm:"type:varchar(32);unique_index"` // case id //要自己定
 
 	Status int `json:"status" gorm:"type:tinyint(1)"`
 
-	UserId int64 `json:"user_id"` // 归属用户
+	UserID int64 `json:"user_id"` // 归属用户
 
-	CategoryId int64    `json:"-"` // 争议类型
+	CategoryID int64    `json:"-"` // 争议类型
 	Category   Category `json:"category"`
 
 	//Applicant   Applicant `json:"applicant"` // 申请人
 	//ApplicantId int64     `json:"-"`
 	//
-	//Respondent   Employer `json:"respondent" gorm:"foreignkey:RespondentId"` // 被申请用工单位
+	//Respondent   Employer `json:"respondent" gorm:"foreignkey:RespondentID"` // 被申请用工单位
 	//RespondentId int64    `json:"-"`
 
 	Applicant // 申请人
@@ -94,12 +94,14 @@ type Case struct {
 
 	Content string `json:"content" binding:"required"` // 调解事实与理由
 
-	FormId int64 `json:"-"` // 表单
-	Form   *LaborArbitration
+	FormID int64             `json:"-"` // 表单
+	Form   *LaborArbitration `gorm:"foreignkey:FormID"`
 
-	Materials []*Material `json:"materials"` // 证据材料
+	Materials []*Material `json:"materials" gorm:"foreignkey:CaseID"` // 证据材料
 
-	Suggestions []*Suggestion `json:"suggestions"` // 部门处理意见
+	Records []*Record `json:"records" gorm:"foreignkey:CaseID"` // 笔录
+
+	Suggestions []*Suggestion `json:"suggestions" gorm:"foreignkey:CaseID"` // 部门处理意见
 
 }
 

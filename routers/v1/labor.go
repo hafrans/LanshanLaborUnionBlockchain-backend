@@ -20,8 +20,8 @@ import (
 // @Success 200 {object} vo.CommonData
 // @Failure 401 {object} vo.Common "未验证"
 // @Failure 500 {object} vo.Common "服务器错误"
-// @Router /api/v1/labor/arbitration_instructor [get]
-// @Router /api/v1/labor/arbitration_instructor [post]
+// @Router /api/v1/test/labor/arbitration/template [get]
+// @Router /api/v1/test/labor/arbitration/template [post]
 func LaborArbitrationFormInstructor(ctx *gin.Context) {
 
 	var form vo.LaborArbitrationForm

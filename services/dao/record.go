@@ -9,9 +9,9 @@ import (
 func CreateRecord(name, path string, caseId string) (*models.Record, error) {
 
 	record := &models.Record{
-		Name: name,
-		Path: path,
-		CaseId: caseId,
+		Name:   name,
+		Path:   path,
+		CaseID: caseId,
 	}
 
 	result := db.Create(record)

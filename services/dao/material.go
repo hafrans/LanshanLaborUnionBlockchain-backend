@@ -9,9 +9,9 @@ import (
 func CreateMaterial(name, path string, caseId string) (*models.Material, error) {
 
 	material := &models.Material{
-		Name: name,
-		Path: &path,
-		CaseId: caseId,
+		Name:   name,
+		Path:   &path,
+		CaseID: caseId,
 	}
 
 	result := db.Create(material)

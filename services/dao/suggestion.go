@@ -11,7 +11,7 @@ func CreateSuggestion(depart, content string, caseId string) (*models.Suggestion
 	suggestion := &models.Suggestion{
 		Department: depart,
 		Content:    content,
-		CaseId:     caseId,
+		CaseID:     caseId,
 	}
 
 	result := db.Create(suggestion)

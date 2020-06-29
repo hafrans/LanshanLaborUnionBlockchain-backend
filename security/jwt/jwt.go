@@ -18,7 +18,7 @@ func InitJwt() {
 		&jwt.GinJWTMiddleware{
 			Key:             []byte(utils.JWTSettings.Key),
 			Realm:           utils.JWTSettings.Realm,
-			Timeout:         time.Hour,
+			Timeout:         time.Hour * 24,
 			MaxRefresh:      time.Hour,
 			IdentityKey:     utils.JWTSettings.IdentityKey,
 			Authenticator:   handler.Authenticator,
@@ -52,6 +52,3 @@ func InitJwt() {
 	}
 
 }
-
-
-

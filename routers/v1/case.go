@@ -6,6 +6,7 @@ import (
 	"RizhaoLanshanLabourUnion/services/models/utils"
 	"RizhaoLanshanLabourUnion/services/respcode"
 	"RizhaoLanshanLabourUnion/services/vo"
+	utils2 "RizhaoLanshanLabourUnion/utils"
 	"github.com/gin-gonic/gin"
 	"log"
 )
@@ -43,7 +44,7 @@ func GetAllCategories(ctx *gin.Context) {
 // @Success 200 {object} vo.CommonData "成功"
 // @Failure 422 {object} vo.Common "绑定失败"
 // @Failure 401 {object} vo.Common "没有认证"
-// @Router /api/v1/case/create [get]
+// @Router /api/v1/case/create [post]
 func CreateNewCaseByApplicant(ctx *gin.Context) {
 
 	claims := jwtmodel.ExtractUserClaimsFromGinContext(ctx)
@@ -56,7 +57,67 @@ func CreateNewCaseByApplicant(ctx *gin.Context) {
 		return
 	}
 
-	_ = utils.PopulateCaseBasicFromFormToModel(&form, claims.Id, "371100")
+	newCase := utils.PopulateCaseBasicFromFormToModel(&form, claims.Id, "371100")
 
+	model, err := dao.CreateCase(newCase)
+
+	if err != nil {
+		ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, err.Error()))
+		return
+	} else {
+		// 注入material
+		for _, v := range form.Materials {
+			if v.Path != nil {
+				if _, mErr := dao.CreateMaterial(v.Name, *v.Path, model.CaseID); mErr != nil {
+					ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, mErr.Error()))
+					return
+				}
+			}
+		}
+
+		result, err := dao.GetCaseFullModelById(model.ID)
+		if err != nil {
+			ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, err.Error()))
+			return
+		} else {
+			ctx.JSON(respcode.HttpOK, vo.CommonData{
+				Common: vo.GenerateCommonResponseHead(respcode.GenericSuccess, "success"),
+				Data:   result,
+			})
+			return
+		}
+
+		// 提交成功
+	}
+
+}
+
+// Get Case First Submit Form Template
+// @Summary 获取申请调解案件的上传模板
+// @Description 获取申请调解案件的上传模板，测试用
+// @Tags case,test
+// @Produce json
+// @Success 200 {object} vo.CommonData "成功"
+// @Failure 422 {object} vo.Common "绑定失败"
+// @Failure 401 {object} vo.Common "没有认证"
+// @Router /api/v1/test/case/template [get]
+func GetCaseFirstSubmitFormTemplate(ctx *gin.Context) {
+
+	s := new(vo.CaseFirstSubmitForm)
+	marr := make([]*vo.Material,0,2)
+	path := "/test/1.png"
+	marr = append(marr, &vo.Material{Path: &path ,Name:"欠条"})
+	marr = append(marr, &vo.Material{Path: &path ,Name:"老合同"})
+	s.Materials = marr
+	s.Applicant = vo.Applicant{Name: "张三",Contact: "10086",Address: "三体星",Nationality: "三体人",IdentityNumber: "1234567890123456789",Birthday: utils2.NowDateDay()}
+	s.Respondent = vo.Employer{Name: "第三红岸基地",Address: "地球",Contact: "10010",UniformSocialCreditCode: "1234567889456123",LegalRepresentative: "李四"}
+	s.Content = "一场简单的劳动纠纷"
+	s.Title = "劳动纠纷2001"
+	s.FormID = 1
+
+	ctx.JSON(200, vo.CommonData{
+		Common: vo.GenerateCommonResponseHead(0, "success"),
+		Data:   s,
+	})
 
 }

@@ -420,9 +420,6 @@ definitions:
     type: object
   vo.Material:
     properties:
-      case_id:
-        description: caseID， 新建表单时不要上传该信息
-        type: string
       name:
         description: 材料介绍
         type: string
@@ -575,7 +572,7 @@ paths:
       tags:
       - utils
   /api/v1/case/create:
-    get:
+    post:
       consumes:
       - application/json
       description: 由申请人填写创建新调解案件
@@ -711,7 +708,29 @@ paths:
       summary: 创建劳动争议案件审判要素表
       tags:
       - labor
-  /api/v1/labor/arbitration_instructor:
+  /api/v1/test/case/template:
+    get:
+      description: 获取申请调解案件的上传模板，测试用
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/vo.CommonData'
+        "401":
+          description: 没有认证
+          schema:
+            $ref: '#/definitions/vo.Common'
+        "422":
+          description: 绑定失败
+          schema:
+            $ref: '#/definitions/vo.Common'
+      summary: 获取申请调解案件的上传模板
+      tags:
+      - case
+      - test
+  /api/v1/test/labor/arbitration/template:
     post:
       description: 获取劳动争议表单模板
       produces:

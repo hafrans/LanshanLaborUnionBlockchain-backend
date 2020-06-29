@@ -67,8 +67,8 @@ func CreateTables() {
 
 	db.DropTableIfExists(&models.LaborArbitration{})
 	db.DropTableIfExists(&models.Category{})
-	db.DropTableIfExists(&models.Applicant{})
-	db.DropTableIfExists(&models.Employer{})
+	//db.DropTableIfExists(&models.Applicant{})
+	//db.DropTableIfExists(&models.Employer{})
 	db.DropTableIfExists(&models.Case{})
 	db.DropTableIfExists(&models.Suggestion{})
 	db.DropTableIfExists(&models.Material{})
@@ -85,8 +85,8 @@ func CreateTables() {
 	db.CreateTable(&models.Permission{})
 
 	db.CreateTable(&models.Category{})
-	db.CreateTable(&models.Employer{})
-	db.CreateTable(&models.Applicant{})
+	//db.CreateTable(&models.Employer{})
+	//db.CreateTable(&models.Applicant{})
 	db.CreateTable(&models.Record{})
 	db.CreateTable(&models.Material{})
 	db.CreateTable(&models.Suggestion{})

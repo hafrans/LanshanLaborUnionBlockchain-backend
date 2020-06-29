@@ -12,8 +12,8 @@ func PopulateCaseBasicFromFormToModel(form *vo.CaseFirstSubmitForm, userId int64
 		Title:      form.Title,
 		Content:    form.Content,
 		Status:     models.StatusSubmitted,
-		CategoryId: form.CategoryId,
-		FormId:     form.FormId,
+		CategoryID: form.CategoryID,
+		FormID:     form.FormID,
 		Applicant: models.Applicant{
 			ApplicantAddress:        form.Applicant.Address,
 			ApplicantBirthday:       form.Applicant.Birthday,
@@ -29,8 +29,8 @@ func PopulateCaseBasicFromFormToModel(form *vo.CaseFirstSubmitForm, userId int64
 			EmployerUniformSocialCreditCode: form.Respondent.UniformSocialCreditCode,
 			EmployerName:                    form.Respondent.Name,
 		},
-		UserId: userId,
-		CaseId: utils.GenerateCaseId(areaCode),
+		UserID: userId,
+		CaseID: utils.GenerateCaseId(areaCode),
 	}
 	return &cases
 }

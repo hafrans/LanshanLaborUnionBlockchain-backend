@@ -163,7 +163,7 @@
             }
         },
         "/api/v1/case/create": {
-            "get": {
+            "post": {
                 "description": "由申请人填写创建新调解案件",
                 "consumes": [
                     "application/json"
@@ -370,7 +370,40 @@
                 }
             }
         },
-        "/api/v1/labor/arbitration_instructor": {
+        "/api/v1/test/case/template": {
+            "get": {
+                "description": "获取申请调解案件的上传模板，测试用",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "case",
+                    "test"
+                ],
+                "summary": "获取申请调解案件的上传模板",
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/vo.CommonData"
+                        }
+                    },
+                    "401": {
+                        "description": "没有认证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    },
+                    "422": {
+                        "description": "绑定失败",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/test/labor/arbitration/template": {
             "post": {
                 "description": "获取劳动争议表单模板",
                 "produces": [
@@ -1108,10 +1141,6 @@
                 "name"
             ],
             "properties": {
-                "case_id": {
-                    "description": "caseID， 新建表单时不要上传该信息",
-                    "type": "string"
-                },
                 "name": {
                     "description": "材料介绍",
                     "type": "string"

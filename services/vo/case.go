@@ -62,7 +62,7 @@ type Suggestion struct {
 type CaseFirstSubmitForm struct {
 
 	// 类型id
-	CategoryId int64 `json:"category_id"`
+	CategoryID int64 `json:"category_id"`
 
 	// 1.申请人
 	Applicant Applicant `json:"applicant" binding:"required,dive"`
@@ -77,7 +77,7 @@ type CaseFirstSubmitForm struct {
 	Content string `json:"content" binding:"required"`
 
 	// 5.劳动者填写的表单 id
-	FormId int64 `json:"form_id" binding:"required"`
+	FormID int64 `json:"form_id" binding:"required"`
 
 	// 6. 证据材料
 	Materials []*Material `json:"materials"`
