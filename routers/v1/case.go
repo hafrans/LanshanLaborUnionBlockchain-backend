@@ -7,8 +7,10 @@ import (
 	"RizhaoLanshanLabourUnion/services/respcode"
 	"RizhaoLanshanLabourUnion/services/vo"
 	utils2 "RizhaoLanshanLabourUnion/utils"
+	"database/sql"
 	"github.com/gin-gonic/gin"
 	"log"
+	"strconv"
 )
 
 // Get All Categories
@@ -75,19 +77,19 @@ func CreateNewCaseByApplicant(ctx *gin.Context) {
 			}
 		}
 
-		result, err := dao.GetCaseFullModelById(model.ID)
+		result, err := dao.GetCasePreloadedModelById(model.ID)
 		if err != nil {
 			ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, err.Error()))
 			return
 		} else {
 			ctx.JSON(respcode.HttpOK, vo.CommonData{
 				Common: vo.GenerateCommonResponseHead(respcode.GenericSuccess, "success"),
-				Data:   result,
+				Data:   utils.PopulateCaseFullModelToFullForm(result),
 			})
 			return
 		}
 
-		// 提交成功
+		// 提交成功 37110020200630134604159349596481
 	}
 
 }
@@ -98,7 +100,6 @@ func CreateNewCaseByApplicant(ctx *gin.Context) {
 // @Tags case,test
 // @Produce json
 // @Success 200 {object} vo.CommonData "成功"
-// @Failure 422 {object} vo.Common "绑定失败"
 // @Failure 401 {object} vo.Common "没有认证"
 // @Router /api/v1/test/case/template [get]
 func GetCaseFirstSubmitFormTemplate(ctx *gin.Context) {
@@ -119,5 +120,38 @@ func GetCaseFirstSubmitFormTemplate(ctx *gin.Context) {
 		Common: vo.GenerateCommonResponseHead(0, "success"),
 		Data:   s,
 	})
+
+}
+
+// Get Case By ID
+// @Summary 通过ID（主键）获取case
+// @Description 获取单一Case
+// @Tags case
+// @Produce json
+// @Success 200 {object} vo.CommonData "成功"
+// @Failure 401 {object} vo.Common "没有认证"
+// @Router /api/v1/test/case/id/:id [get]
+func GetCaseById(ctx *gin.Context){
+
+	if id,err := strconv.Atoi(ctx.Param("id")); err != nil{
+		log.Println(err.Error())
+		ctx.JSON(200,vo.GenerateCommonResponseHead(respcode.GenericFailed, "invalid id"))
+		return
+	}else{
+		cases, cErr := dao.GetCasePreloadedModelById(int64(id))
+		if cErr != nil{
+			if cErr == sql.ErrNoRows {
+				ctx.JSON(200,vo.GenerateCommonResponseHead(respcode.GenericFailed, "记录不存在"))
+				return
+			}else{
+				ctx.JSON(200,vo.GenerateCommonResponseHead(respcode.GenericFailed, cErr.Error()))
+				return
+			}
+		}
+		ctx.JSON(200,vo.CommonData{
+			Common:vo.GenerateCommonResponseHead(respcode.GenericSuccess,"success"),
+			Data:utils.PopulateCaseFullModelToFullForm(cases),
+		})
+	}
 
 }

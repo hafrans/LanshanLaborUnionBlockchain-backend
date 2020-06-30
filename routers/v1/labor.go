@@ -135,7 +135,7 @@ func CreateLaborArbitrationForm(ctx *gin.Context) {
 		ctx.JSON(respcode.HttpBindingFailed, vo.GenerateCommonResponseHead(respcode.GenericFailed, err.Error()))
 		return
 	} else {
-		model, err := utils2.PopulateLaborArbitrationFormToModel(&form)
+		model, err := utils2.PopulateLaborArbitrationVOToModel(&form)
 		model.Owner = claims.Id
 		if err != nil {
 			ctx.JSON(respcode.HttpBindingFailed, vo.GenerateCommonResponseHead(respcode.GenericFailed, err.Error()))
@@ -147,7 +147,7 @@ func CreateLaborArbitrationForm(ctx *gin.Context) {
 		} else {
 			ctx.JSON(respcode.HttpOK, vo.CommonData{
 				Common: vo.GenerateCommonResponseHead(respcode.GenericSuccess, "success"),
-				Data:   utils2.PopulateLaborArbitrationModelToForm(model),
+				Data:   utils2.PopulateLaborArbitrationModelToVO(model),
 			})
 		}
 
@@ -237,7 +237,7 @@ func GetOneLaborArbitrationFormById(ctx *gin.Context) {
 
 			ctx.JSON(respcode.HttpOK, vo.CommonData{
 				Common: vo.GenerateCommonResponseHead(respcode.GenericSuccess, "success"),
-				Data:   utils2.PopulateLaborArbitrationModelToForm(model),
+				Data:   utils2.PopulateLaborArbitrationModelToVO(model),
 			})
 			return
 		}

@@ -23,11 +23,25 @@ func CreateCase(model *models.Case) (*models.Case, error) {
 
 }
 
-func GetCaseFullModelById(id int64) (*models.Case, error) {
+func GetCasePreloadedModelById(id int64) (*models.Case, error) {
 
 	var model models.Case
 
 	result := db.Preload("Category").Preload("Form").Preload("Materials").Preload("Records").Preload("Suggestions").First(&model, id)
+	if result.Error != nil {
+		log.Println(result.Error)
+		return nil, result.Error
+	} else {
+		return &model, nil
+	}
+
+}
+
+func GetCaseNotPreloadModelById(id int64) (*models.Case, error) {
+
+	var model models.Case
+
+	result := db.First(&model, id)
 	if result.Error != nil {
 		log.Println(result.Error)
 		return nil, result.Error

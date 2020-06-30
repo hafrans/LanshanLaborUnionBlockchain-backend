@@ -6,6 +6,18 @@ import (
 
 type LaborArbitrationForm struct {
 
+	// 0.1 ID, 新建时不填写
+	ID int64 `json:"id,omitempty"`
+
+	// 0.2 Owner 新建时不填写
+	Owner int64 `json:"owner,omitempty"`
+
+	// 0.3 CreatedAt 新建时不填写
+	CreatedAt *utils.Time `json:"created_at,omitempty"`
+
+	// 0.4 UpdatedAt 新建时不填写
+	UpdatedAt *utils.Time `json:"updated_at,omitempty"`
+
 	// 1. 主体性质
 	Subject int `json:"main" binding:"required,number,gte=0,lte=2"`
 	// 2. 入职时间

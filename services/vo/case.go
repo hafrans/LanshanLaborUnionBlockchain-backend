@@ -4,6 +4,14 @@ import (
 	"RizhaoLanshanLabourUnion/utils"
 )
 
+// 类型
+
+type Category struct {
+	ID          int64  `json:"id"`
+	Name        string `json:"category_name"`
+	Description string `json:"category_description"`
+}
+
 // 申请调解人
 type Applicant struct {
 	// 姓名
@@ -36,6 +44,7 @@ type Employer struct {
 
 // 相关证据材料
 type Material struct {
+	ID int64 `json:"id,omitempty"`
 	// 材料介绍
 	Name string `json:"name" binding:"required"`
 	// 材料资源path
@@ -44,6 +53,9 @@ type Material struct {
 
 // 调解笔录
 type Record struct {
+
+	ID int64 `json:"id,omitempty"`
+
 	// 记录介绍
 	Name string `json:"record_name"`
 
@@ -53,6 +65,9 @@ type Record struct {
 
 // 部门调解意见
 type Suggestion struct {
+
+	ID int64 `json:"id,omitempty"`
+
 	// 部门名称
 	Department string `json:"suggestion_department"`
 	// 意见
@@ -84,4 +99,35 @@ type CaseFirstSubmitForm struct {
 
 	// 7.调解笔录， 8. 调解意见 不用填写
 
+}
+
+type CaseFullResultForm struct {
+	ID        int64       `json:"id"`
+	CaseID    string      `json:"case_id"`
+	CreatedAt *utils.Time `json:"created_at"`
+	UpdateAt  *utils.Time `json:"updated_at"`
+	Owner     int64       `json:"owner"`
+
+	Status int `json:"status"`
+
+	Title      string    `json:"title"`
+	Content    string    `json:"content"`
+	Category   Category  `json:"category"`
+	Applicant  Applicant `json:"applicant"`
+	Respondent Employer  `json:"respondent"`
+
+	Form        *LaborArbitrationForm `json:"form"`
+	Materials   []*Material           `json:"materials"`
+	Records     []*Record             `json:"records"`
+	Suggestions []*Suggestion         `json:"suggestions"`
+}
+
+type SimplifiedCaseListItem struct {
+	ID        int64       `json:"id"`
+	CaseID    string      `json:"case_id"`
+	Title     string      `json:"title"`
+	CreatedAt *utils.Time `json:"created_at"`
+	UpdateAt  *utils.Time `json:"updated_at"`
+	Status    int         `json:"status"`
+	Owner     int64       `json:"owner"`
 }

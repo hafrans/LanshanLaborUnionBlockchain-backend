@@ -35,40 +35,8 @@ func PopulateCaseBasicFromFormToModel(form *vo.CaseFirstSubmitForm, userId int64
 	return &cases
 }
 
-func PopulateMaterialFromFormToModel(material *vo.Material) *models.Material {
 
-	model := models.Material{
-		Name: material.Name,
-		Path: material.Path,
-	}
-	return &model
-}
 
-func PopulateMaterialListFromFormToModel(materials []*vo.Material) []*models.Material {
-
-	length := len(materials)
-	result := make([]*models.Material, 0, length)
-
-	for _, v := range materials {
-		result = append(result, PopulateMaterialFromFormToModel(v))
-	}
-
-	return result
-
-}
-
-func PopulateApplicantFromFormToModel(applicant *vo.Applicant) *models.Applicant {
-	model := models.Applicant{
-		ApplicantName:           applicant.Name,
-		ApplicantIdentityNumber: applicant.IdentityNumber,
-		ApplicantBirthday:       applicant.Birthday,
-		ApplicantContact:        applicant.Contact,
-		ApplicantAddress:        applicant.Address,
-		ApplicantNationality:    applicant.Nationality,
-	}
-
-	return &model
-}
 
 func PopulateEmployerFromFormToModel(employer *vo.Employer) *models.Employer {
 	model := models.Employer{
@@ -79,4 +47,66 @@ func PopulateEmployerFromFormToModel(employer *vo.Employer) *models.Employer {
 		EmployerLegalRepresentative:     employer.LegalRepresentative,
 	}
 	return &model
+}
+
+func SimplyCaseListItem(list []*models.Case) []*vo.SimplifiedCaseListItem {
+
+	length := len(list)
+	arr := make([]*vo.SimplifiedCaseListItem, 0, length)
+
+	for _, v := range list {
+		tmp := new(vo.SimplifiedCaseListItem)
+		tmp.Owner = v.UserID
+		tmp.ID = v.ID
+		tmp.CreatedAt = utils.GetTime(v.CreatedAt)
+		tmp.UpdateAt = utils.GetTime(v.UpdatedAt)
+		tmp.Title = v.Title
+		tmp.Status = v.Status
+		tmp.CaseID = v.CaseID
+
+		arr = append(arr, tmp)
+	}
+
+	return arr
+}
+
+func PopulateCaseFullModelToFullForm(model *models.Case) *vo.CaseFullResultForm {
+
+	form := &vo.CaseFullResultForm{
+		ID:        model.ID,
+		CaseID:    model.CaseID,
+		Status:    model.Status,
+		Title:     model.Title,
+		UpdateAt:  utils.GetTime(model.UpdatedAt),
+		CreatedAt: utils.GetTime(model.CreatedAt),
+		Owner:     model.UserID,
+		Content:   model.Content,
+		Form:      PopulateLaborArbitrationModelToVO(model.Form),
+		Applicant: vo.Applicant{
+			Name:           model.ApplicantName,
+			Contact:        model.ApplicantContact,
+			Address:        model.ApplicantAddress,
+			Birthday:       model.ApplicantBirthday,
+			IdentityNumber: model.ApplicantIdentityNumber,
+			Nationality:    model.ApplicantNationality,
+		},
+		Respondent: vo.Employer{
+			Name:                    model.EmployerName,
+			Address:                 model.EmployerAddress,
+			Contact:                 model.EmployerContact,
+			LegalRepresentative:     model.EmployerLegalRepresentative,
+			UniformSocialCreditCode: model.EmployerUniformSocialCreditCode,
+		},
+		Category: vo.Category{
+			Name:        model.Category.Name,
+			Description: model.Category.Description,
+			ID:          model.CategoryID,
+		},
+		Materials: PopulateMaterialListFromModelToVO(model.Materials),
+		Records:   PopulateRecordListFromModelToVO(model.Records),
+		Suggestions: PopulateSuggestionListFromModelToVO(model.Suggestions),
+	}
+
+	return form
+
 }

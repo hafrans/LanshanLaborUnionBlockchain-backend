@@ -49,15 +49,15 @@ func InitApiV1Routers(apiV1 *gin.RouterGroup) {
 	apiLabor.GET("/arbitration/:id", v1.GetOneLaborArbitrationFormById)
 
 	apiCase := apiV1.Group("/case/")
-	apiCase.POST("/create",v1.CreateNewCaseByApplicant)
+	apiCase.POST("/create", v1.CreateNewCaseByApplicant)
+	apiCase.GET("/id/:id", v1.GetCaseById)
 
 	apiCategory := apiV1.Group("/category")
 	apiCategory.GET("/", v1.GetAllCategories)
 
-
 	apiTest := apiV1.Group("/test")
-	apiTest.GET("/labor/arbitration/template",v1.LaborArbitrationFormInstructor)
-	apiTest.POST("/labor/arbitration/template",v1.LaborArbitrationFormInstructor)
-	apiTest.GET("/case/template",v1.GetCaseFirstSubmitFormTemplate)
+	apiTest.GET("/labor/arbitration/template", v1.LaborArbitrationFormInstructor)
+	apiTest.POST("/labor/arbitration/template", v1.LaborArbitrationFormInstructor)
+	apiTest.GET("/case/template", v1.GetCaseFirstSubmitFormTemplate)
 
 }

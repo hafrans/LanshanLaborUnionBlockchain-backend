@@ -71,7 +71,7 @@ type Suggestion struct {
 type Case struct {
 	Model
 
-	CaseID string `json:"case_id" gorm:"type:varchar(32);unique_index"` // case id //要自己定
+	CaseID string `json:"case_id" gorm:"type:varchar(64);unique_index"` // case id //要自己定
 
 	Status int `json:"status" gorm:"type:tinyint(1)"`
 
@@ -97,11 +97,11 @@ type Case struct {
 	FormID int64             `json:"-"` // 表单
 	Form   *LaborArbitration `gorm:"foreignkey:FormID"`
 
-	Materials []*Material `json:"materials" gorm:"foreignkey:CaseID"` // 证据材料
+	Materials []*Material `json:"materials" gorm:"foreignkey:CaseID;association_foreignkey:CaseID"` // 证据材料
 
-	Records []*Record `json:"records" gorm:"foreignkey:CaseID"` // 笔录
+	Records []*Record `json:"records" gorm:"foreignkey:CaseID;association_foreignkey:CaseID"` // 笔录
 
-	Suggestions []*Suggestion `json:"suggestions" gorm:"foreignkey:CaseID"` // 部门处理意见
+	Suggestions []*Suggestion `json:"suggestions" gorm:"foreignkey:CaseID;association_foreignkey:CaseID"` // 部门处理意见
 
 }
 

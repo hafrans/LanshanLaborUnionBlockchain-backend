@@ -7,7 +7,7 @@ import (
 	"errors"
 )
 
-func PopulateLaborArbitrationFormToModel(form *vo.LaborArbitrationForm) (*models.LaborArbitration, error) {
+func PopulateLaborArbitrationVOToModel(form *vo.LaborArbitrationForm) (*models.LaborArbitration, error) {
 
 	if form == nil {
 		return nil, errors.New("no form found")
@@ -92,8 +92,7 @@ func PopulateLaborArbitrationFormToModel(form *vo.LaborArbitrationForm) (*models
 
 }
 
-func PopulateLaborArbitrationModelToForm(model *models.LaborArbitration) *vo.LaborArbitrationForm {
-
+func PopulateLaborArbitrationModelToVO(model *models.LaborArbitration) *vo.LaborArbitrationForm {
 
 	form := &vo.LaborArbitrationForm{
 		LaborContractType:                                 model.LaborContractType,
@@ -164,17 +163,20 @@ func PopulateLaborArbitrationModelToForm(model *models.LaborArbitration) *vo.Lab
 		LaborContractRange:                   [2]*utils.Date{model.LaborContractStart, model.LaborContractEnd},
 		HospitalRange:                        [2]*utils.Date{model.HospitalStart, model.HospitalEnd},
 		BeforeSeverLaborRelationshipRange:    [2]*utils.Date{model.BeforeSeverLaborRelationshipAvgWageStart, model.BeforeSeverLaborRelationshipAvgWageEnd},
+		UpdatedAt:                            utils.GetTime(model.UpdatedAt),
+		CreatedAt:                            utils.GetTime(model.CreatedAt),
+		ID:                                   model.ID,
+		Owner:                                model.Owner,
 	}
 
 	return form
 
 }
 
-
-func SimplifyLaborArbitrationResult(list []*models.LaborArbitration) []*vo.SimplifiedLaborArbitrationResult{
+func SimplifyLaborArbitrationResult(list []*models.LaborArbitration) []*vo.SimplifiedLaborArbitrationResult {
 
 	length := len(list)
-	result := make([]*vo.SimplifiedLaborArbitrationResult,0,length)
+	result := make([]*vo.SimplifiedLaborArbitrationResult, 0, length)
 
 	for _, v := range list {
 
@@ -186,10 +188,8 @@ func SimplifyLaborArbitrationResult(list []*models.LaborArbitration) []*vo.Simpl
 		t := utils.Time(v.UpdatedAt)
 		tmp.UpdatedAt = &t
 
-		result = append(result,tmp)
+		result = append(result, tmp)
 	}
 
 	return result
 }
-
-

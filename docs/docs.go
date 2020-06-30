@@ -387,6 +387,32 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/test/case/id/:id": {
+            "get": {
+                "description": "获取单一Case",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "case"
+                ],
+                "summary": "通过ID（主键）获取case",
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/vo.CommonData"
+                        }
+                    },
+                    "401": {
+                        "description": "没有认证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/test/case/template": {
             "get": {
                 "description": "获取申请调解案件的上传模板，测试用",
@@ -407,12 +433,6 @@ var doc = `{
                     },
                     "401": {
                         "description": "没有认证",
-                        "schema": {
-                            "$ref": "#/definitions/vo.Common"
-                        }
-                    },
-                    "422": {
-                        "description": "绑定失败",
                         "schema": {
                             "$ref": "#/definitions/vo.Common"
                         }
@@ -870,6 +890,10 @@ var doc = `{
                     "description": "8.3 工时制",
                     "type": "integer"
                 },
+                "created_at": {
+                    "description": "0.3 CreatedAt 新建时不填写",
+                    "type": "string"
+                },
                 "disability_rating_time": {
                     "description": "15. 伤残等级鉴定时间及结果\n15.1 伤残等级鉴定时间",
                     "type": "string"
@@ -893,6 +917,10 @@ var doc = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "id": {
+                    "description": "0.1 ID, 新建时不填写",
+                    "type": "integer"
                 },
                 "industrial_injury": {
                     "description": "13.2 是否经过工伤认定",
@@ -994,6 +1022,10 @@ var doc = `{
                     "type": "number",
                     "example": 2
                 },
+                "owner": {
+                    "description": "0.2 Owner 新建时不填写",
+                    "type": "integer"
+                },
                 "paid_annual_leave_not_leave_day": {
                     "description": "22. 未休带薪年休假天数",
                     "type": "boolean"
@@ -1065,6 +1097,10 @@ var doc = `{
                 "unpaid_wages": {
                     "description": "11. 欠发工资及加班费数额\n11.1 欠发工资数",
                     "type": "number"
+                },
+                "updated_at": {
+                    "description": "0.4 UpdatedAt 新建时不填写",
+                    "type": "string"
                 },
                 "wage": {
                     "description": "9. 实发月工资数及工资构成、发放形式、发放周期\n9.1 月工资数",
@@ -1158,6 +1194,9 @@ var doc = `{
                 "name"
             ],
             "properties": {
+                "id": {
+                    "type": "integer"
+                },
                 "name": {
                     "description": "材料介绍",
                     "type": "string"
