@@ -53,7 +53,6 @@ type Material struct {
 
 // 调解笔录
 type Record struct {
-
 	ID int64 `json:"id,omitempty"`
 
 	// 记录介绍
@@ -65,7 +64,6 @@ type Record struct {
 
 // 部门调解意见
 type Suggestion struct {
-
 	ID int64 `json:"id,omitempty"`
 
 	// 部门名称
@@ -123,11 +121,13 @@ type CaseFullResultForm struct {
 }
 
 type SimplifiedCaseListItem struct {
-	ID        int64       `json:"id"`
-	CaseID    string      `json:"case_id"`
-	Title     string      `json:"title"`
-	CreatedAt *utils.Time `json:"created_at"`
-	UpdateAt  *utils.Time `json:"updated_at"`
-	Status    int         `json:"status"`
-	Owner     int64       `json:"owner"`
+	ID             int64       `json:"id"`
+	CaseID         string      `json:"case_id"`
+	ApplicantName  string      `json:"applicant_name"`  // 申请人
+	RespondentName string      `json:"respondent_name"` // 被申请人
+	Title          string      `json:"title"`
+	CreatedAt      *utils.Time `json:"created_at"`
+	UpdateAt       *utils.Time `json:"updated_at"`
+	Status         int         `json:"status"`
+	Owner          int64       `json:"owner"`
 }

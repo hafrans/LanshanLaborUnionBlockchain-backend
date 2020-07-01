@@ -36,6 +36,51 @@ func CreateUser(username, password, email, phone string, userType int, emailChec
 	return user, nil
 }
 
+func CreateUserWithProfile(username, password, email, phone string, userType int, emailChecked, phoneChecked, active bool, departmentId int64, profile *models.UserProfile) (*models.User, error) {
+	hashedPassword, ok := utils.GenerateHashedPassword(password)
+	if !ok {
+		log.Println("generate password failed")
+		return nil, errors.New("can not generate password")
+	}
+
+	user := &models.User{
+		UserName:     username,
+		Credentials:  hashedPassword,
+		Email:        email,
+		EmailChecked: emailChecked,
+		Phone:        phone,
+		PhoneChecked: phoneChecked,
+		UserType:     userType,
+		Activated:    active,
+	}
+
+	if departmentId != 0 {
+		user.DepartmentID = &departmentId
+	}
+
+	result := db.Model(&models.User{}).Create(user)
+
+	if result.Error != nil {
+		log.Println(result.Error)
+		return nil, result.Error
+	}
+
+	if profile != nil {
+		// inject profile
+		profile.UserID = user.ID
+		profileResult := db.Model(&models.UserProfile{}).Create(profile)
+
+		if profileResult.Error != nil {
+			log.Println(result.Error)
+			return nil, result.Error
+		}
+	}
+
+	user.UserProfile = *profile
+
+	return user, nil
+}
+
 func GetUserById(id int64) (*models.User, error) {
 	user := &models.User{}
 	result := db.First(user, id)
@@ -112,7 +157,7 @@ func DeleteUserById(id int64) bool {
 
 func LoginUser(user *models.User) bool {
 	now := time.Now()
-	result := db.Model(user).Update(models.User{LastLoginTime: &now})
+	result := db.Model(user).Where("id = ?", 1).Update(models.User{LastLoginTime: &now})
 	if result.Error != nil {
 		log.Println(result.Error)
 		return false

@@ -35,9 +35,6 @@ func PopulateCaseBasicFromFormToModel(form *vo.CaseFirstSubmitForm, userId int64
 	return &cases
 }
 
-
-
-
 func PopulateEmployerFromFormToModel(employer *vo.Employer) *models.Employer {
 	model := models.Employer{
 		EmployerAddress:                 employer.Address,
@@ -63,6 +60,8 @@ func SimplyCaseListItem(list []*models.Case) []*vo.SimplifiedCaseListItem {
 		tmp.Title = v.Title
 		tmp.Status = v.Status
 		tmp.CaseID = v.CaseID
+		tmp.ApplicantName = v.ApplicantName
+		tmp.RespondentName = v.EmployerName
 
 		arr = append(arr, tmp)
 	}
@@ -102,8 +101,8 @@ func PopulateCaseFullModelToFullForm(model *models.Case) *vo.CaseFullResultForm 
 			Description: model.Category.Description,
 			ID:          model.CategoryID,
 		},
-		Materials: PopulateMaterialListFromModelToVO(model.Materials),
-		Records:   PopulateRecordListFromModelToVO(model.Records),
+		Materials:   PopulateMaterialListFromModelToVO(model.Materials),
+		Records:     PopulateRecordListFromModelToVO(model.Records),
 		Suggestions: PopulateSuggestionListFromModelToVO(model.Suggestions),
 	}
 

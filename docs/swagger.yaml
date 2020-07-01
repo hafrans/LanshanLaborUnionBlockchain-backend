@@ -14,6 +14,25 @@ definitions:
       sub:
         type: string
     type: object
+  models.Department:
+    properties:
+      created_at:
+        description: 创建日期，提交表单时不要上传该信息
+        type: string
+      deleted_at:
+        description: 删除日期 提交表单时不要上传该信息
+        type: string
+      description:
+        type: string
+      id:
+        description: 模型ID，提交表单时不要上传该信息
+        type: integer
+      name:
+        type: string
+      updated_at:
+        description: 更新日期，提交表单时不要上传该信息
+        type: string
+    type: object
   models.User:
     properties:
       active:
@@ -24,6 +43,10 @@ definitions:
       deleted_at:
         description: 删除日期 提交表单时不要上传该信息
         type: string
+      department:
+        $ref: '#/definitions/models.Department'
+        description: 工会等用户
+        type: object
       email:
         type: string
       email_checked:
@@ -40,18 +63,59 @@ definitions:
       updated_at:
         description: 更新日期，提交表单时不要上传该信息
         type: string
+      user_profile:
+        $ref: '#/definitions/models.UserProfile'
+        type: object
       user_type:
+        description: 约定使用UserProfile中的某些字段
         type: integer
       username:
         type: string
     type: object
   models.UserProfile:
     properties:
+      applicant_address:
+        description: 地址
+        type: string
+      applicant_birth:
+        description: 生日
+        type: string
+      applicant_contact:
+        description: 联系方式
+        type: string
+      applicant_id:
+        description: 身份证号
+        type: string
+      applicant_name:
+        description: |-
+          Model
+          姓名
+        type: string
+      applicant_nationality:
+        description: 民族
+        type: string
       created_at:
         description: 创建日期，提交表单时不要上传该信息
         type: string
       deleted_at:
         description: 删除日期 提交表单时不要上传该信息
+        type: string
+      employer_address:
+        description: 地址
+        type: string
+      employer_contact:
+        description: 联系方式
+        type: string
+      employer_faren:
+        description: 法人
+        type: string
+      employer_name:
+        description: |-
+          Model
+          公司名
+        type: string
+      employer_uscc:
+        description: 识别号
         type: string
       id:
         description: 模型ID，提交表单时不要上传该信息
@@ -59,6 +123,8 @@ definitions:
       updated_at:
         description: 更新日期，提交表单时不要上传该信息
         type: string
+      userID:
+        type: integer
     type: object
   vo.Applicant:
     properties:
@@ -464,13 +530,34 @@ definitions:
         $ref: '#/definitions/models.User'
         type: object
     type: object
+  vo.UserRegisterLaborForm:
+    properties:
+      applicant:
+        $ref: '#/definitions/vo.Applicant'
+        type: object
+      confirm_password:
+        type: string
+      password:
+        type: string
+      phone:
+        example: "13800138000"
+        type: string
+      username:
+        type: string
+    required:
+    - applicant
+    - confirm_password
+    - password
+    - phone
+    - username
+    type: object
   vo.UserUpdateInfo:
     properties:
       email:
         example: hafrans@163.com
         type: string
       phone:
-        example: test@gov.cn
+        example: "13800138000"
         type: string
     required:
     - email
@@ -510,6 +597,40 @@ paths:
       summary: 获得验证码
       tags:
       - captcha
+  /api/auth/labor/register:
+    post:
+      consumes:
+      - application/json
+      description: 劳动者账户申请
+      parameters:
+      - description: 请求
+        in: body
+        name: email
+        required: true
+        schema:
+          $ref: '#/definitions/vo.UserRegisterLaborForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 正常业务处理
+          schema:
+            $ref: '#/definitions/vo.Common'
+        "401":
+          description: 未验证
+          schema:
+            $ref: '#/definitions/vo.Common'
+        "422":
+          description: 表单绑定失败
+          schema:
+            $ref: '#/definitions/vo.Common'
+        "500":
+          description: 表单绑定失败
+          schema:
+            $ref: '#/definitions/vo.Common'
+      summary: 劳动者 账户申请
+      tags:
+      - user
   /api/auth/login:
     post:
       consumes:
@@ -585,6 +706,36 @@ paths:
       summary: 上传资源
       tags:
       - utils
+  /api/v1/case/:
+    get:
+      consumes:
+      - application/json
+      description: 获取所有的案件，非管理员只能看到自己的，管理员能看到全部人的
+      parameters:
+      - description: 页码
+        in: query
+        name: page
+        required: true
+        type: number
+      - description: 页大小
+        in: query
+        name: pageSize
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 正常业务处理
+          schema:
+            $ref: '#/definitions/vo.CommonData'
+        "401":
+          description: 未验证
+          schema:
+            $ref: '#/definitions/vo.Common'
+      summary: 获取所有的案件
+      tags:
+      - labor
   /api/v1/case/create:
     post:
       consumes:
@@ -633,62 +784,7 @@ paths:
       tags:
       - category
       - case
-  /api/v1/labor/arbitration/:
-    get:
-      consumes:
-      - application/json
-      description: 劳动争议案件审判要素表列表
-      parameters:
-      - description: 页码
-        in: query
-        name: page
-        required: true
-        type: number
-      - description: 页大小
-        in: query
-        name: pageSize
-        required: true
-        type: number
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 正常业务处理
-          schema:
-            $ref: '#/definitions/vo.CommonData'
-        "401":
-          description: 未验证
-          schema:
-            $ref: '#/definitions/vo.Common'
-      summary: 获取自己所有的劳动争议案件审判要素表
-      tags:
-      - labor
-  /api/v1/labor/arbitration/:id:
-    get:
-      consumes:
-      - application/json
-      description: 劳动争议案件审判要素表获取，非管理员只能看自己的。
-      parameters:
-      - description: 表单id
-        in: path
-        name: id
-        required: true
-        type: number
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 正常业务处理
-          schema:
-            $ref: '#/definitions/vo.CommonData'
-        "401":
-          description: 未验证
-          schema:
-            $ref: '#/definitions/vo.Common'
-      summary: 获取指定劳动争议案件审判要素表列表
-      tags:
-      - labor
-  /api/v1/labor/arbitration/create:
+  /api/v1/labor/create:
     post:
       consumes:
       - application/json
@@ -722,9 +818,104 @@ paths:
       summary: 创建劳动争议案件审判要素表
       tags:
       - labor
+  /api/v1/labor/delete/:id:
+    get:
+      description: 劳动争议案件审判要素表删除，非管理员只能删除自己的，如果有案件依赖则不可以删除
+      parameters:
+      - description: 表单id
+        in: path
+        name: id
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 正常业务处理
+          schema:
+            $ref: '#/definitions/vo.CommonData'
+        "401":
+          description: 未验证
+          schema:
+            $ref: '#/definitions/vo.Common'
+      summary: 删除单个劳动争议案件审判要素表
+      tags:
+      - labor
+  /api/v1/labor/id/:id:
+    get:
+      consumes:
+      - application/json
+      description: 劳动争议案件审判要素表获取，非管理员只能看自己的。
+      parameters:
+      - description: 表单id
+        in: path
+        name: id
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 正常业务处理
+          schema:
+            $ref: '#/definitions/vo.CommonData'
+        "401":
+          description: 未验证
+          schema:
+            $ref: '#/definitions/vo.Common'
+      summary: 获取指定劳动争议案件审判要素表列表
+      tags:
+      - labor
+  /api/v1/labor/list:
+    get:
+      consumes:
+      - application/json
+      description: 劳动争议案件审判要素表列表，记住，只能看到自己的！！！
+      parameters:
+      - description: 页码
+        in: query
+        name: page
+        required: true
+        type: number
+      - description: 页大小
+        in: query
+        name: pageSize
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 正常业务处理
+          schema:
+            $ref: '#/definitions/vo.CommonData'
+        "401":
+          description: 未验证
+          schema:
+            $ref: '#/definitions/vo.Common'
+      summary: 获取自己所有的劳动争议案件审判要素表
+      tags:
+      - labor
+  /api/v1/test/case/caseId/:caseId:
+    get:
+      description: 获取单一Case，通过CaseID 例子：3711002020063019254015935163407436142
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/vo.CommonData'
+        "401":
+          description: 没有认证
+          schema:
+            $ref: '#/definitions/vo.Common'
+      summary: 通过Case ID（调解申请号）获取case
+      tags:
+      - case
   /api/v1/test/case/id/:id:
     get:
-      description: 获取单一Case
+      description: 获取单一Case， 例子：9
       produces:
       - application/json
       responses:
@@ -757,7 +948,7 @@ paths:
       tags:
       - case
       - test
-  /api/v1/test/labor/arbitration/template:
+  /api/v1/test/labor/template:
     post:
       description: 获取劳动争议表单模板
       produces:

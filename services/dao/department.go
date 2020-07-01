@@ -6,6 +6,12 @@ import (
 	"log"
 )
 
+func InitDepartment() {
+	CreateDepartment("[测试]莒州市总工会", "无")
+	CreateDepartment("[测试]莒州市中级人民法院", "无")
+	CreateDepartment("[测试]莒州市劳动仲裁委员会", "无")
+}
+
 func CreateDepartment(name, description string) (*models.Department , error){
 	department := &models.Department{
 		Name: name,

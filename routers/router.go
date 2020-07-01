@@ -26,6 +26,7 @@ func InitRouter(r *gin.Engine) {
 func InitApiAuthRouters(apiAuth *gin.RouterGroup) {
 
 	apiAuth.POST("/login", jwt.AuthMiddleWare.LoginHandler)
+	apiAuth.POST("/labor/register", v1.RegisterNewLaborUser)
 	apiAuth.GET("/logout", jwt.AuthMiddleWare.LogoutHandler)
 	apiAuth.GET("/refresh_token", jwt.AuthMiddleWare.RefreshHandler)
 	apiAuth.GET("/captcha/:id", v1.GetCaptcha)
@@ -44,20 +45,23 @@ func InitApiV1Routers(apiV1 *gin.RouterGroup) {
 	apiUser.POST("/update_info", v1.UpdateUserInfo)
 
 	apiLabor := apiV1.Group("/labor")
-	apiLabor.POST("/arbitration/create", v1.CreateLaborArbitrationForm)
-	apiLabor.GET("/arbitration/", v1.GetMyLaborArbitrationForms)
-	apiLabor.GET("/arbitration/:id", v1.GetOneLaborArbitrationFormById)
+	apiLabor.POST("/create", v1.CreateLaborArbitrationForm)
+	apiLabor.GET("/list", v1.GetMyLaborArbitrationFormList)
+	apiLabor.GET("/id/:id", v1.GetOneLaborArbitrationFormById)
+	apiLabor.GET("/delete/:id", v1.DeleteOneLaborArbitrationFormById)
 
 	apiCase := apiV1.Group("/case/")
 	apiCase.POST("/create", v1.CreateNewCaseByApplicant)
 	apiCase.GET("/id/:id", v1.GetCaseById)
+	apiCase.GET("/caseId/:caseId", v1.GetCaseByCaseID)
+	apiCase.GET("/", v1.GetCaseList)
 
 	apiCategory := apiV1.Group("/category")
 	apiCategory.GET("/", v1.GetAllCategories)
 
 	apiTest := apiV1.Group("/test")
-	apiTest.GET("/labor/arbitration/template", v1.LaborArbitrationFormInstructor)
-	apiTest.POST("/labor/arbitration/template", v1.LaborArbitrationFormInstructor)
+	apiTest.GET("/labor/template", v1.LaborArbitrationFormInstructor)
+	apiTest.POST("/labor/template", v1.LaborArbitrationFormInstructor)
 	apiTest.GET("/case/template", v1.GetCaseFirstSubmitFormTemplate)
 
 }

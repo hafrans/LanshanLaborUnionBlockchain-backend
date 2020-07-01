@@ -64,6 +64,7 @@ func CreateTables() {
 	db.DropTableIfExists(&models.Role{})
 	db.DropTableIfExists(&models.Permission{})
 	db.DropTableIfExists(&models.Department{})
+	db.DropTableIfExists(&models.UserProfile{})
 
 	db.DropTableIfExists(&models.LaborArbitration{})
 	db.DropTableIfExists(&models.Category{})
@@ -80,13 +81,12 @@ func CreateTables() {
 	db.CreateTable(&models.UserRole{})
 
 	db.CreateTable(&models.Department{})
+	db.CreateTable(&models.UserProfile{})
 	db.CreateTable(&models.User{})
 	db.CreateTable(&models.Role{})
 	db.CreateTable(&models.Permission{})
 
 	db.CreateTable(&models.Category{})
-	//db.CreateTable(&models.Employer{})
-	//db.CreateTable(&models.Applicant{})
 	db.CreateTable(&models.Record{})
 	db.CreateTable(&models.Material{})
 	db.CreateTable(&models.Suggestion{})
@@ -102,6 +102,7 @@ func CreateTables() {
 func InitInformation() {
 
 	InitCategory()
+	InitDepartment()
 
 }
 

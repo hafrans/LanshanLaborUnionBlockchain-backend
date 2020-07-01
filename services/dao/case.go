@@ -50,3 +50,59 @@ func GetCaseNotPreloadModelById(id int64) (*models.Case, error) {
 	}
 
 }
+
+func GetCasePreloadedModelByCaseID(caseId string) (*models.Case, error) {
+	var model models.Case
+	result := db.Preload("Category").Preload("Form").Preload("Materials").Preload("Records").Preload("Suggestions").Where("case_id = ?", caseId).First(&model)
+	if result.Error != nil {
+		log.Println(result.Error)
+		return nil, result.Error
+	} else {
+		return &model, nil
+	}
+}
+
+func GetCaseNotPreloadedModelByCaseID(caseId string) (*models.Case, error) {
+	var model models.Case
+	result := db.Where("case_id = ?", caseId).First(&model)
+	if result.Error != nil {
+		log.Println(result.Error)
+		return nil, result.Error
+	} else {
+		return &model, nil
+	}
+}
+
+func GetCasesAllPaginatedOwnByUserId(pageNum, pageSize int, userId *int64) ([]*models.Case, int, error) {
+
+	var cases []*models.Case
+	var totalCount int
+
+	pendingDb := db.Model(&models.Case{})
+
+	if userId != nil && *userId != 0 {
+		pendingDb = pendingDb.Where("user_id = ?", userId)
+	}
+
+	result := pendingDb.Count(&totalCount).Offset(pageSize * (pageNum - 1)).Limit(pageSize).Find(&cases)
+
+	if result.Error != nil {
+		log.Println(result.Error)
+		return nil, totalCount, result.Error
+	} else {
+		return cases, 0, nil
+	}
+}
+
+func GetCasesByFormId(formId int64) ([]*models.Case, int, error) {
+
+	var cases []*models.Case
+
+	result := db.Model(&models.Case{}).Where("form_id = ? ", formId).Find(&cases)
+	if result.Error != nil {
+		log.Println(result.Error)
+		return cases, 0, result.Error
+	}else{
+		return cases, len(cases), nil
+	}
+}

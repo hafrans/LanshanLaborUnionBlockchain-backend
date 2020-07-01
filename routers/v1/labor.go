@@ -9,6 +9,7 @@ import (
 	"RizhaoLanshanLabourUnion/utils"
 	"database/sql"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 	"strconv"
 )
 
@@ -20,8 +21,8 @@ import (
 // @Success 200 {object} vo.CommonData
 // @Failure 401 {object} vo.Common "未验证"
 // @Failure 500 {object} vo.Common "服务器错误"
-// @Router /api/v1/test/labor/arbitration/template [get]
-// @Router /api/v1/test/labor/arbitration/template [post]
+// @Router /api/v1/test/labor/template [get]
+// @Router /api/v1/test/labor/template [post]
 func LaborArbitrationFormInstructor(ctx *gin.Context) {
 
 	var form vo.LaborArbitrationForm
@@ -125,7 +126,7 @@ func LaborArbitrationFormInstructor(ctx *gin.Context) {
 // @Failure 401 {object} vo.Common "未验证"
 // @Failure 422 {object} vo.Common "表单绑定失败"
 // @Failure 500 {object} vo.Common "表单绑定失败"
-// @Router /api/v1/labor/arbitration/create [post]
+// @Router /api/v1/labor/create [post]
 func CreateLaborArbitrationForm(ctx *gin.Context) {
 
 	claims := jwtmodel.ExtractUserClaimsFromGinContext(ctx)
@@ -136,11 +137,11 @@ func CreateLaborArbitrationForm(ctx *gin.Context) {
 		return
 	} else {
 		model, err := utils2.PopulateLaborArbitrationVOToModel(&form)
-		model.Owner = claims.Id
 		if err != nil {
 			ctx.JSON(respcode.HttpBindingFailed, vo.GenerateCommonResponseHead(respcode.GenericFailed, err.Error()))
 			return
 		}
+		model.Owner = claims.Id
 		model, err = dao.CreateLaborArbitration(model)
 		if err != nil {
 			ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, err.Error()))
@@ -157,7 +158,7 @@ func CreateLaborArbitrationForm(ctx *gin.Context) {
 
 // Get My Labor Arbitration Forms
 // @Summary 获取自己所有的劳动争议案件审判要素表
-// @Description 劳动争议案件审判要素表列表
+// @Description 劳动争议案件审判要素表列表，记住，只能看到自己的！！！
 // @Tags labor
 // @Accept json
 // @Produce json
@@ -165,8 +166,8 @@ func CreateLaborArbitrationForm(ctx *gin.Context) {
 // @Param pageSize query number true "页大小"
 // @Success 200 {object} vo.CommonData "正常业务处理"
 // @Failure 401 {object} vo.Common "未验证"
-// @Router /api/v1/labor/arbitration/ [get]
-func GetMyLaborArbitrationForms(ctx *gin.Context) {
+// @Router /api/v1/labor/list [get]
+func GetMyLaborArbitrationFormList(ctx *gin.Context) {
 	claims := jwtmodel.ExtractUserClaimsFromGinContext(ctx)
 
 	pageNum, err := strconv.Atoi(ctx.DefaultQuery("page", "1"))
@@ -178,6 +179,7 @@ func GetMyLaborArbitrationForms(ctx *gin.Context) {
 		pageCount = 10
 	}
 
+	// TODO 权限控制
 	list, total, err := dao.GetLaborArbitrationAllPaginatedOwnByUser(pageNum, pageCount, claims.Id)
 
 	if err != nil {
@@ -199,10 +201,10 @@ func GetMyLaborArbitrationForms(ctx *gin.Context) {
 		ctx.JSON(200, vo.CommonData{
 			Common: vo.GenerateCommonResponseHead(respcode.GenericSuccess, "success"),
 			Data: gin.H{
-				"list":  utils2.SimplifyLaborArbitrationResult(list),
-				"total": total,
-				"size":  pageCount,
-				"page":  pageNum,
+				"list":        utils2.SimplifyLaborArbitrationResult(list),
+				"total_count": total,
+				"page_count":  pageCount,
+				"page_num":    pageNum,
 			},
 		})
 	}
@@ -218,7 +220,7 @@ func GetMyLaborArbitrationForms(ctx *gin.Context) {
 // @Param id path number true "表单id"
 // @Success 200 {object} vo.CommonData "正常业务处理"
 // @Failure 401 {object} vo.Common "未验证"
-// @Router /api/v1/labor/arbitration/:id [get]
+// @Router /api/v1/labor/id/:id [get]
 func GetOneLaborArbitrationFormById(ctx *gin.Context) {
 
 	// claims := jwtmodel.ExtractUserClaimsFromGinContext(ctx)
@@ -244,4 +246,58 @@ func GetOneLaborArbitrationFormById(ctx *gin.Context) {
 
 	}
 
+}
+
+// Delete One Labor Arbitration Forms By Id
+// @Summary 删除单个劳动争议案件审判要素表
+// @Description 劳动争议案件审判要素表删除，非管理员只能删除自己的，如果有案件依赖则不可以删除
+// @Tags labor
+// @Produce json
+// @Param id path number true "表单id"
+// @Success 200 {object} vo.CommonData "正常业务处理"
+// @Failure 401 {object} vo.Common "未验证"
+// @Router /api/v1/labor/delete/:id [get]
+func DeleteOneLaborArbitrationFormById(ctx *gin.Context) {
+
+	_ = jwtmodel.ExtractUserClaimsFromGinContext(ctx)
+
+	if formId, err := strconv.Atoi(ctx.Param("id")); err != nil {
+		ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "非法ID"))
+		return
+	} else {
+
+		_, caseCount, err := dao.GetCasesByFormId(int64(formId))
+
+		if err != nil {
+			ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "其他错误"))
+			return
+		}
+
+		if caseCount > 0 { // 说明有依赖
+			ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "有调解案件依赖该表单"))
+			return
+		}
+
+		_, err = dao.GetLaborArbitrationById(int64(formId)) // 先获取有没有这个form
+		if err != nil {
+			if err == gorm.ErrRecordNotFound { // record not found
+				ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "该表单不存在"))
+				return
+			} else {
+				ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, err.Error()))
+				return
+			}
+		} else {
+			// 可以删除了
+			// TODO 在这里检查权限
+
+			if dao.DeleteLaborArbitrationById(int64(formId)) {
+				ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericSuccess, "删除成功"))
+			} else {
+				ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "删除失败"))
+			}
+			return
+		}
+
+	}
 }

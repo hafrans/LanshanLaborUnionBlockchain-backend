@@ -3,6 +3,7 @@ package dao
 import (
 	"RizhaoLanshanLabourUnion/services/models"
 	"errors"
+	"github.com/jinzhu/gorm"
 	"log"
 )
 
@@ -80,7 +81,7 @@ func GetLaborArbitrationAllPaginated(pageNum, pageCount int) ([]*models.LaborArb
 		pageNum = 0
 	}
 	totalCounts := 0
-	result := db.Model(&models.LaborArbitration{}).Count(&totalCounts).Limit(pageCount).Offset(pageCount * ( pageNum - 1)).Find(&labors)
+	result := db.Model(&models.LaborArbitration{}).Count(&totalCounts).Limit(pageCount).Offset(pageCount * (pageNum - 1)).Find(&labors)
 
 	if result.Error != nil {
 		log.Println(result.Error)
@@ -97,7 +98,14 @@ func GetLaborArbitrationAllPaginatedOwnByUser(pageNum, pageCount int, userId int
 		pageNum = 0
 	}
 	totalCounts := 0
-	result := db.Model(&models.LaborArbitration{}).Where("Owner = ?" , userId).Count(&totalCounts).Limit(pageCount).Offset(pageCount * ( pageNum - 1)).Find(&labors)
+
+	var result *gorm.DB
+
+	if userId != 0 {
+		result = db.Model(&models.LaborArbitration{}).Where("Owner = ?", userId).Count(&totalCounts).Limit(pageCount).Offset(pageCount * (pageNum - 1)).Find(&labors)
+	} else {
+		result = db.Model(&models.LaborArbitration{}).Count(&totalCounts).Limit(pageCount).Offset(pageCount * (pageNum - 1)).Find(&labors)
+	}
 
 	if result.Error != nil {
 		log.Println(result.Error)
@@ -107,4 +115,3 @@ func GetLaborArbitrationAllPaginatedOwnByUser(pageNum, pageCount int, userId int
 		return labors, totalCounts, nil
 	}
 }
-

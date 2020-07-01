@@ -1,12 +1,16 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 const (
 	USER_TYPE_ADMIN = 1
 	USER_TYPE_LABOR = 2
 	USER_TYPE_FIRM  = 3
 )
+
+
 
 type User struct {
 	Model
@@ -19,11 +23,19 @@ type User struct {
 	Activated     bool       `json:"active" gorm:"not null"`
 	LastLoginTime *time.Time `json:"last_login"`
 	Roles         []*Role    `json:"-" gorm:"many2many:user_role"`
-	UserType      int        `json:"user_type" gorm:"size:1;not null"`
+
+	UserType    int         `json:"user_type" gorm:"size:1;not null"` // 约定使用UserProfile中的某些字段
+	UserProfile UserProfile `json:"user_profile"`
+
+	Department   Department `json:"department"` // 工会等用户
+	DepartmentID *int64      `json:"-"`
 }
 
 type UserProfile struct {
 	Model
+	UserID int64
+	Applicant
+	Employer
 }
 
 type Department struct {

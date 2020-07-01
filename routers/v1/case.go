@@ -9,6 +9,7 @@ import (
 	utils2 "RizhaoLanshanLabourUnion/utils"
 	"database/sql"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 	"log"
 	"strconv"
 )
@@ -61,6 +62,27 @@ func CreateNewCaseByApplicant(ctx *gin.Context) {
 
 	newCase := utils.PopulateCaseBasicFromFormToModel(&form, claims.Id, "371100")
 
+	// check form exists or else
+
+	laborForm, err := dao.GetLaborArbitrationById(newCase.FormID)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "表单不存在"))
+			return
+		} else {
+			ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, err.Error()))
+			return
+		}
+	}
+
+	// 是否这个表单属于自己
+
+	if laborForm.Owner != claims.Id { // 不是自己的表单
+		log.Println("有人使用他人表单" + strconv.Itoa(int(laborForm.Owner)) + "," + strconv.Itoa(int(claims.Id)))
+		ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "表单不存在"))
+		return
+	}
+
 	model, err := dao.CreateCase(newCase)
 
 	if err != nil {
@@ -105,13 +127,13 @@ func CreateNewCaseByApplicant(ctx *gin.Context) {
 func GetCaseFirstSubmitFormTemplate(ctx *gin.Context) {
 
 	s := new(vo.CaseFirstSubmitForm)
-	marr := make([]*vo.Material,0,2)
+	marr := make([]*vo.Material, 0, 2)
 	path := "/test/1.png"
-	marr = append(marr, &vo.Material{Path: &path ,Name:"欠条"})
-	marr = append(marr, &vo.Material{Path: &path ,Name:"老合同"})
+	marr = append(marr, &vo.Material{Path: &path, Name: "欠条"})
+	marr = append(marr, &vo.Material{Path: &path, Name: "老合同"})
 	s.Materials = marr
-	s.Applicant = vo.Applicant{Name: "张三",Contact: "10086",Address: "三体星",Nationality: "三体人",IdentityNumber: "1234567890123456789",Birthday: utils2.NowDateDay()}
-	s.Respondent = vo.Employer{Name: "第三红岸基地",Address: "地球",Contact: "10010",UniformSocialCreditCode: "1234567889456123",LegalRepresentative: "李四"}
+	s.Applicant = vo.Applicant{Name: "张三", Contact: "10086", Address: "三体星", Nationality: "三体人", IdentityNumber: "1234567890123456789", Birthday: utils2.NowDateDay()}
+	s.Respondent = vo.Employer{Name: "第三红岸基地", Address: "地球", Contact: "10010", UniformSocialCreditCode: "1234567889456123", LegalRepresentative: "李四"}
 	s.Content = "一场简单的劳动纠纷"
 	s.Title = "劳动纠纷2001"
 	s.FormID = 1
@@ -125,33 +147,121 @@ func GetCaseFirstSubmitFormTemplate(ctx *gin.Context) {
 
 // Get Case By ID
 // @Summary 通过ID（主键）获取case
-// @Description 获取单一Case
+// @Description 获取单一Case， 例子：9
 // @Tags case
 // @Produce json
 // @Success 200 {object} vo.CommonData "成功"
 // @Failure 401 {object} vo.Common "没有认证"
 // @Router /api/v1/test/case/id/:id [get]
-func GetCaseById(ctx *gin.Context){
+func GetCaseById(ctx *gin.Context) {
 
-	if id,err := strconv.Atoi(ctx.Param("id")); err != nil{
+	if id, err := strconv.Atoi(ctx.Param("id")); err != nil {
 		log.Println(err.Error())
-		ctx.JSON(200,vo.GenerateCommonResponseHead(respcode.GenericFailed, "invalid id"))
+		ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "invalid id"))
 		return
-	}else{
+	} else {
 		cases, cErr := dao.GetCasePreloadedModelById(int64(id))
-		if cErr != nil{
+		if cErr != nil {
 			if cErr == sql.ErrNoRows {
-				ctx.JSON(200,vo.GenerateCommonResponseHead(respcode.GenericFailed, "记录不存在"))
+				ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "记录不存在"))
 				return
-			}else{
-				ctx.JSON(200,vo.GenerateCommonResponseHead(respcode.GenericFailed, cErr.Error()))
+			} else {
+				ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, cErr.Error()))
 				return
 			}
 		}
-		ctx.JSON(200,vo.CommonData{
-			Common:vo.GenerateCommonResponseHead(respcode.GenericSuccess,"success"),
-			Data:utils.PopulateCaseFullModelToFullForm(cases),
+		ctx.JSON(200, vo.CommonData{
+			Common: vo.GenerateCommonResponseHead(respcode.GenericSuccess, "success"),
+			Data:   utils.PopulateCaseFullModelToFullForm(cases),
 		})
+	}
+
+}
+
+// Get Case By Case ID
+// @Summary 通过Case ID（调解申请号）获取case
+// @Description 获取单一Case，通过CaseID 例子：3711002020063019254015935163407436142
+// @Tags case
+// @Produce json
+// @Success 200 {object} vo.CommonData "成功"
+// @Failure 401 {object} vo.Common "没有认证"
+// @Router /api/v1/test/case/caseId/:caseId [get]
+func GetCaseByCaseID(ctx *gin.Context) {
+
+	caseId := ctx.Param("caseId")
+
+	cases, err := dao.GetCasePreloadedModelByCaseID(caseId)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "记录不存在"))
+			return
+		} else {
+			ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, err.Error()))
+			return
+		}
+	}
+
+	ctx.JSON(200, vo.CommonData{
+		Common: vo.GenerateCommonResponseHead(respcode.GenericSuccess, "success"),
+		Data:   utils.PopulateCaseFullModelToFullForm(cases),
+	})
+
+}
+
+// Get Case list
+// @Summary 获取所有的案件
+// @Description 获取所有的案件，非管理员只能看到自己的，管理员能看到全部人的
+// @Tags labor
+// @Accept json
+// @Produce json
+// @Param page query number true "页码"
+// @Param pageSize query number true "页大小"
+// @Success 200 {object} vo.CommonData "正常业务处理"
+// @Failure 401 {object} vo.Common "未验证"
+// @Router /api/v1/case/ [get]
+func GetCaseList(ctx *gin.Context) {
+
+	claims := jwtmodel.ExtractUserClaimsFromGinContext(ctx)
+
+	pageNum, err := strconv.Atoi(ctx.DefaultQuery("page", "1"))
+	if err != nil || pageNum < 1 {
+		pageNum = 1
+	}
+	pageCount, err := strconv.Atoi(ctx.DefaultQuery("pageSize", "10"))
+	if err != nil || pageCount < 1 {
+		pageCount = 10
+	}
+
+	// TODO 加上权限控制
+
+	model, totalCount, err := dao.GetCasesAllPaginatedOwnByUserId(pageNum, pageCount, &claims.Id)
+
+	if err == nil {
+		list := utils.SimplyCaseListItem(model)
+
+		ctx.JSON(respcode.HttpOK, vo.CommonData{
+			Common: vo.GenerateCommonResponseHead(respcode.GenericSuccess, "success"),
+			Data: gin.H{
+				"list":        list,
+				"total_count": totalCount,
+				"page_count":  pageCount,
+				"page_num":    pageNum,
+			},
+		})
+	} else {
+		if err == sql.ErrNoRows {
+			ctx.JSON(respcode.HttpOK, vo.CommonData{
+				Common: vo.GenerateCommonResponseHead(respcode.GenericSuccess, "数据为空"),
+				Data: gin.H{
+					"list":        []interface{}{},
+					"total_count": totalCount,
+					"page_count":  pageCount,
+					"page_num":    pageNum,
+				},
+			})
+		} else {
+			ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, err.Error()))
+		}
 	}
 
 }

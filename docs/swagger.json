@@ -48,6 +48,58 @@
                 }
             }
         },
+        "/api/auth/labor/register": {
+            "post": {
+                "description": "劳动者账户申请",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "劳动者 账户申请",
+                "parameters": [
+                    {
+                        "description": "请求",
+                        "name": "email",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.UserRegisterLaborForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "正常业务处理",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    },
+                    "401": {
+                        "description": "未验证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    },
+                    "422": {
+                        "description": "表单绑定失败",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    },
+                    "500": {
+                        "description": "表单绑定失败",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
         "/api/auth/login": {
             "post": {
                 "description": "用户登录并获得token以及失效日期",
@@ -162,6 +214,51 @@
                 }
             }
         },
+        "/api/v1/case/": {
+            "get": {
+                "description": "获取所有的案件，非管理员只能看到自己的，管理员能看到全部人的",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "labor"
+                ],
+                "summary": "获取所有的案件",
+                "parameters": [
+                    {
+                        "type": "number",
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "页大小",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "正常业务处理",
+                        "schema": {
+                            "$ref": "#/definitions/vo.CommonData"
+                        }
+                    },
+                    "401": {
+                        "description": "未验证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/case/create": {
             "post": {
                 "description": "由申请人填写创建新调解案件",
@@ -235,90 +332,7 @@
                 }
             }
         },
-        "/api/v1/labor/arbitration/": {
-            "get": {
-                "description": "劳动争议案件审判要素表列表",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "labor"
-                ],
-                "summary": "获取自己所有的劳动争议案件审判要素表",
-                "parameters": [
-                    {
-                        "type": "number",
-                        "description": "页码",
-                        "name": "page",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "number",
-                        "description": "页大小",
-                        "name": "pageSize",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "正常业务处理",
-                        "schema": {
-                            "$ref": "#/definitions/vo.CommonData"
-                        }
-                    },
-                    "401": {
-                        "description": "未验证",
-                        "schema": {
-                            "$ref": "#/definitions/vo.Common"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/labor/arbitration/:id": {
-            "get": {
-                "description": "劳动争议案件审判要素表获取，非管理员只能看自己的。",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "labor"
-                ],
-                "summary": "获取指定劳动争议案件审判要素表列表",
-                "parameters": [
-                    {
-                        "type": "number",
-                        "description": "表单id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "正常业务处理",
-                        "schema": {
-                            "$ref": "#/definitions/vo.CommonData"
-                        }
-                    },
-                    "401": {
-                        "description": "未验证",
-                        "schema": {
-                            "$ref": "#/definitions/vo.Common"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/labor/arbitration/create": {
+        "/api/v1/labor/create": {
             "post": {
                 "description": "劳动争议案件审判要素表新建",
                 "consumes": [
@@ -370,9 +384,153 @@
                 }
             }
         },
+        "/api/v1/labor/delete/:id": {
+            "get": {
+                "description": "劳动争议案件审判要素表删除，非管理员只能删除自己的，如果有案件依赖则不可以删除",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "labor"
+                ],
+                "summary": "删除单个劳动争议案件审判要素表",
+                "parameters": [
+                    {
+                        "type": "number",
+                        "description": "表单id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "正常业务处理",
+                        "schema": {
+                            "$ref": "#/definitions/vo.CommonData"
+                        }
+                    },
+                    "401": {
+                        "description": "未验证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/labor/id/:id": {
+            "get": {
+                "description": "劳动争议案件审判要素表获取，非管理员只能看自己的。",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "labor"
+                ],
+                "summary": "获取指定劳动争议案件审判要素表列表",
+                "parameters": [
+                    {
+                        "type": "number",
+                        "description": "表单id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "正常业务处理",
+                        "schema": {
+                            "$ref": "#/definitions/vo.CommonData"
+                        }
+                    },
+                    "401": {
+                        "description": "未验证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/labor/list": {
+            "get": {
+                "description": "劳动争议案件审判要素表列表，记住，只能看到自己的！！！",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "labor"
+                ],
+                "summary": "获取自己所有的劳动争议案件审判要素表",
+                "parameters": [
+                    {
+                        "type": "number",
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "页大小",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "正常业务处理",
+                        "schema": {
+                            "$ref": "#/definitions/vo.CommonData"
+                        }
+                    },
+                    "401": {
+                        "description": "未验证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/test/case/caseId/:caseId": {
+            "get": {
+                "description": "获取单一Case，通过CaseID 例子：3711002020063019254015935163407436142",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "case"
+                ],
+                "summary": "通过Case ID（调解申请号）获取case",
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/vo.CommonData"
+                        }
+                    },
+                    "401": {
+                        "description": "没有认证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/test/case/id/:id": {
             "get": {
-                "description": "获取单一Case",
+                "description": "获取单一Case， 例子：9",
                 "produces": [
                     "application/json"
                 ],
@@ -423,7 +581,7 @@
                 }
             }
         },
-        "/api/v1/test/labor/arbitration/template": {
+        "/api/v1/test/labor/template": {
             "post": {
                 "description": "获取劳动争议表单模板",
                 "produces": [
@@ -629,6 +787,33 @@
                 }
             }
         },
+        "models.Department": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "description": "创建日期，提交表单时不要上传该信息",
+                    "type": "string"
+                },
+                "deleted_at": {
+                    "description": "删除日期 提交表单时不要上传该信息",
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "description": "模型ID，提交表单时不要上传该信息",
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "description": "更新日期，提交表单时不要上传该信息",
+                    "type": "string"
+                }
+            }
+        },
         "models.User": {
             "type": "object",
             "properties": {
@@ -642,6 +827,11 @@
                 "deleted_at": {
                     "description": "删除日期 提交表单时不要上传该信息",
                     "type": "string"
+                },
+                "department": {
+                    "description": "工会等用户",
+                    "type": "object",
+                    "$ref": "#/definitions/models.Department"
                 },
                 "email": {
                     "type": "string"
@@ -666,7 +856,12 @@
                     "description": "更新日期，提交表单时不要上传该信息",
                     "type": "string"
                 },
+                "user_profile": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.UserProfile"
+                },
                 "user_type": {
+                    "description": "约定使用UserProfile中的某些字段",
                     "type": "integer"
                 },
                 "username": {
@@ -677,12 +872,56 @@
         "models.UserProfile": {
             "type": "object",
             "properties": {
+                "applicant_address": {
+                    "description": "地址",
+                    "type": "string"
+                },
+                "applicant_birth": {
+                    "description": "生日",
+                    "type": "string"
+                },
+                "applicant_contact": {
+                    "description": "联系方式",
+                    "type": "string"
+                },
+                "applicant_id": {
+                    "description": "身份证号",
+                    "type": "string"
+                },
+                "applicant_name": {
+                    "description": "Model\n姓名",
+                    "type": "string"
+                },
+                "applicant_nationality": {
+                    "description": "民族",
+                    "type": "string"
+                },
                 "created_at": {
                     "description": "创建日期，提交表单时不要上传该信息",
                     "type": "string"
                 },
                 "deleted_at": {
                     "description": "删除日期 提交表单时不要上传该信息",
+                    "type": "string"
+                },
+                "employer_address": {
+                    "description": "地址",
+                    "type": "string"
+                },
+                "employer_contact": {
+                    "description": "联系方式",
+                    "type": "string"
+                },
+                "employer_faren": {
+                    "description": "法人",
+                    "type": "string"
+                },
+                "employer_name": {
+                    "description": "Model\n公司名",
+                    "type": "string"
+                },
+                "employer_uscc": {
+                    "description": "识别号",
                     "type": "string"
                 },
                 "id": {
@@ -692,6 +931,9 @@
                 "updated_at": {
                     "description": "更新日期，提交表单时不要上传该信息",
                     "type": "string"
+                },
+                "userID": {
+                    "type": "integer"
                 }
             }
         },
@@ -1219,6 +1461,35 @@
                 }
             }
         },
+        "vo.UserRegisterLaborForm": {
+            "type": "object",
+            "required": [
+                "applicant",
+                "confirm_password",
+                "password",
+                "phone",
+                "username"
+            ],
+            "properties": {
+                "applicant": {
+                    "type": "object",
+                    "$ref": "#/definitions/vo.Applicant"
+                },
+                "confirm_password": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string",
+                    "example": "13800138000"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "vo.UserUpdateInfo": {
             "type": "object",
             "required": [
@@ -1232,7 +1503,7 @@
                 },
                 "phone": {
                     "type": "string",
-                    "example": "test@gov.cn"
+                    "example": "13800138000"
                 }
             }
         }

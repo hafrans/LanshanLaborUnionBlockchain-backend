@@ -80,12 +80,6 @@ type Case struct {
 	CategoryID int64    `json:"-"` // 争议类型
 	Category   Category `json:"category"`
 
-	//Applicant   Applicant `json:"applicant"` // 申请人
-	//ApplicantId int64     `json:"-"`
-	//
-	//Respondent   Employer `json:"respondent" gorm:"foreignkey:RespondentID"` // 被申请用工单位
-	//RespondentId int64    `json:"-"`
-
 	Applicant // 申请人
 
 	Employer // 用工单位
