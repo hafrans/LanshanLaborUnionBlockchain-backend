@@ -146,6 +146,13 @@ definitions:
       applicant_nationality:
         description: 民族
         type: string
+    required:
+    - applicant_address
+    - applicant_birth
+    - applicant_contact
+    - applicant_id
+    - applicant_name
+    - applicant_nationality
     type: object
   vo.CaseFirstSubmitForm:
     properties:
@@ -224,6 +231,12 @@ definitions:
       employer_uscc:
         description: 识别号
         type: string
+    required:
+    - employer_address
+    - employer_contact
+    - employer_faren
+    - employer_name
+    - employer_uscc
     type: object
   vo.LaborArbitrationForm:
     properties:
@@ -619,7 +632,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: 用人单位账户申请
+      description: 用人单位账户注册
       parameters:
       - description: 请求
         in: body
@@ -646,14 +659,15 @@ paths:
           description: 表单绑定失败
           schema:
             $ref: '#/definitions/vo.Common'
-      summary: 用人单位 账户申请
+      summary: 用人单位 账户注册
       tags:
       - user
+      - register
   /api/auth/labor/register:
     post:
       consumes:
       - application/json
-      description: 劳动者账户申请
+      description: 劳动者账户注册
       parameters:
       - description: 请求
         in: body
@@ -680,9 +694,10 @@ paths:
           description: 表单绑定失败
           schema:
             $ref: '#/definitions/vo.Common'
-      summary: 劳动者 账户申请
+      summary: 劳动者 账户注册
       tags:
       - user
+      - register
   /api/auth/login:
     post:
       consumes:

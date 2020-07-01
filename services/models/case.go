@@ -54,6 +54,10 @@ type Record struct {
 	CaseID string `json:"case_id"`
 	// 截图/材料等地址
 	Path string `json:"record_path"`
+
+	// 谁录入的笔录
+	UserID int64 `json:"-"`
+	User   *User `json:"user,omitempty"`
 }
 
 // 部门调解意见
@@ -65,6 +69,10 @@ type Suggestion struct {
 	Content string `json:"suggestion_content"`
 	// caseID， 新建表单时不要上传该信息
 	CaseID string `json:"case_id"`
+
+	// 谁录入的笔录
+	UserID int64 `json:"-"`
+	User   *User `json:"user,omitempty"`
 }
 
 // 案件 many to many

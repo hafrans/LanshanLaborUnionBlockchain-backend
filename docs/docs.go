@@ -67,7 +67,7 @@ var doc = `{
         },
         "/api/auth/employer/register": {
             "post": {
-                "description": "用人单位账户申请",
+                "description": "用人单位账户注册",
                 "consumes": [
                     "application/json"
                 ],
@@ -75,9 +75,10 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "user",
+                    "register"
                 ],
-                "summary": "用人单位 账户申请",
+                "summary": "用人单位 账户注册",
                 "parameters": [
                     {
                         "description": "请求",
@@ -119,7 +120,7 @@ var doc = `{
         },
         "/api/auth/labor/register": {
             "post": {
-                "description": "劳动者账户申请",
+                "description": "劳动者账户注册",
                 "consumes": [
                     "application/json"
                 ],
@@ -127,9 +128,10 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "user",
+                    "register"
                 ],
-                "summary": "劳动者 账户申请",
+                "summary": "劳动者 账户注册",
                 "parameters": [
                     {
                         "description": "请求",
@@ -1034,6 +1036,14 @@ var doc = `{
         },
         "vo.Applicant": {
             "type": "object",
+            "required": [
+                "applicant_address",
+                "applicant_birth",
+                "applicant_contact",
+                "applicant_id",
+                "applicant_name",
+                "applicant_nationality"
+            ],
             "properties": {
                 "applicant_address": {
                     "description": "地址",
@@ -1145,6 +1155,13 @@ var doc = `{
         },
         "vo.Employer": {
             "type": "object",
+            "required": [
+                "employer_address",
+                "employer_contact",
+                "employer_faren",
+                "employer_name",
+                "employer_uscc"
+            ],
             "properties": {
                 "employer_address": {
                     "description": "地址",

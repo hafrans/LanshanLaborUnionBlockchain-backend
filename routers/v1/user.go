@@ -127,9 +127,9 @@ func UpdateUserInfo(ctx *gin.Context) {
 }
 
 // Labor User Register
-// @Summary 劳动者 账户申请
-// @Description 劳动者账户申请
-// @Tags user
+// @Summary 劳动者 账户注册
+// @Description 劳动者账户注册
+// @Tags user,register
 // @Accept json
 // @Produce json
 // @Param email body vo.UserRegisterLaborForm true  "请求"
@@ -179,11 +179,10 @@ func RegisterNewLaborUser(ctx *gin.Context) {
 
 }
 
-
 // Employer User Register
-// @Summary 用人单位 账户申请
-// @Description 用人单位账户申请
-// @Tags user
+// @Summary 用人单位 账户注册
+// @Description 用人单位账户注册
+// @Tags user,register
 // @Accept json
 // @Produce json
 // @Param email body vo.UserRegisterEmployerForm true  "请求"
@@ -231,4 +230,3 @@ func RegisterNewEmployerUser(ctx *gin.Context) {
 	}
 
 }
-

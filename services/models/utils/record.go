@@ -19,6 +19,7 @@ func PopulateRecordFromModelToVO(model *models.Record) *vo.Record {
 		ID:   model.ID,
 		Path: model.Path,
 		Name: model.Name,
+		Submitter: model.User.UserName,
 	}
 }
 

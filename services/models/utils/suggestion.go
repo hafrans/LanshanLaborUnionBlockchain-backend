@@ -19,6 +19,7 @@ func PopulateSuggestionFromModelToVO(model *models.Suggestion) *vo.Suggestion {
 		ID:   model.ID,
 		Department: model.Department,
 		Content: model.Content,
+		Submitter: model.User.UserName,
 	}
 }
 

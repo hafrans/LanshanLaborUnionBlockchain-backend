@@ -49,6 +49,7 @@ type Material struct {
 	Name string `json:"name" binding:"required"`
 	// 材料资源path
 	Path *string `json:"path" binding:"omitempty"`
+
 }
 
 // 调解笔录
@@ -60,6 +61,9 @@ type Record struct {
 
 	// 截图/材料等地址
 	Path string `json:"record_path"`
+
+	// 录入人
+	Submitter string `json:"submitter"`
 }
 
 // 部门调解意见
@@ -70,6 +74,9 @@ type Suggestion struct {
 	Department string `json:"suggestion_department"`
 	// 意见
 	Content string `json:"suggestion_content"`
+
+	// 录入人
+	Submitter string `json:"submitter"`
 }
 
 type CaseFirstSubmitForm struct {
