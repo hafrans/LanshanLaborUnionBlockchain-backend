@@ -3,6 +3,7 @@ package v1
 import (
 	"RizhaoLanshanLabourUnion/security/jwt/jwtmodel"
 	"RizhaoLanshanLabourUnion/services/dao"
+	"RizhaoLanshanLabourUnion/services/models"
 	"RizhaoLanshanLabourUnion/services/models/utils"
 	"RizhaoLanshanLabourUnion/services/respcode"
 	"RizhaoLanshanLabourUnion/services/vo"
@@ -152,7 +153,7 @@ func GetCaseFirstSubmitFormTemplate(ctx *gin.Context) {
 // @Produce json
 // @Success 200 {object} vo.CommonData "成功"
 // @Failure 401 {object} vo.Common "没有认证"
-// @Router /api/v1/test/case/id/:id [get]
+// @Router /api/v1/case/id/:id [get]
 func GetCaseById(ctx *gin.Context) {
 
 	if id, err := strconv.Atoi(ctx.Param("id")); err != nil {
@@ -185,7 +186,7 @@ func GetCaseById(ctx *gin.Context) {
 // @Produce json
 // @Success 200 {object} vo.CommonData "成功"
 // @Failure 401 {object} vo.Common "没有认证"
-// @Router /api/v1/test/case/caseId/:caseId [get]
+// @Router /api/v1/case/caseId/:caseId [get]
 func GetCaseByCaseID(ctx *gin.Context) {
 
 	caseId := ctx.Param("caseId")
@@ -262,6 +263,57 @@ func GetCaseList(ctx *gin.Context) {
 		} else {
 			ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, err.Error()))
 		}
+	}
+
+}
+
+// Delete Case By ID
+// @Summary 通过 ID（调解案件ID，不是case_id）删除case
+// @Description 删除单一Case，一般用户只可以删除自己的，特殊权限者可以删除任何人的，注意：如果案件正在处理中，则无法删除
+// @Tags case
+// @Produce json
+// @Success 200 {object} vo.CommonData "成功"
+// @Failure 401 {object} vo.Common "没有认证"
+// @Router /api/v1/case/delete/:id [get]
+func DeleteCaseById(ctx *gin.Context) {
+
+	claims := jwtmodel.ExtractUserClaimsFromGinContext(ctx)
+
+	if id, err := strconv.Atoi(ctx.Param("id")); err != nil {
+		log.Println(err.Error())
+		ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "invalid id"))
+	} else {
+		cases, cErr := dao.GetCaseNotPreloadModelById(int64(id))
+		if cErr != nil {
+			if cErr == sql.ErrNoRows {
+				ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "记录不存在"))
+				return
+			} else {
+				ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, cErr.Error()))
+				return
+			}
+		}
+
+		// TODO 检查是否是管理员，是管理员就能删除其他人的
+
+		// TODO 如果案件在处理，则无法删除
+		if cases.Status != models.StatusSubmitted && cases.Status != models.StatusCompleted {
+			ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericSuccess, "该案件正在处理中，无法删除"))
+			return
+		}
+
+		if cases.UserID == claims.Id {
+			// 执行删除
+			if dao.DeleteCaseById(cases.ID) {
+				ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericSuccess, "删除成功"))
+			} else {
+				ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "删除失败"))
+			}
+
+		} else {
+			ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "删除失败,您没有删除该案件的权限"))
+		}
+
 	}
 
 }

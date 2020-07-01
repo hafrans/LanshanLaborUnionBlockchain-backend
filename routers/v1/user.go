@@ -154,6 +154,7 @@ func RegisterNewLaborUser(ctx *gin.Context) {
 		profile.ApplicantIdentityNumber = registerForm.Applicant.IdentityNumber
 		profile.ApplicantNationality = registerForm.Applicant.Nationality
 		profile.ApplicantName = registerForm.Applicant.Name
+		
 
 		result, err := dao.CreateUserWithProfile(registerForm.Username,registerForm.Password,"",registerForm.Phone,models.USER_TYPE_LABOR,false,false,true,0,&profile)
 

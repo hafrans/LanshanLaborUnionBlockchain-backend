@@ -55,6 +55,7 @@ func InitApiV1Routers(apiV1 *gin.RouterGroup) {
 	apiCase.GET("/id/:id", v1.GetCaseById)
 	apiCase.GET("/caseId/:caseId", v1.GetCaseByCaseID)
 	apiCase.GET("/", v1.GetCaseList)
+	apiCase.GET("/delete/:id", v1.DeleteCaseById)
 
 	apiCategory := apiV1.Group("/category")
 	apiCategory.GET("/", v1.GetAllCategories)

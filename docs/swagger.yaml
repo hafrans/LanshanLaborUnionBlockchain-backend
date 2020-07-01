@@ -736,6 +736,23 @@ paths:
       summary: 获取所有的案件
       tags:
       - labor
+  /api/v1/case/caseId/:caseId:
+    get:
+      description: 获取单一Case，通过CaseID 例子：3711002020063019254015935163407436142
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/vo.CommonData'
+        "401":
+          description: 没有认证
+          schema:
+            $ref: '#/definitions/vo.Common'
+      summary: 通过Case ID（调解申请号）获取case
+      tags:
+      - case
   /api/v1/case/create:
     post:
       consumes:
@@ -764,6 +781,40 @@ paths:
           schema:
             $ref: '#/definitions/vo.Common'
       summary: 创建新调解案件
+      tags:
+      - case
+  /api/v1/case/delete/:id:
+    get:
+      description: 删除单一Case，一般用户只可以删除自己的，特殊权限者可以删除任何人的，注意：如果案件正在处理中，则无法删除
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/vo.CommonData'
+        "401":
+          description: 没有认证
+          schema:
+            $ref: '#/definitions/vo.Common'
+      summary: 通过 ID（调解案件ID，不是case_id）删除case
+      tags:
+      - case
+  /api/v1/case/id/:id:
+    get:
+      description: 获取单一Case， 例子：9
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/vo.CommonData'
+        "401":
+          description: 没有认证
+          schema:
+            $ref: '#/definitions/vo.Common'
+      summary: 通过ID（主键）获取case
       tags:
       - case
   /api/v1/category:
@@ -896,40 +947,6 @@ paths:
       summary: 获取自己所有的劳动争议案件审判要素表
       tags:
       - labor
-  /api/v1/test/case/caseId/:caseId:
-    get:
-      description: 获取单一Case，通过CaseID 例子：3711002020063019254015935163407436142
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 成功
-          schema:
-            $ref: '#/definitions/vo.CommonData'
-        "401":
-          description: 没有认证
-          schema:
-            $ref: '#/definitions/vo.Common'
-      summary: 通过Case ID（调解申请号）获取case
-      tags:
-      - case
-  /api/v1/test/case/id/:id:
-    get:
-      description: 获取单一Case， 例子：9
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 成功
-          schema:
-            $ref: '#/definitions/vo.CommonData'
-        "401":
-          description: 没有认证
-          schema:
-            $ref: '#/definitions/vo.Common'
-      summary: 通过ID（主键）获取case
-      tags:
-      - case
   /api/v1/test/case/template:
     get:
       description: 获取申请调解案件的上传模板，测试用

@@ -3,6 +3,7 @@ package dao
 import (
 	"RizhaoLanshanLabourUnion/services/models"
 	"errors"
+	"github.com/jinzhu/gorm"
 	"log"
 )
 
@@ -102,7 +103,37 @@ func GetCasesByFormId(formId int64) ([]*models.Case, int, error) {
 	if result.Error != nil {
 		log.Println(result.Error)
 		return cases, 0, result.Error
-	}else{
+	} else {
 		return cases, len(cases), nil
+	}
+}
+
+func DeleteCaseById(id int64) bool {
+
+	result := db.Model(&models.Case{}).Delete(&models.Case{}, id)
+	if result.Error != nil {
+		log.Println(result.Error)
+		if result.Error == gorm.ErrRecordNotFound {
+			return true
+		} else {
+			return false
+		}
+	} else {
+		return true
+	}
+
+}
+
+func DeleteCaseByCaseId(caseId string) bool {
+	result := db.Model(&models.Case{}).Where("caseId = ?", caseId).Delete(&models.Case{})
+	if result.Error != nil {
+		log.Println(result.Error)
+		if result.Error == gorm.ErrRecordNotFound {
+			return true
+		} else {
+			return false
+		}
+	} else {
+		return true
 	}
 }

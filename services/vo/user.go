@@ -24,14 +24,14 @@ type UserResetPassword struct {
 
 type UserUpdateInfo struct {
 	Email string `json:"email" form:"email" binding:"required,email" example:"hafrans@163.com"`
-	Phone string `json:"phone" form:"phone" binding:"required,alpha" example:"13800138000"`
+	Phone string `json:"phone" form:"phone" binding:"required,numeric" example:"13800138000"`
 }
 
 type UserRegisterLaborForm struct {
 	Username        string    `json:"username" form:"username" binding:"required,min=3,max=20"`
 	Password        string    `json:"password" form:"password" binding:"required,min=3,max=20"`
 	ConfirmPassword string    `json:"confirm_password" binding:"required,eqfield=Password"`
-	Phone           string    `json:"phone" binding:"required,alpha" example:"13800138000"`
+	Phone           string    `json:"phone" binding:"required,numeric" example:"13800138000"`
 	Applicant       Applicant `json:"applicant" binding:"required,dive"`
 }
 
@@ -39,6 +39,6 @@ type UserRegisterEmployerForm struct {
 	Username        string   `json:"username" form:"username" binding:"required,min=3,max=20"`
 	Password        string   `json:"password" form:"password" binding:"required,min=3,max=20"`
 	ConfirmPassword string   `json:"confirm_password" binding:"required,eqfield=Password"`
-	Phone           string   `json:"phone" binding:"required,alpha" example:"13800138000"`
+	Phone           string   `json:"phone" binding:"required,numeric" example:"13800138000"`
 	Employer        Employer `json:"employer" binding:"required,dive"`
 }

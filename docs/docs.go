@@ -276,6 +276,32 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/case/caseId/:caseId": {
+            "get": {
+                "description": "获取单一Case，通过CaseID 例子：3711002020063019254015935163407436142",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "case"
+                ],
+                "summary": "通过Case ID（调解申请号）获取case",
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/vo.CommonData"
+                        }
+                    },
+                    "401": {
+                        "description": "没有认证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/case/create": {
             "post": {
                 "description": "由申请人填写创建新调解案件",
@@ -315,6 +341,58 @@ var doc = `{
                     },
                     "422": {
                         "description": "绑定失败",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/case/delete/:id": {
+            "get": {
+                "description": "删除单一Case，一般用户只可以删除自己的，特殊权限者可以删除任何人的，注意：如果案件正在处理中，则无法删除",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "case"
+                ],
+                "summary": "通过 ID（调解案件ID，不是case_id）删除case",
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/vo.CommonData"
+                        }
+                    },
+                    "401": {
+                        "description": "没有认证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/case/id/:id": {
+            "get": {
+                "description": "获取单一Case， 例子：9",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "case"
+                ],
+                "summary": "通过ID（主键）获取case",
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/vo.CommonData"
+                        }
+                    },
+                    "401": {
+                        "description": "没有认证",
                         "schema": {
                             "$ref": "#/definitions/vo.Common"
                         }
@@ -512,58 +590,6 @@ var doc = `{
                     },
                     "401": {
                         "description": "未验证",
-                        "schema": {
-                            "$ref": "#/definitions/vo.Common"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/test/case/caseId/:caseId": {
-            "get": {
-                "description": "获取单一Case，通过CaseID 例子：3711002020063019254015935163407436142",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "case"
-                ],
-                "summary": "通过Case ID（调解申请号）获取case",
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/vo.CommonData"
-                        }
-                    },
-                    "401": {
-                        "description": "没有认证",
-                        "schema": {
-                            "$ref": "#/definitions/vo.Common"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/test/case/id/:id": {
-            "get": {
-                "description": "获取单一Case， 例子：9",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "case"
-                ],
-                "summary": "通过ID（主键）获取case",
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/vo.CommonData"
-                        }
-                    },
-                    "401": {
-                        "description": "没有认证",
                         "schema": {
                             "$ref": "#/definitions/vo.Common"
                         }
