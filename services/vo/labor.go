@@ -24,7 +24,7 @@ type LaborArbitrationForm struct {
 	HireDate *utils.Date `json:"hire_date" time_format:"2006-01-02" binding:"required"`
 
 	// 3.1 是否签订书面劳动合同
-	LaborContractSigned bool `json:"labor_contract_signed""`
+	LaborContractSigned bool `json:"labor_contract_signed"`
 	// 3.2 签订时间
 	LaborContractSigningTime *utils.Date `json:"labor_contract_signing_date" json:"omitempty"` // 没找到
 	// 3.3 签订次数
@@ -68,7 +68,7 @@ type LaborArbitrationForm struct {
 	// 11.1 欠发工资数
 	UnpaidWage float64 `json:"unpaid_wages"  binding:"number,gte=0"`
 	// 11.2 欠发加班费奖金
-	UnpaidOvertimeWage float64 `json:"overtime_bonus"   binding:"number,gte=0"`
+	UnpaidOvertimeWage float64 `json:"overtime_bonus" binding:"number,gte=0"`
 
 	// 12.办理社会保险及险种
 	// 12.1 是否进行社会保险
@@ -140,9 +140,9 @@ type LaborArbitrationForm struct {
 
 	// 22. 未休带薪年休假天数
 	PaidAnnualLeaveNotLeaveDay         bool `json:"paid_annual_leave_not_leave_day"`
-	PaidAnnualLeaveNotLeaveDayShould   *int `json:"should_rest"  binding:"required,number,gte=0"`   // 应休
-	PaidAnnualLeaveNotLeaveDayActual   *int `json:"real_rest" binding:"required,number,gte=0" `     // 实休
-	PaidAnnualLeaveNotLeaveDayNotLeave *int `json:"not_take_days" binding:"required,number,gte=0" ` // 未休
+	PaidAnnualLeaveNotLeaveDayShould   *int `json:"should_rest"  binding:"omitempty,number,gte=0"`   // 应休
+	PaidAnnualLeaveNotLeaveDayActual   *int `json:"real_rest" binding:"omitempty,number,gte=0" `     // 实休
+	PaidAnnualLeaveNotLeaveDayNotLeave *int `json:"not_take_days" binding:"omitempty,number,gte=0" ` // 未休
 
 	// 23. 扣除加班工资后十二个月劳动者月平均工资数额
 	NoOvertimeAvgWage      *float64       `json:"no_overtime_avg_wage"  example:"1"`
@@ -172,7 +172,6 @@ type LaborArbitrationForm struct {
 	// 30. 本表遗漏的其他项目
 	Other string `json:"other_information" form:"other_information"`
 }
-
 
 type SimplifiedLaborArbitrationResult struct {
 	ID        int64       `json:"id"`

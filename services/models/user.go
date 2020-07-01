@@ -5,12 +5,10 @@ import (
 )
 
 const (
-	USER_TYPE_ADMIN = 1
-	USER_TYPE_LABOR = 2
-	USER_TYPE_FIRM  = 3
+	USER_TYPE_ADMIN    = 1
+	USER_TYPE_LABOR    = 2
+	USER_TYPE_EMPLOYER = 3
 )
-
-
 
 type User struct {
 	Model
@@ -28,7 +26,7 @@ type User struct {
 	UserProfile UserProfile `json:"user_profile"`
 
 	Department   Department `json:"department"` // 工会等用户
-	DepartmentID *int64      `json:"-"`
+	DepartmentID *int64     `json:"-"`
 }
 
 type UserProfile struct {

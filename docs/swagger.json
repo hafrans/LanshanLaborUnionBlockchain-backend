@@ -48,6 +48,58 @@
                 }
             }
         },
+        "/api/auth/employer/register": {
+            "post": {
+                "description": "用人单位账户申请",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "用人单位 账户申请",
+                "parameters": [
+                    {
+                        "description": "请求",
+                        "name": "email",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.UserRegisterEmployerForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "正常业务处理",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    },
+                    "401": {
+                        "description": "未验证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    },
+                    "422": {
+                        "description": "表单绑定失败",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    },
+                    "500": {
+                        "description": "表单绑定失败",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
         "/api/auth/labor/register": {
             "post": {
                 "description": "劳动者账户申请",
@@ -1105,12 +1157,9 @@
                 "arbitration_time",
                 "hire_date",
                 "main",
-                "not_take_days",
                 "parties_dispute_time",
                 "payment_cycle",
                 "payment_type",
-                "real_rest",
-                "should_rest",
                 "wage"
             ],
             "properties": {
@@ -1484,6 +1533,35 @@
                 "user": {
                     "type": "object",
                     "$ref": "#/definitions/models.User"
+                }
+            }
+        },
+        "vo.UserRegisterEmployerForm": {
+            "type": "object",
+            "required": [
+                "confirm_password",
+                "employer",
+                "password",
+                "phone",
+                "username"
+            ],
+            "properties": {
+                "confirm_password": {
+                    "type": "string"
+                },
+                "employer": {
+                    "type": "object",
+                    "$ref": "#/definitions/vo.Employer"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string",
+                    "example": "13800138000"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         },

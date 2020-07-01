@@ -10,6 +10,7 @@ import (
 	"database/sql"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
+	"log"
 	"strconv"
 )
 
@@ -133,6 +134,7 @@ func CreateLaborArbitrationForm(ctx *gin.Context) {
 	var form vo.LaborArbitrationForm
 
 	if err := ctx.ShouldBindJSON(&form); err != nil {
+		log.Println(err.Error())
 		ctx.JSON(respcode.HttpBindingFailed, vo.GenerateCommonResponseHead(respcode.GenericFailed, err.Error()))
 		return
 	} else {

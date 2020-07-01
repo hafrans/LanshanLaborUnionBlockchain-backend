@@ -27,6 +27,7 @@ func InitApiAuthRouters(apiAuth *gin.RouterGroup) {
 
 	apiAuth.POST("/login", jwt.AuthMiddleWare.LoginHandler)
 	apiAuth.POST("/labor/register", v1.RegisterNewLaborUser)
+	apiAuth.POST("/employer/register", v1.RegisterNewEmployerUser)
 	apiAuth.GET("/logout", jwt.AuthMiddleWare.LogoutHandler)
 	apiAuth.GET("/refresh_token", jwt.AuthMiddleWare.RefreshHandler)
 	apiAuth.GET("/captcha/:id", v1.GetCaptcha)

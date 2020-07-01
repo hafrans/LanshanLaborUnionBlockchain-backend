@@ -9,6 +9,7 @@ import (
 	"RizhaoLanshanLabourUnion/utils"
 	"github.com/gin-gonic/gin"
 	"log"
+	"strings"
 )
 
 // GetUserInfo
@@ -125,8 +126,6 @@ func UpdateUserInfo(ctx *gin.Context) {
 
 }
 
-
-
 // Labor User Register
 // @Summary 劳动者 账户申请
 // @Description 劳动者账户申请
@@ -145,7 +144,7 @@ func RegisterNewLaborUser(ctx *gin.Context) {
 
 	if err := ctx.ShouldBindJSON(&registerForm); err != nil {
 		ctx.JSON(respcode.HttpBindingFailed, vo.GenerateCommonResponseHead(respcode.FormBindingFailed, "bind form failed"+err.Error()))
-	}else{
+	} else {
 
 		var profile models.UserProfile
 		profile.ApplicantContact = registerForm.Applicant.Contact
@@ -154,19 +153,82 @@ func RegisterNewLaborUser(ctx *gin.Context) {
 		profile.ApplicantIdentityNumber = registerForm.Applicant.IdentityNumber
 		profile.ApplicantNationality = registerForm.Applicant.Nationality
 		profile.ApplicantName = registerForm.Applicant.Name
-		
 
-		result, err := dao.CreateUserWithProfile(registerForm.Username,registerForm.Password,"",registerForm.Phone,models.USER_TYPE_LABOR,false,false,true,0,&profile)
+		result, err := dao.CreateUserWithProfile(registerForm.Username, registerForm.Password, "", registerForm.Phone, models.USER_TYPE_LABOR, false, false, true, 0, &profile)
 
 		if err != nil {
-			ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "注册失败"+err.Error()))
-		}else{
-			ctx.JSON(respcode.HttpOK,vo.CommonData{
-				Common:vo.GenerateCommonResponseHead(0,"注册成功"),
-				Data:result,
+			if strings.Contains(err.Error(), "Duplicate") {
+				if strings.Contains(err.Error(), "phone") {
+					ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "手机号已被注册"))
+				} else if strings.Contains(err.Error(), "email") {
+					ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "E-mail已被注册"))
+				} else if strings.Contains(err.Error(), "user_name") {
+					ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "用户已被已被注册"))
+				}
+			} else {
+				ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "注册失败"+err.Error()))
+			}
+		} else {
+			ctx.JSON(respcode.HttpOK, vo.CommonData{
+				Common: vo.GenerateCommonResponseHead(0, "注册成功"),
+				Data:   result,
 			})
 		}
 
 	}
 
 }
+
+
+// Employer User Register
+// @Summary 用人单位 账户申请
+// @Description 用人单位账户申请
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param email body vo.UserRegisterEmployerForm true  "请求"
+// @Success 200 {object} vo.Common "正常业务处理"
+// @Failure 401 {object} vo.Common "未验证"
+// @Failure 422 {object} vo.Common "表单绑定失败"
+// @Failure 500 {object} vo.Common "表单绑定失败"
+// @Router /api/auth/employer/register [post]
+func RegisterNewEmployerUser(ctx *gin.Context) {
+
+	var registerForm vo.UserRegisterEmployerForm
+
+	if err := ctx.ShouldBindJSON(&registerForm); err != nil {
+		ctx.JSON(respcode.HttpBindingFailed, vo.GenerateCommonResponseHead(respcode.FormBindingFailed, "bind form failed"+err.Error()))
+	} else {
+
+		var profile models.UserProfile
+		profile.EmployerContact = registerForm.Employer.Contact
+		profile.EmployerAddress = registerForm.Employer.Address
+		profile.EmployerName = registerForm.Employer.Name
+		profile.EmployerUniformSocialCreditCode = registerForm.Employer.UniformSocialCreditCode
+		profile.EmployerLegalRepresentative = registerForm.Employer.LegalRepresentative
+
+		result, err := dao.CreateUserWithProfile(registerForm.Username, registerForm.Password, "", registerForm.Phone, models.USER_TYPE_EMPLOYER, false, false, true, 0, &profile)
+
+		if err != nil {
+			if strings.Contains(err.Error(), "Duplicate") {
+				if strings.Contains(err.Error(), "phone") {
+					ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "手机号已被注册"))
+				} else if strings.Contains(err.Error(), "email") {
+					ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "E-mail已被注册"))
+				} else if strings.Contains(err.Error(), "user_name") {
+					ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "用户已被已被注册"))
+				}
+			} else {
+				ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "注册失败"+err.Error()))
+			}
+		} else {
+			ctx.JSON(respcode.HttpOK, vo.CommonData{
+				Common: vo.GenerateCommonResponseHead(0, "注册成功"),
+				Data:   result,
+			})
+		}
+
+	}
+
+}
+
