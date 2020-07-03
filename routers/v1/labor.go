@@ -3,6 +3,7 @@ package v1
 import (
 	"RizhaoLanshanLabourUnion/security/jwt/jwtmodel"
 	"RizhaoLanshanLabourUnion/services/dao"
+	"RizhaoLanshanLabourUnion/services/models"
 	utils2 "RizhaoLanshanLabourUnion/services/models/utils"
 	"RizhaoLanshanLabourUnion/services/respcode"
 	"RizhaoLanshanLabourUnion/services/vo"
@@ -231,7 +232,6 @@ func GetOneLaborArbitrationFormById(ctx *gin.Context) {
 		ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "非法ID"))
 		return
 	} else {
-
 		model, err := dao.GetLaborArbitrationById(int64(formId))
 		if err != nil {
 			ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "获取失败"))
@@ -245,9 +245,7 @@ func GetOneLaborArbitrationFormById(ctx *gin.Context) {
 			})
 			return
 		}
-
 	}
-
 }
 
 // Delete One Labor Arbitration Forms By Id
@@ -261,7 +259,8 @@ func GetOneLaborArbitrationFormById(ctx *gin.Context) {
 // @Router /api/v1/labor/delete/:id [get]
 func DeleteOneLaborArbitrationFormById(ctx *gin.Context) {
 
-	_ = jwtmodel.ExtractUserClaimsFromGinContext(ctx)
+	claims := jwtmodel.ExtractUserClaimsFromGinContext(ctx)
+	var targetModel *models.LaborArbitration
 
 	if formId, err := strconv.Atoi(ctx.Param("id")); err != nil {
 		ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "非法ID"))
@@ -280,7 +279,7 @@ func DeleteOneLaborArbitrationFormById(ctx *gin.Context) {
 			return
 		}
 
-		_, err = dao.GetLaborArbitrationById(int64(formId)) // 先获取有没有这个form
+		targetModel, err = dao.GetLaborArbitrationById(int64(formId)) // 先获取有没有这个form
 		if err != nil {
 			if err == gorm.ErrRecordNotFound { // record not found
 				ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "该表单不存在"))
@@ -292,6 +291,11 @@ func DeleteOneLaborArbitrationFormById(ctx *gin.Context) {
 		} else {
 			// 可以删除了
 			// TODO 在这里检查权限
+			if targetModel.Owner != claims.Id { // 自己能删除自己的，否则是管理员手动删
+				log.Printf("触发安全风险 %v 尝试修改 %v 的表单，id为 %v", claims.Id, targetModel.Owner, formId)
+				ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "您没有权限修改他人的表单！"))
+				return
+			}
 
 			if dao.DeleteLaborArbitrationById(int64(formId)) {
 				ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericSuccess, "删除成功"))
@@ -302,4 +306,87 @@ func DeleteOneLaborArbitrationFormById(ctx *gin.Context) {
 		}
 
 	}
+}
+
+// Update Labor Arbitration
+// @Summary 修改劳动争议案件审判要素表
+// @Description 劳动争议案件审判要素表修改，只能修改未绑定到案件的表单，已绑定到案件的，不可修改，另外，每个人只能修改自己的表单，除了管理员，其他人不可以修改
+// @Tags labor
+// @Accept json
+// @Produce json
+// @Param id path integer true "表单id"
+// @Param email body vo.LaborArbitrationForm true  "表单"
+// @Success 200 {object} vo.CommonData "正常业务处理"
+// @Failure 401 {object} vo.Common "未验证"
+// @Failure 422 {object} vo.Common "表单绑定失败"
+// @Failure 500 {object} vo.Common "表单绑定失败"
+// @Router /api/v1/labor/update/:id [post]
+func UpdateLaborArbitrationForm(ctx *gin.Context) {
+
+	claims := jwtmodel.ExtractUserClaimsFromGinContext(ctx)
+
+	var formVO vo.LaborArbitrationForm
+	var newForm *models.LaborArbitration
+	var targetForm *models.LaborArbitration
+
+	if formId, err := strconv.Atoi(ctx.Param("id")); err != nil { // 获取要更新的formID
+		ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "非法ID"))
+		return
+	} else {
+		if err := ctx.ShouldBindJSON(&formVO); err != nil { // 表单绑定失败
+			log.Println(err.Error())
+			ctx.JSON(respcode.HttpBindingFailed, vo.GenerateCommonResponseHead(respcode.GenericFailed, err.Error()))
+		} else {
+
+			newForm, err = utils2.PopulateLaborArbitrationVOToModel(&formVO)
+			if err != nil {
+				ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "表单信息迁移错误 "+err.Error()))
+				return
+			}
+
+			_, caseCount, err := dao.GetCasesByFormId(int64(formId)) // 获取该formID相关的所有case
+
+			if err != nil {
+				ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "其他错误"))
+				return
+			}
+
+			if caseCount > 0 { // 说明有依赖 ， 有依赖不能修改
+				ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "有调解案件依赖该表单，不能修改"))
+				return
+			}
+
+			targetForm, err = dao.GetLaborArbitrationById(int64(formId)) // 先获取有没有这个form 一般是有的
+
+			if err != nil {
+				if err == gorm.ErrRecordNotFound { // record not found
+					ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "该表单不存在"))
+					return
+				} else {
+					ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, err.Error()))
+					return
+				}
+			} else {
+				// 可以执行修改了
+				// TODO 在这里检查权限 RBAC
+				if targetForm.Owner != claims.Id { // 不是自己的 而且缺少管理员权限
+					log.Printf("触发安全风险 %v 尝试修改 %v 的表单，id为 %v", claims.Id, targetForm.Owner, formId)
+					ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "您没有权限修改他人的表单！"))
+					return
+				}
+
+				newForm.Model = targetForm.Model
+				newForm.Owner = targetForm.Owner
+
+				if dao.UpdateLaborArbitration(newForm) {
+					ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericSuccess, "修改成功"))
+				} else {
+					ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "修改失败"))
+				}
+				return
+			}
+		}
+
+	}
+
 }

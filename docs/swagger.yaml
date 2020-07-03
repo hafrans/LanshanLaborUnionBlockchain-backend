@@ -1014,6 +1014,45 @@ paths:
       summary: 获取自己所有的劳动争议案件审判要素表
       tags:
       - labor
+  /api/v1/labor/update/:id:
+    post:
+      consumes:
+      - application/json
+      description: 劳动争议案件审判要素表修改，只能修改未绑定到案件的表单，已绑定到案件的，不可修改，另外，每个人只能修改自己的表单，除了管理员，其他人不可以修改
+      parameters:
+      - description: 表单id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 表单
+        in: body
+        name: email
+        required: true
+        schema:
+          $ref: '#/definitions/vo.LaborArbitrationForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 正常业务处理
+          schema:
+            $ref: '#/definitions/vo.CommonData'
+        "401":
+          description: 未验证
+          schema:
+            $ref: '#/definitions/vo.Common'
+        "422":
+          description: 表单绑定失败
+          schema:
+            $ref: '#/definitions/vo.Common'
+        "500":
+          description: 表单绑定失败
+          schema:
+            $ref: '#/definitions/vo.Common'
+      summary: 修改劳动争议案件审判要素表
+      tags:
+      - labor
   /api/v1/test/case/template:
     get:
       description: 获取申请调解案件的上传模板，测试用

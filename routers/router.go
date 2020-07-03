@@ -47,6 +47,7 @@ func InitApiV1Routers(apiV1 *gin.RouterGroup) {
 
 	apiLabor := apiV1.Group("/labor")
 	apiLabor.POST("/create", v1.CreateLaborArbitrationForm)
+	apiLabor.POST("/update/:id", v1.UpdateLaborArbitrationForm)
 	apiLabor.GET("/list", v1.GetMyLaborArbitrationFormList)
 	apiLabor.GET("/id/:id", v1.GetOneLaborArbitrationFormById)
 	apiLabor.GET("/delete/:id", v1.DeleteOneLaborArbitrationFormById)

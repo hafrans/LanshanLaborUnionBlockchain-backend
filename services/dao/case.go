@@ -2,6 +2,7 @@ package dao
 
 import (
 	"RizhaoLanshanLabourUnion/services/models"
+	"database/sql"
 	"errors"
 	"github.com/jinzhu/gorm"
 	"log"
@@ -101,8 +102,13 @@ func GetCasesByFormId(formId int64) ([]*models.Case, int, error) {
 
 	result := db.Model(&models.Case{}).Where("form_id = ? ", formId).Find(&cases)
 	if result.Error != nil {
-		log.Println(result.Error)
-		return cases, 0, result.Error
+		if result.Error == sql.ErrNoRows || result.Error == gorm.ErrRecordNotFound {
+			log.Println(result.Error)
+			return cases, 0, nil
+		} else {
+			log.Println(result.Error)
+			return cases, 0, result.Error
+		}
 	} else {
 		return cases, len(cases), nil
 	}

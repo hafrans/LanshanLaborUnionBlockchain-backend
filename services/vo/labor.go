@@ -136,7 +136,7 @@ type LaborArbitrationForm struct {
 	BeforeSeverLaborRelationshipRange   [2]*utils.Date `json:"before_sever_labor_relationship_range" time_format:"2006-01-02" binding:"omitempty"`
 
 	// 21. 劳动者在本单位工作年限
-	WorkYear *int `json:"work_year" form:"work_year" binding:"number,gte=0"`
+	WorkYear *int `json:"work_year" form:"work_year" binding:"omitempty,number,gte=0"`
 
 	// 22. 未休带薪年休假天数
 	PaidAnnualLeaveNotLeaveDay         bool `json:"paid_annual_leave_not_leave_day"`

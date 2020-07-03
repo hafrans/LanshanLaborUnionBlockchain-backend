@@ -36,7 +36,7 @@ func mapTo(cfg *ini.File, section string, v interface{}){
 
 func InitSettings(){
 
-	if cfg, err := ini.Load("E:\\GolangProjects\\RizhaoLanshanLabourUnion\\conf\\conf.ini"); err == nil{
+	if cfg, err := ini.Load("conf/conf.ini"); err == nil{
 		mapTo(cfg,"database",DatabaseSettings)
 		mapTo(cfg,"jwt",JWTSettings)
 	}else{
