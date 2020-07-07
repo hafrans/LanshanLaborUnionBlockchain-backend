@@ -63,13 +63,13 @@ func GetDepartmentById(id int64) (*models.Department, error) {
 	if id <= 0 {
 		return nil, errors.New("invalid id")
 	}
-	var department *models.Department
-	result := db.FirstOrInit(department, id)
+	var department models.Department
+	result := db.First(&department, id)
 	if result.Error != nil {
 		log.Println(result.Error)
 		return nil, result.Error
 	} else {
-		return department, nil
+		return &department, nil
 	}
 }
 

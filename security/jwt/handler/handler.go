@@ -6,7 +6,6 @@ import (
 	"RizhaoLanshanLabourUnion/services/respcode"
 	"RizhaoLanshanLabourUnion/services/vo"
 	"RizhaoLanshanLabourUnion/utils"
-	"RizhaoLanshanLabourUnion/utils/captchaid"
 	"errors"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
@@ -33,13 +32,13 @@ func Authenticator(c *gin.Context) (interface{}, error) {
 	if err := c.ShouldBindJSON(&login); err == nil {
 
 		// check captcha
-		result := utils.CheckCaptcha(captchaid.CAPTCHA_ID_LOGIN,
-			login.Captcha,
-			login.CaptchaTimestamp,
-			login.CaptchaChallenge)
-		if !result {
-			return "", errors.New("验证码无效")
-		}
+		//result := utils.CheckCaptcha(captchaid.CAPTCHA_ID_LOGIN,
+		//	login.Captcha,
+		//	login.CaptchaTimestamp,
+		//	login.CaptchaChallenge)
+		//if !result {
+		//	return "", errors.New("验证码无效")
+		//}
 
 		// check login
 		user, err := dao.GetUserByPhone(login.Phone)

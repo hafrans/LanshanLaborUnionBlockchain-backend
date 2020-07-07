@@ -66,13 +66,13 @@ func GetRecordById(id int64) (*models.Record, error) {
 	if id <= 0 {
 		return nil, errors.New("invalid id")
 	}
-	var department *models.Record
-	result := db.FirstOrInit(department, id)
+	var department models.Record
+	result := db.First(&department, id)
 	if result.Error != nil {
 		log.Println(result.Error)
 		return nil, result.Error
 	} else {
-		return department, nil
+		return &department, nil
 	}
 }
 

@@ -9,6 +9,7 @@ import (
 func PopulateDepartmentFromModelToVO(model *models.Department) *vo.DepartmentVO {
 
 	return &vo.DepartmentVO{
+		ID:          model.ID,
 		Contact:     model.Contact,
 		Service:     model.Service,
 		Name:        model.Name,

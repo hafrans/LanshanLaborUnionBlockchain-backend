@@ -117,6 +117,103 @@ func CreateNewCaseByApplicant(ctx *gin.Context) {
 
 }
 
+// Update case by id
+// @Summary 修改调解案件
+// @Description 由申请人填写修改调解案件，申请人、管理员、部门人员可以修改，只可以修改案件信息，不可以修改案件状态
+// @Tags case
+// @Accept json
+// @Produce json
+// @Param id path integer true  "案件模型id，注意：不是案件号"
+// @Param case body vo.CaseFirstSubmitForm true "提交表单"
+// @Success 200 {object} vo.CommonData "成功"
+// @Failure 422 {object} vo.Common "绑定失败"
+// @Failure 401 {object} vo.Common "没有认证"
+// @Router /api/v1/case/update/:id [post]
+func UpdateCaseByApplicant(ctx *gin.Context) {
+
+	claims := jwtmodel.ExtractUserClaimsFromGinContext(ctx)
+	var form vo.CaseFirstSubmitForm
+	if id, err := strconv.Atoi(ctx.Param("id")); err != nil {
+
+		log.Println(err.Error())
+		ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "invalid id"))
+		return
+
+	} else {
+
+		if err := ctx.ShouldBindJSON(&form); err != nil {
+			log.Println(err)
+			ctx.JSON(respcode.HttpBindingFailed, vo.GenerateCommonResponseHead(respcode.GenericFailed, err.Error()))
+			return
+		}
+
+		newCase := utils.PopulateCaseBasicFromFormToModel(&form, claims.Id, "371100")
+		currentCase, err := dao.GetCaseNotPreloadModelById(int64(id))
+		newCase.Model = currentCase.Model
+		newCase.UserID = currentCase.UserID
+		newCase.CaseID = currentCase.CaseID
+		//newCase.Status = currentCase.Status // 不能修改案件状态
+
+		// check labor arbitration form exists or else
+		laborForm, err := dao.GetLaborArbitrationById(newCase.FormID)
+		if err != nil {
+			if err == gorm.ErrRecordNotFound {
+				ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "表单不存在"))
+				return
+			} else {
+				ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, err.Error()))
+				return
+			}
+		}
+
+		// 是否这个表单属于自己
+		if laborForm.Owner != claims.Id && claims.UserType != models.USER_TYPE_ADMIN && claims.UserType != models.USER_TYPE_DEPARTMENT { // 不是自己的表单，管理员和部门人员无视
+			log.Println("有人使用他人表单" + strconv.Itoa(int(laborForm.Owner)) + "," + strconv.Itoa(int(claims.Id)))
+			ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "表单不存在"))
+			return
+		}
+
+		// 检查可不可以修改该表单
+		if newCase.UserID != claims.Id && claims.UserType != models.USER_TYPE_ADMIN && claims.UserType != models.USER_TYPE_DEPARTMENT {
+			ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "您没有权限修改案件"))
+			return
+		}
+
+		if !dao.UpdateCase(newCase) {
+			ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "案件修改失败"))
+			return
+		} else {
+
+			// 删除所有Material
+			dao.DeleteUnscopedAllMaterialsByCaseId(newCase.CaseID)
+			// 注入material
+			for _, v := range form.Materials {
+				if v.Path != nil {
+					if _, mErr := dao.CreateMaterial(v.Name, *v.Path, newCase.CaseID); mErr != nil {
+						ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, mErr.Error()))
+						return
+					}
+				}
+			}
+
+			result, err := dao.GetCasePreloadedModelById(newCase.ID)
+			if err != nil {
+				ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, err.Error()))
+				return
+			} else {
+				ctx.JSON(respcode.HttpOK, vo.CommonData{
+					Common: vo.GenerateCommonResponseHead(respcode.GenericSuccess, "success"),
+					Data:   utils.PopulateCaseFullModelToFullForm(result),
+				})
+				return
+			}
+
+			// 修改成功 37110020200630134604159349596481
+		}
+	}
+
+}
+
 // Get Case First Submit Form Template
 // @Summary 获取申请调解案件的上传模板
 // @Description 获取申请调解案件的上传模板，测试用
@@ -301,8 +398,6 @@ func DeleteCaseById(ctx *gin.Context) {
 				return
 			}
 		}
-
-
 
 		// 如果案件在处理，则无法删除
 		if cases.Status != models.StatusSubmitted && cases.Status != models.StatusCompleted {

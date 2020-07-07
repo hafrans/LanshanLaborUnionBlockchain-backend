@@ -1,6 +1,7 @@
 package vo
 
 type DepartmentVO struct {
+	ID          int64  `json:"id,omitempty"`             // id
 	Name        string `json:"name" gorm:"unique_index"` // 机构、单位名称
 	Service     string `json:"service"`                  // 机构提供的服务
 	Contact     string `json:"contact"`                  // 机构联系方式

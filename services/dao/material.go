@@ -52,6 +52,20 @@ func DeleteMaterial(department *models.Material) bool {
 	}
 }
 
+func DeleteUnscopedAllMaterialsByCaseId(caseId string) bool {
+
+	result := db.Unscoped().Model(&models.Material{}).Where("case_id = ?", caseId).Delete(&models.Material{})
+
+	if result.Error != nil {
+		log.Println(result.Error)
+		return false
+	} else {
+		log.Println("delete ", result.RowsAffected, " row(s)")
+		return true
+	}
+
+}
+
 func DeleteMaterialById(id int64) bool {
 	result := db.Delete(&models.Material{}, id)
 	if result.Error != nil {

@@ -54,6 +54,7 @@ func InitApiV1Routers(apiV1 *gin.RouterGroup) {
 
 	apiCase := apiV1.Group("/case/")
 	apiCase.POST("/create", v1.CreateNewCaseByApplicant)
+	apiCase.POST("/update/:id", v1.UpdateCaseByApplicant)
 	apiCase.GET("/id/:id", v1.GetCaseById)
 	apiCase.GET("/caseId/:caseId", v1.GetCaseByCaseID)
 	apiCase.GET("/", v1.GetCaseList)
@@ -69,5 +70,8 @@ func InitApiV1Routers(apiV1 *gin.RouterGroup) {
 
 	apiDepartment := apiV1.Group("/department")
 	apiDepartment.GET("/list", v1.GetDepartmentList)
+	apiDepartment.POST("/create", v1.CreateDepartment)
+	apiDepartment.GET("/delete/:id", v1.DeleteDepartmentById)
+	apiDepartment.GET("/id/:id", v1.GetOneDepartmentById)
 
 }

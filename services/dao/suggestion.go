@@ -66,13 +66,13 @@ func GetSuggestionById(id int64) (*models.Suggestion, error) {
 	if id <= 0 {
 		return nil, errors.New("invalid id")
 	}
-	var department *models.Suggestion
-	result := db.FirstOrInit(department, id)
+	var department models.Suggestion
+	result := db.First(&department, id)
 	if result.Error != nil {
 		log.Println(result.Error)
 		return nil, result.Error
 	} else {
-		return department, nil
+		return &department, nil
 	}
 }
 

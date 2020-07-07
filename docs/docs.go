@@ -461,6 +461,59 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/case/update/:id": {
+            "post": {
+                "description": "由申请人填写修改调解案件，申请人、管理员、部门人员可以修改，只可以修改案件信息，不可以修改案件状态",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "case"
+                ],
+                "summary": "修改调解案件",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "案件模型id，注意：不是案件号",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "提交表单",
+                        "name": "case",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.CaseFirstSubmitForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/vo.CommonData"
+                        }
+                    },
+                    "401": {
+                        "description": "没有认证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    },
+                    "422": {
+                        "description": "绑定失败",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/category": {
             "get": {
                 "description": "获取所有类型",
@@ -481,6 +534,96 @@ var doc = `{
                     },
                     "401": {
                         "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/department/create": {
+            "post": {
+                "description": "创建单位，只有管理员可以使用",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "department"
+                ],
+                "summary": "创建department",
+                "responses": {
+                    "200": {
+                        "description": "正常业务处理",
+                        "schema": {
+                            "$ref": "#/definitions/vo.CommonData"
+                        }
+                    },
+                    "401": {
+                        "description": "未验证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/department/delete/:id": {
+            "get": {
+                "description": "删除单一单位，只有管理员可以操作",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "department"
+                ],
+                "summary": "通过 ID 删除 department",
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/vo.CommonData"
+                        }
+                    },
+                    "401": {
+                        "description": "没有认证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/department/id/:id": {
+            "get": {
+                "description": "获取指定单位的信息，所有人都可以使用",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "department"
+                ],
+                "summary": "获取指定单位的信息",
+                "parameters": [
+                    {
+                        "type": "number",
+                        "description": "表单id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "正常业务处理",
+                        "schema": {
+                            "$ref": "#/definitions/vo.CommonData"
+                        }
+                    },
+                    "401": {
+                        "description": "未验证",
                         "schema": {
                             "$ref": "#/definitions/vo.Common"
                         }
@@ -989,6 +1132,9 @@ var doc = `{
                 },
                 "sub": {
                     "type": "string"
+                },
+                "type": {
+                    "type": "integer"
                 }
             }
         },

@@ -42,7 +42,6 @@ func GetCasePreloadedModelById(id int64) (*models.Case, error) {
 func GetCaseNotPreloadModelById(id int64) (*models.Case, error) {
 
 	var model models.Case
-
 	result := db.First(&model, id)
 	if result.Error != nil {
 		log.Println(result.Error)
@@ -168,4 +167,19 @@ func DeleteCaseByCaseId(caseId string) bool {
 	} else {
 		return true
 	}
+}
+
+func UpdateCase(model *models.Case) bool {
+
+	result := db.Save(model)
+	if result.Error != nil {
+		log.Println(result.Error)
+		return false
+	} else if result.RowsAffected == 1 {
+		return true
+	} else {
+		log.Println(result.RowsAffected)
+		return false
+	}
+
 }
