@@ -5,14 +5,15 @@ import (
 )
 
 const (
-	USER_TYPE_ADMIN    = 1
-	USER_TYPE_LABOR    = 2
-	USER_TYPE_EMPLOYER = 3
+	USER_TYPE_ADMIN      = 1
+	USER_TYPE_LABOR      = 2
+	USER_TYPE_EMPLOYER   = 3
+	USER_TYPE_DEPARTMENT = 4
 )
 
 type User struct {
 	Model
-	UserName      string     `json:"username" gorm:"type:varchar(128);unique_index"`
+	UserName      string     `json:"username" gorm:"type:varchar(128);"`
 	Email         string     `json:"email" gorm:"type:varchar(255);unique_index"`
 	EmailChecked  bool       `json:"email_checked" gorm:"default:false"`
 	Phone         string     `json:"phone" gorm:"type:varchar(32);unique_index"`
@@ -38,6 +39,8 @@ type UserProfile struct {
 
 type Department struct {
 	Model
-	Name        string `json:"name" gorm:"unique_index"`
-	Description string `json:"description"`
+	Name        string `json:"name" gorm:"unique_index"` // 机构、单位名称
+	Service     string `json:"service"`                  // 机构提供的服务
+	Contact     string `json:"contact"`                  // 机构联系方式
+	Description string `json:"description"`              // 机构介绍
 }

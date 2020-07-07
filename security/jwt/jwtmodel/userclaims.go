@@ -9,22 +9,24 @@ import (
 )
 
 type UserClaims struct {
-	Id    int64         `json:"id"`
-	Sub   string        `json:"sub"`
-	Roles []interface{} `json:"roles"`
-	Iss   string        `json:"iss"`
-	Realm string        `json:"realm"`
+	Id       int64         `json:"id"`
+	Sub      string        `json:"sub"`
+	Roles    []interface{} `json:"roles"`
+	Iss      string        `json:"iss"`
+	Realm    string        `json:"realm"`
+	UserType int           `json:"type"`
 }
 
 func ExtractUserClaimsFromGinContext(ctx *gin.Context) *UserClaims {
 
 	claims := jwt.ExtractClaims(ctx)
 	return &UserClaims{
-		Id:    int64(claims[utils.JWTSettings.IdentityKey].(float64)),
-		Sub:   claims["sub"].(string),
-		Roles: claims["roles"].([]interface{}),
-		Iss:   claims["iss"].(string),
-		Realm: claims["realm"].(string),
+		Id:       int64(claims[utils.JWTSettings.IdentityKey].(float64)),
+		Sub:      claims["sub"].(string),
+		Roles:    claims["roles"].([]interface{}),
+		Iss:      claims["iss"].(string),
+		Realm:    claims["realm"].(string),
+		UserType: int(claims["type"].(float64)),
 	}
 }
 
@@ -41,11 +43,12 @@ func PopulateUserToUserClaims(user *models.User) *UserClaims {
 	}
 
 	return &UserClaims{
-		Id:    user.ID,
-		Sub:   user.UserName,
-		Roles: roles,
-		Iss:   "hafrans",
-		Realm: utils.JWTSettings.Realm,
+		Id:       user.ID,
+		Sub:      user.UserName,
+		Roles:    roles,
+		Iss:      "hafrans",
+		Realm:    utils.JWTSettings.Realm,
+		UserType: user.UserType,
 	}
 
 }

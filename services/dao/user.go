@@ -83,7 +83,7 @@ func CreateUserWithProfile(username, password, email, phone string, userType int
 
 func GetUserById(id int64) (*models.User, error) {
 	user := &models.User{}
-	result := db.First(user, id)
+	result := db.Preload("UserProfile").Preload("Department").First(user, id)
 	if result.Error != nil {
 		log.Println(result.Error)
 		return nil, result.Error
@@ -92,16 +92,7 @@ func GetUserById(id int64) (*models.User, error) {
 	}
 }
 
-func GetUserByUserName(username string) (*models.User, error) {
-	user := &models.User{}
-	result := db.Where("user_name = ?", username).First(user)
-	if result.Error != nil {
-		log.Println(result.Error)
-		return nil, result.Error
-	} else {
-		return user, nil
-	}
-}
+
 
 func GetUserByEmail(email string) (*models.User, error) {
 	user := &models.User{}

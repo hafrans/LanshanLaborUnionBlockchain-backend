@@ -36,6 +36,10 @@ func mapTo(cfg *ini.File, section string, v interface{}){
 
 func InitSettings(){
 
+	//TODO 部署的时候关掉
+	InitTestSetting()
+	return
+
 	if cfg, err := ini.Load("conf/conf.ini"); err == nil{
 		mapTo(cfg,"database",DatabaseSettings)
 		mapTo(cfg,"jwt",JWTSettings)
@@ -44,5 +48,15 @@ func InitSettings(){
 	}
 
 
+}
+
+
+func InitTestSetting(){
+	if cfg, err := ini.Load("E:\\GolangProjects\\RizhaoLanshanLabourUnion\\conf\\conf.ini"); err == nil{
+		mapTo(cfg,"database",DatabaseSettings)
+		mapTo(cfg,"jwt",JWTSettings)
+	}else{
+		log.Fatalln("Config Settings Load Failed "+err.Error())
+	}
 }
 

@@ -67,4 +67,7 @@ func InitApiV1Routers(apiV1 *gin.RouterGroup) {
 	apiTest.POST("/labor/template", v1.LaborArbitrationFormInstructor)
 	apiTest.GET("/case/template", v1.GetCaseFirstSubmitFormTemplate)
 
+	apiDepartment := apiV1.Group("/department")
+	apiDepartment.GET("/list", v1.GetDepartmentList)
+
 }

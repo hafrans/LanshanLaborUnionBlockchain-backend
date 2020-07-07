@@ -183,10 +183,11 @@ func SimplifyLaborArbitrationResult(list []*models.LaborArbitration) []*vo.Simpl
 		tmp := new(vo.SimplifiedLaborArbitrationResult)
 		tmp.Owner = v.Owner
 		tmp.ID = v.ID
-		d := utils.Time(v.CreatedAt)
+		d := utils.Date(v.CreatedAt)
 		tmp.CreatedAt = &d
-		t := utils.Time(v.UpdatedAt)
+		t := utils.Date(v.UpdatedAt)
 		tmp.UpdatedAt = &t
+		tmp.ApplyDate = v.LaborArbitrationDate
 
 		result = append(result, tmp)
 	}

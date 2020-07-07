@@ -186,8 +186,8 @@ var doc = `{
                 "summary": "用户登录",
                 "parameters": [
                     {
-                        "description": "用户名",
-                        "name": "username",
+                        "description": "手机号",
+                        "name": "phone",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -310,6 +310,13 @@ var doc = `{
                         "type": "number",
                         "description": "页大小",
                         "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "案件号（case id）模糊查询",
+                        "name": "search",
                         "in": "query",
                         "required": true
                     }
@@ -474,6 +481,48 @@ var doc = `{
                     },
                     "401": {
                         "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/department/list": {
+            "get": {
+                "description": "获取所有相关单位信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "department"
+                ],
+                "summary": "获取所有相关单位信息",
+                "parameters": [
+                    {
+                        "type": "number",
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "页大小",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "正常业务处理",
+                        "schema": {
+                            "$ref": "#/definitions/vo.CommonData"
+                        }
+                    },
+                    "401": {
+                        "description": "未验证",
                         "schema": {
                             "$ref": "#/definitions/vo.Common"
                         }
@@ -946,6 +995,10 @@ var doc = `{
         "models.Department": {
             "type": "object",
             "properties": {
+                "contact": {
+                    "description": "机构联系方式",
+                    "type": "string"
+                },
                 "created_at": {
                     "description": "创建日期，提交表单时不要上传该信息",
                     "type": "string"
@@ -955,6 +1008,7 @@ var doc = `{
                     "type": "string"
                 },
                 "description": {
+                    "description": "机构介绍",
                     "type": "string"
                 },
                 "id": {
@@ -962,6 +1016,11 @@ var doc = `{
                     "type": "integer"
                 },
                 "name": {
+                    "description": "机构、单位名称",
+                    "type": "string"
+                },
+                "service": {
+                    "description": "机构提供的服务",
                     "type": "string"
                 },
                 "updated_at": {
@@ -1635,8 +1694,7 @@ var doc = `{
                 "confirm_password",
                 "employer",
                 "password",
-                "phone",
-                "username"
+                "phone"
             ],
             "properties": {
                 "confirm_password": {
@@ -1647,14 +1705,12 @@ var doc = `{
                     "$ref": "#/definitions/vo.Employer"
                 },
                 "password": {
+                    "description": "Username        string   ` + "`" + `json:\"username\" form:\"username\" binding:\"required,min=3,max=20\"` + "`" + `",
                     "type": "string"
                 },
                 "phone": {
                     "type": "string",
                     "example": "13800138000"
-                },
-                "username": {
-                    "type": "string"
                 }
             }
         },
@@ -1664,8 +1720,7 @@ var doc = `{
                 "applicant",
                 "confirm_password",
                 "password",
-                "phone",
-                "username"
+                "phone"
             ],
             "properties": {
                 "applicant": {
@@ -1676,14 +1731,12 @@ var doc = `{
                     "type": "string"
                 },
                 "password": {
+                    "description": "Username        string    ` + "`" + `json:\"username\" form:\"username\" binding:\"required,min=3,max=20\"` + "`" + `",
                     "type": "string"
                 },
                 "phone": {
                     "type": "string",
                     "example": "13800138000"
-                },
-                "username": {
-                    "type": "string"
                 }
             }
         },

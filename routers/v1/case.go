@@ -217,10 +217,12 @@ func GetCaseByCaseID(ctx *gin.Context) {
 // @Produce json
 // @Param page query number true "页码"
 // @Param pageSize query number true "页大小"
+// @Param search query string true "案件号（case id）模糊查询"
 // @Success 200 {object} vo.CommonData "正常业务处理"
 // @Failure 401 {object} vo.Common "未验证"
 // @Router /api/v1/case/ [get]
 func GetCaseList(ctx *gin.Context) {
+	var err error
 
 	claims := jwtmodel.ExtractUserClaimsFromGinContext(ctx)
 
@@ -232,10 +234,16 @@ func GetCaseList(ctx *gin.Context) {
 	if err != nil || pageCount < 1 {
 		pageCount = 10
 	}
+	caseId := ctx.DefaultQuery("search", "")
 
-	// TODO 加上权限控制
+	var model []*models.Case
+	var totalCount int
 
-	model, totalCount, err := dao.GetCasesAllPaginatedOwnByUserId(pageNum, pageCount, &claims.Id)
+	if claims.UserType == models.USER_TYPE_LABOR || claims.UserType == models.USER_TYPE_EMPLOYER { // 如果是普通用户
+		model, totalCount, err = dao.GetCasesAllPaginatedByCaseId(&caseId, pageNum, pageCount, &claims.Id)
+	} else {
+		model, totalCount, err = dao.GetCasesAllPaginatedByCaseId(&caseId, pageNum, pageCount, nil)
+	}
 
 	if err == nil {
 		list := utils.SimplyCaseListItem(model)
@@ -294,15 +302,16 @@ func DeleteCaseById(ctx *gin.Context) {
 			}
 		}
 
-		// TODO 检查是否是管理员，是管理员就能删除其他人的
 
-		// TODO 如果案件在处理，则无法删除
+
+		// 如果案件在处理，则无法删除
 		if cases.Status != models.StatusSubmitted && cases.Status != models.StatusCompleted {
 			ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericSuccess, "该案件正在处理中，无法删除"))
 			return
 		}
 
-		if cases.UserID == claims.Id {
+		// 检查是否是管理员，是管理员就能删除其他人的
+		if cases.UserID == claims.Id || claims.UserType == models.USER_TYPE_ADMIN { // 如果是个人或者 管理员
 			// 执行删除
 			if dao.DeleteCaseById(cases.ID) {
 				ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericSuccess, "删除成功"))

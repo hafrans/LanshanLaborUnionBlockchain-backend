@@ -28,7 +28,7 @@ type UserUpdateInfo struct {
 }
 
 type UserRegisterLaborForm struct {
-	Username        string    `json:"username" form:"username" binding:"required,min=3,max=20"`
+	//Username        string    `json:"username" form:"username" binding:"required,min=3,max=20"`
 	Password        string    `json:"password" form:"password" binding:"required,min=3,max=20"`
 	ConfirmPassword string    `json:"confirm_password" binding:"required,eqfield=Password"`
 	Phone           string    `json:"phone" binding:"required,numeric" example:"13800138000"`
@@ -36,7 +36,7 @@ type UserRegisterLaborForm struct {
 }
 
 type UserRegisterEmployerForm struct {
-	Username        string   `json:"username" form:"username" binding:"required,min=3,max=20"`
+	//Username        string   `json:"username" form:"username" binding:"required,min=3,max=20"`
 	Password        string   `json:"password" form:"password" binding:"required,min=3,max=20"`
 	ConfirmPassword string   `json:"confirm_password" binding:"required,eqfield=Password"`
 	Phone           string   `json:"phone" binding:"required,numeric" example:"13800138000"`

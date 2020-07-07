@@ -154,7 +154,7 @@ func RegisterNewLaborUser(ctx *gin.Context) {
 		profile.ApplicantNationality = registerForm.Applicant.Nationality
 		profile.ApplicantName = registerForm.Applicant.Name
 
-		result, err := dao.CreateUserWithProfile(registerForm.Username, registerForm.Password, "", registerForm.Phone, models.USER_TYPE_LABOR, false, false, true, 0, &profile)
+		result, err := dao.CreateUserWithProfile(registerForm.Applicant.Name, registerForm.Password, "", registerForm.Phone, models.USER_TYPE_LABOR, false, false, true, 0, &profile)
 
 		if err != nil {
 			if strings.Contains(err.Error(), "Duplicate") {
@@ -162,8 +162,6 @@ func RegisterNewLaborUser(ctx *gin.Context) {
 					ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "手机号已被注册"))
 				} else if strings.Contains(err.Error(), "email") {
 					ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "E-mail已被注册"))
-				} else if strings.Contains(err.Error(), "user_name") {
-					ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "用户已被已被注册"))
 				}
 			} else {
 				ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "注册失败"+err.Error()))
@@ -206,7 +204,7 @@ func RegisterNewEmployerUser(ctx *gin.Context) {
 		profile.EmployerUniformSocialCreditCode = registerForm.Employer.UniformSocialCreditCode
 		profile.EmployerLegalRepresentative = registerForm.Employer.LegalRepresentative
 
-		result, err := dao.CreateUserWithProfile(registerForm.Username, registerForm.Password, "", registerForm.Phone, models.USER_TYPE_EMPLOYER, false, false, true, 0, &profile)
+		result, err := dao.CreateUserWithProfile(registerForm.Employer.LegalRepresentative, registerForm.Password, "", registerForm.Phone, models.USER_TYPE_EMPLOYER, false, false, true, 0, &profile)
 
 		if err != nil {
 			if strings.Contains(err.Error(), "Duplicate") {
@@ -214,8 +212,6 @@ func RegisterNewEmployerUser(ctx *gin.Context) {
 					ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "手机号已被注册"))
 				} else if strings.Contains(err.Error(), "email") {
 					ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "E-mail已被注册"))
-				} else if strings.Contains(err.Error(), "user_name") {
-					ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "用户已被已被注册"))
 				}
 			} else {
 				ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "注册失败"+err.Error()))

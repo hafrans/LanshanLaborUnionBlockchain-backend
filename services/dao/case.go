@@ -96,6 +96,32 @@ func GetCasesAllPaginatedOwnByUserId(pageNum, pageSize int, userId *int64) ([]*m
 	}
 }
 
+func GetCasesAllPaginatedByCaseId(caseId *string, pageNum, pageSize int, userId *int64) ([]*models.Case, int, error) {
+
+	var cases []*models.Case
+	var totalCount int
+
+	pendingDb := db.Model(&models.Case{})
+
+	if caseId != nil && *caseId != "" {
+		pendingDb = pendingDb.Where("case_id like ?", "%"+*caseId+"%")
+	}
+
+	if userId != nil && *userId != 0 {
+		pendingDb = pendingDb.Where("user_id = ?", userId)
+	}
+
+	result := pendingDb.Count(&totalCount).Offset(pageSize * (pageNum - 1)).Limit(pageSize).Find(&cases)
+
+	if result.Error != nil {
+		log.Println(result.Error)
+		return nil, totalCount, result.Error
+	} else {
+		return cases, 0, nil
+	}
+
+}
+
 func GetCasesByFormId(formId int64) ([]*models.Case, int, error) {
 
 	var cases []*models.Case

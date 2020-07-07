@@ -175,7 +175,8 @@ type LaborArbitrationForm struct {
 
 type SimplifiedLaborArbitrationResult struct {
 	ID        int64       `json:"id"`
-	CreatedAt *utils.Time `json:"created_at"`
-	UpdatedAt *utils.Time `json:"updated_at"`
+	CreatedAt *utils.Date `json:"created_at"`
+	UpdatedAt *utils.Date `json:"updated_at"`
 	Owner     int64       `json:"owner"`
+	ApplyDate *utils.Date `json:"apply_date"`
 }

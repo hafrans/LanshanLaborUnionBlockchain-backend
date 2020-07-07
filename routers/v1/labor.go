@@ -182,8 +182,11 @@ func GetMyLaborArbitrationFormList(ctx *gin.Context) {
 		pageCount = 10
 	}
 
-	// TODO 权限控制
-	list, total, err := dao.GetLaborArbitrationAllPaginatedOwnByUser(pageNum, pageCount, claims.Id)
+	var list []*models.LaborArbitration
+	var total int
+
+	// TODO 权限控制,暂时不用
+	list, total, err = dao.GetLaborArbitrationAllPaginatedOwnByUser(pageNum, pageCount, claims.Id)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -226,7 +229,7 @@ func GetMyLaborArbitrationFormList(ctx *gin.Context) {
 // @Router /api/v1/labor/id/:id [get]
 func GetOneLaborArbitrationFormById(ctx *gin.Context) {
 
-	// claims := jwtmodel.ExtractUserClaimsFromGinContext(ctx)
+	claims := jwtmodel.ExtractUserClaimsFromGinContext(ctx)
 
 	if formId, err := strconv.Atoi(ctx.Param("id")); err != nil {
 		ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "非法ID"))
@@ -237,13 +240,14 @@ func GetOneLaborArbitrationFormById(ctx *gin.Context) {
 			ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "获取失败"))
 			return
 		} else {
-			// TODO 在这里检查权限
-
-			ctx.JSON(respcode.HttpOK, vo.CommonData{
-				Common: vo.GenerateCommonResponseHead(respcode.GenericSuccess, "success"),
-				Data:   utils2.PopulateLaborArbitrationModelToVO(model),
-			})
-			return
+			if model.Owner == claims.Id || claims.UserType == models.USER_TYPE_ADMIN { // 是否是自己的表单，管理员无视
+				ctx.JSON(respcode.HttpOK, vo.CommonData{
+					Common: vo.GenerateCommonResponseHead(respcode.GenericSuccess, "success"),
+					Data:   utils2.PopulateLaborArbitrationModelToVO(model),
+				})
+			} else {
+				ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "您没有权限获取此内容"))
+			}
 		}
 	}
 }
@@ -289,9 +293,8 @@ func DeleteOneLaborArbitrationFormById(ctx *gin.Context) {
 				return
 			}
 		} else {
-			// 可以删除了
-			// TODO 在这里检查权限
-			if targetModel.Owner != claims.Id { // 自己能删除自己的，否则是管理员手动删
+			// 可以删除了,必须是自己的或者管理员
+			if targetModel.Owner != claims.Id && claims.UserType != models.USER_TYPE_ADMIN { // 自己能删除自己的，否则是管理员手动删
 				log.Printf("触发安全风险 %v 尝试修改 %v 的表单，id为 %v", claims.Id, targetModel.Owner, formId)
 				ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "您没有权限修改他人的表单！"))
 				return
@@ -368,8 +371,7 @@ func UpdateLaborArbitrationForm(ctx *gin.Context) {
 				}
 			} else {
 				// 可以执行修改了
-				// TODO 在这里检查权限 RBAC
-				if targetForm.Owner != claims.Id { // 不是自己的 而且缺少管理员权限
+				if targetForm.Owner != claims.Id && claims.UserType != models.USER_TYPE_ADMIN { // 不是自己的 而且缺少管理员权限
 					log.Printf("触发安全风险 %v 尝试修改 %v 的表单，id为 %v", claims.Id, targetForm.Owner, formId)
 					ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "您没有权限修改他人的表单！"))
 					return

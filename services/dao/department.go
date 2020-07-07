@@ -7,21 +7,24 @@ import (
 )
 
 func InitDepartment() {
-	CreateDepartment("[测试]莒州市总工会", "无")
-	CreateDepartment("[测试]莒州市中级人民法院", "无")
-	CreateDepartment("[测试]莒州市劳动仲裁委员会", "无")
+	CreateDepartment("[测试]莒州市总工会", "暂时无描述", "测试、调解、测试、调解", "0633-8888888")
+	CreateDepartment("[测试]莒州市中级人民法院", "暂时无描述", "测试、调解、测试、调解", "0633-7777777")
+	CreateDepartment("[测试]莒州市劳动仲裁委员会", "暂时无描述", "测试、调解、测试、调解", "0633-6666666")
+	CreateDepartment("[测试]莒州市人社局", "暂时无描述", "测试、调解、测试、调解", "0633-5555555")
 }
 
-func CreateDepartment(name, description string) (*models.Department , error){
+func CreateDepartment(name, description, service, contact string) (*models.Department, error) {
 	department := &models.Department{
-		Name: name,
+		Name:        name,
 		Description: description,
+		Service:     service,
+		Contact:     contact,
 	}
 	result := db.Create(department)
-	if result.Error != nil{
+	if result.Error != nil {
 		log.Println(result.Error)
 		return nil, result.Error
-	}else{
+	} else {
 		return department, nil
 	}
 }
@@ -46,7 +49,6 @@ func DeleteDepartment(department *models.Department) bool {
 	}
 }
 
-
 func DeleteDepartmentById(id int64) bool {
 	result := db.Delete(&models.Department{}, id)
 	if result.Error != nil {
@@ -57,16 +59,16 @@ func DeleteDepartmentById(id int64) bool {
 	}
 }
 
-func GetDepartmentById(id int64) (*models.Department, error){
-	if id <= 0{
+func GetDepartmentById(id int64) (*models.Department, error) {
+	if id <= 0 {
 		return nil, errors.New("invalid id")
 	}
 	var department *models.Department
-	result := db.FirstOrInit(department,id)
-	if result.Error != nil{
+	result := db.FirstOrInit(department, id)
+	if result.Error != nil {
 		log.Println(result.Error)
 		return nil, result.Error
-	}else{
+	} else {
 		return department, nil
 	}
 }
@@ -77,7 +79,7 @@ func GetDepartmentAllPaginated(pageNum, pageCount int) ([]*models.Department, in
 		pageNum = 0
 	}
 	totalCounts := 0
-	result := db.Limit(pageCount).Offset(pageCount * pageNum).Order("id desc").Find(&departments).Count(&totalCounts)
+	result := db.Model(&models.Department{}).Count(&totalCounts).Limit(pageCount).Offset(pageCount * (pageNum - 1)).Order("id desc").Find(&departments)
 	if result.Error != nil {
 		log.Println(result.Error)
 		return nil, 0, result.Error
@@ -86,8 +88,7 @@ func GetDepartmentAllPaginated(pageNum, pageCount int) ([]*models.Department, in
 	}
 }
 
-
-func GetDepartmentAllLikedNamePaginated(name string, pageNum, pageCount int) ([]*models.Department, int, error){
+func GetDepartmentAllLikedNamePaginated(name string, pageNum, pageCount int) ([]*models.Department, int, error) {
 	var departments []*models.Department
 	if pageNum < 0 {
 		pageNum = 0
