@@ -17,7 +17,7 @@ import (
 )
 
 // @title 岚山区劳动争议调解区块链平台
-// @version 0.0.2
+// @version 0.9.9
 // @description 岚山区劳动争议调解区块链平台，后台采用golang开发，使用gin + gorm + gorbac + jwt开发
 // @termsOfService http://hafrans.com
 // @contact.name Chuuka Ro (Hafrans)

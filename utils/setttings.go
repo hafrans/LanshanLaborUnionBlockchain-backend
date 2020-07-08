@@ -3,6 +3,7 @@ package utils
 import (
 	"github.com/go-ini/ini"
 	"log"
+	"os"
 )
 
 type Database struct {
@@ -36,9 +37,14 @@ func mapTo(cfg *ini.File, section string, v interface{}){
 
 func InitSettings(){
 
-	//TODO 部署的时候关掉
-	InitTestSetting()
-	return
+	if env, t := os.LookupEnv("TEST"); t && env == "on" {
+		log.Println("+++++++++++++++  TEST CONF ++++++++++++++++++")
+		//TODO 部署的时候关掉
+		InitTestSetting()
+		return
+	}else{
+		log.Println("==============  NO TEST CONF ==============")
+	}
 
 	if cfg, err := ini.Load("conf/conf.ini"); err == nil{
 		mapTo(cfg,"database",DatabaseSettings)
