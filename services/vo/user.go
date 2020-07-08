@@ -23,8 +23,21 @@ type UserResetPassword struct {
 }
 
 type UserUpdateInfo struct {
-	Email string `json:"email" form:"email" binding:"required,email" example:"hafrans@163.com"`
-	Phone string `json:"phone" form:"phone" binding:"required,numeric" example:"13800138000"`
+	Email string `json:"email" form:"email" binding:"omitempty,email" example:"hafrans@163.com"`
+	Phone string `json:"phone" form:"phone" binding:"omitempty,numeric" example:"13800138000"`
+}
+
+type DepartmentUserUpdateInfo struct {
+	DepartmentId string `json:"department_id"`
+	UserName     string `json:"user_name"`
+}
+
+type LaborUserUpdateInfo struct {
+	Applicant `binding:"dive"`
+}
+
+type EmployerUserUpdateInfo struct {
+	Employer `binding:"dive"`
 }
 
 type UserRegisterLaborForm struct {

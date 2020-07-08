@@ -6,12 +6,12 @@ import (
 	"log"
 )
 
-func CreateSuggestion(depart, content string, caseId string) (*models.Suggestion, error) {
+func CreateSuggestion(content string, caseId string, userId int64) (*models.Suggestion, error) {
 
 	suggestion := &models.Suggestion{
-		Department: depart,
 		Content:    content,
 		CaseID:     caseId,
+		UserID:     userId,
 	}
 
 	result := db.Create(suggestion)
@@ -62,12 +62,12 @@ func DeleteSuggestionById(id int64) bool {
 	}
 }
 
-func GetSuggestionById(id int64) (*models.Suggestion, error) {
+func GetPreloadedSuggestionById(id int64) (*models.Suggestion, error) {
 	if id <= 0 {
 		return nil, errors.New("invalid id")
 	}
 	var department models.Suggestion
-	result := db.First(&department, id)
+	result := db.Set("gorm:auto_preload", true).First(&department, id)
 	if result.Error != nil {
 		log.Println(result.Error)
 		return nil, result.Error

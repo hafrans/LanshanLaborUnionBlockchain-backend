@@ -55,7 +55,6 @@ func TryInitializeTables() {
 
 func CreateTables() {
 
-
 	// 有many to many 的先删除
 	db.DropTableIfExists(&models.RolePermission{})
 	db.DropTableIfExists(&models.UserRole{})
@@ -74,6 +73,8 @@ func CreateTables() {
 	db.DropTableIfExists(&models.Suggestion{})
 	db.DropTableIfExists(&models.Material{})
 	db.DropTableIfExists(&models.Record{})
+
+	db.DropTableIfExists(&models.HistoryV1{})
 	//========================================
 
 	// 有many to many 的先创建
@@ -92,8 +93,9 @@ func CreateTables() {
 	db.CreateTable(&models.Suggestion{})
 	db.CreateTable(&models.Case{})
 
-
 	db.CreateTable(&models.LaborArbitration{})
+
+	db.CreateTable(&models.HistoryV1{})
 
 	InitInformation()
 

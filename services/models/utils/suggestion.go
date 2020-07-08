@@ -9,17 +9,20 @@ import (
 func PopulateSuggestionFromVOToModel(vo *vo.Suggestion) *models.Suggestion {
 	return &models.Suggestion{
 		Content: vo.Content,
-		Department: vo.Department,
+		CaseID:  vo.CaseID,
 	}
 }
 
 // 将Record 的 model 转vo
 func PopulateSuggestionFromModelToVO(model *models.Suggestion) *vo.Suggestion {
 	return &vo.Suggestion{
-		ID:   model.ID,
-		Department: model.Department,
-		Content: model.Content,
-		Submitter: model.User.UserName,
+		ID:             model.ID,
+		Department:     model.User.Department.Name,
+		Content:        model.Content,
+		Submitter:      model.User.UserName,
+		SubmitterPhone: model.User.Phone,
+		CaseID:         model.CaseID,
+		DepartmentInfo: PopulateDepartmentFromModelToVO(&model.User.Department),
 	}
 }
 
@@ -48,8 +51,3 @@ func PopulateSuggestionListFromModelToVO(model []*models.Suggestion) []*vo.Sugge
 
 	return result
 }
-
-
-
-
-

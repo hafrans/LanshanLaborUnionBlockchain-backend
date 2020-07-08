@@ -33,7 +33,7 @@ type LaborArbitration struct {
 	Job *string `json:"job_name" form:"job_name" gorm:"type:varchar(255)"`
 
 	// 7. 劳动合同约定的工作地点
-	WorkPlace *string `json:"job_work_place" form:"job_work_place"`
+	WorkPlace *string `json:"job_work_place" form:"job_work_place" gorm:"type:text"`
 
 	// 8. 劳动合同约定的月工资数、工资构成、工时制
 	ContractWage          *float64 `json:"contract_wage" form:"contract_wage" gorm:"type:varchar(64);default:'0.00'"`
@@ -44,7 +44,7 @@ type LaborArbitration struct {
 	PaymentType   int     `json:"payment_type" form:"payment_type" gorm:"type:tinyint(1)" binding:"numeric,required"`
 	PaymentCycle  int     `json:"payment_cycle" form:"payment_cycle"  gorm:"type:tinyint(1)" binding:"numeric,required"`
 	Wage          float64 `json:"wage" form:"wage" gorm:"default:0"  binding:"number,required"`
-	WageComponent string  `json:"wage_component" form:"wage_component" binding:"required"`
+	WageComponent string  `json:"wage_component" form:"wage_component" binding:"required" gorm:"type:text"`
 
 	// 10. 最后一次支付工资时间
 	LastPayment *utils.DateMonth `json:"last_payment" form:"last_payment" gorm:"type:date" time_format:"2006-01" example:"2010-01"`
@@ -112,8 +112,8 @@ type LaborArbitration struct {
 	// 25. 双方解除或终止劳动关系的原因
 	SeverLaborRelationshipEmployer       *bool   `json:"sever_labor_relationship_employer" form:"sever_labor_relationship_employer" gorm:"type:tinyint(1)"`
 	SeverLaborRelationshipLabor          *bool   `json:"sever_labor_relationship_labor" form:"sever_labor_relationship_labor" gorm:"type:tinyint(1)"`
-	SeverLaborRelationshipEmployerReason *string `json:"sever_labor_relationship_employer_reason" form:"sever_labor_relationship_employer_reason"`
-	SeverLaborRelationshipLaborReason    *string `json:"sever_labor_relationship_labor_reason" form:"sever_labor_relationship_labor_reason"`
+	SeverLaborRelationshipEmployerReason *string `json:"sever_labor_relationship_employer_reason" form:"sever_labor_relationship_employer_reason" gorm:"type:text"`
+	SeverLaborRelationshipLaborReason    *string `json:"sever_labor_relationship_labor_reason" form:"sever_labor_relationship_labor_reason" gorm:"type:text"`
 
 	// 26. 解除或终止劳动关系时间年月日
 	SeverLaborRelationshipDate *utils.Date `json:"sever_labor_relationship_date" form:"sever_labor_relationship_date" gorm:"type:date" example:"2020-01-02"`
@@ -128,7 +128,7 @@ type LaborArbitration struct {
 	MassDisturbance bool `json:"mass_disturbance" form:"mass_disturbance" gorm:"type:tinyint(1)" binding:"required"`
 
 	// 30. 本表遗漏的其他项目
-	Other string `json:"other_information" form:"other_information"`
+	Other string `json:"other_information" form:"other_information" gorm:"type:text"`
 }
 
 // 需支付的工伤待遇项目及数额

@@ -104,12 +104,12 @@ func UpdateUserInfo(ctx *gin.Context) {
 
 	if err := ctx.ShouldBindJSON(&userInfoVO); err == nil {
 
-		if user.Email != userInfoVO.Email {
+		if user.Email != userInfoVO.Email && userInfoVO.Email != "" {
 			user.Email = userInfoVO.Email
 			user.EmailChecked = false
 		}
 
-		if user.Phone != userInfoVO.Phone {
+		if user.Phone != userInfoVO.Phone && userInfoVO.Phone != ""{
 			user.Phone = userInfoVO.Phone
 			user.PhoneChecked = false
 		}
@@ -224,5 +224,6 @@ func RegisterNewEmployerUser(ctx *gin.Context) {
 		}
 
 	}
-
 }
+
+

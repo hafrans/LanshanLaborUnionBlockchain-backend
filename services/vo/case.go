@@ -49,34 +49,6 @@ type Material struct {
 	Name string `json:"name" binding:"required"`
 	// 材料资源path
 	Path *string `json:"path" binding:"omitempty"`
-
-}
-
-// 调解笔录
-type Record struct {
-	ID int64 `json:"id,omitempty"`
-
-	// 记录介绍
-	Name string `json:"record_name"`
-
-	// 截图/材料等地址
-	Path string `json:"record_path"`
-
-	// 录入人
-	Submitter string `json:"submitter"`
-}
-
-// 部门调解意见
-type Suggestion struct {
-	ID int64 `json:"id,omitempty"`
-
-	// 部门名称
-	Department string `json:"suggestion_department"`
-	// 意见
-	Content string `json:"suggestion_content"`
-
-	// 录入人
-	Submitter string `json:"submitter"`
 }
 
 type CaseFirstSubmitForm struct {
@@ -137,4 +109,8 @@ type SimplifiedCaseListItem struct {
 	UpdateAt       *utils.Time `json:"updated_at"`
 	Status         int         `json:"status"`
 	Owner          int64       `json:"owner"`
+}
+
+type CaseStatusChangeForm struct {
+	Status int `json:"status" binding:"required"`
 }

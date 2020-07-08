@@ -16,10 +16,13 @@ func PopulateRecordFromVOToModel(vo *vo.Record) *models.Record {
 // 将Record 的 model 转vo
 func PopulateRecordFromModelToVO(model *models.Record) *vo.Record {
 	return &vo.Record{
-		ID:   model.ID,
-		Path: model.Path,
-		Name: model.Name,
-		Submitter: model.User.UserName,
+		ID:             model.ID,
+		Path:           model.Path,
+		Name:           model.Name,
+		Submitter:      model.User.UserName,
+		CaseID:         model.CaseID,
+		DepartmentInfo: PopulateDepartmentFromModelToVO(&model.User.Department),
+		SubmitterPhone: model.User.Phone,
 	}
 }
 
@@ -48,8 +51,3 @@ func PopulateRecordListFromModelToVO(model []*models.Record) []*vo.Record {
 
 	return result
 }
-
-
-
-
-

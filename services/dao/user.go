@@ -93,6 +93,21 @@ func GetUserById(id int64) (*models.User, error) {
 }
 
 
+func UpdateUserProfileByUserId(profile *models.UserProfile) bool {
+	if profile == nil {
+		return false
+	}
+
+	result := db.Model(&models.UserProfile{}).Save(profile)
+
+	if result.Error != nil {
+		log.Println(result.Error)
+		return false
+	}else{
+		return true
+	}
+}
+
 
 func GetUserByEmail(email string) (*models.User, error) {
 	user := &models.User{}

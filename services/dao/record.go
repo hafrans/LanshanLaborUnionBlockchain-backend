@@ -6,14 +6,14 @@ import (
 	"log"
 )
 
-func CreateRecord(name, path string, caseId string) (*models.Record, error) {
+func CreateRecord(name, path string, caseId string, userId int64) (*models.Record, error) {
 
 	record := &models.Record{
 		Name:   name,
 		Path:   path,
 		CaseID: caseId,
+		UserID: userId,
 	}
-
 	result := db.Create(record)
 
 	if result.Error != nil {
@@ -67,7 +67,7 @@ func GetRecordById(id int64) (*models.Record, error) {
 		return nil, errors.New("invalid id")
 	}
 	var department models.Record
-	result := db.First(&department, id)
+	result := db.Set("gorm:auto_preload", true).First(&department, id)
 	if result.Error != nil {
 		log.Println(result.Error)
 		return nil, result.Error

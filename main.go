@@ -107,6 +107,12 @@ func Cors() gin.HandlerFunc {
 	}
 }
 func pingHandler(ctx *gin.Context) {
+	// test here.
+
+	//dao.GetExternalDB().DropTableIfExists(&models.HistoryV1{})
+	//dao.GetExternalDB().CreateTable(&models.HistoryV1{})
+
+
 	ctx.JSON(200, gin.H{
 		"status":  0,
 		"message": "pong",

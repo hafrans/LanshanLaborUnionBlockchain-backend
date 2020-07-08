@@ -198,6 +198,13 @@ definitions:
     - respondent
     - title
     type: object
+  vo.CaseStatusChangeForm:
+    properties:
+      status:
+        type: integer
+    required:
+    - status
+    type: object
   vo.Common:
     properties:
       message:
@@ -222,6 +229,24 @@ definitions:
         type: integer
       timestamp:
         example: "2048-05-06 12:34:56"
+        type: string
+    type: object
+  vo.DepartmentVO:
+    properties:
+      contact:
+        description: 机构联系方式
+        type: string
+      description:
+        description: 机构介绍
+        type: string
+      id:
+        description: id
+        type: integer
+      name:
+        description: 机构、单位名称
+        type: string
+      service:
+        description: 机构提供的服务
         type: string
     type: object
   vo.Employer:
@@ -529,6 +554,63 @@ definitions:
     required:
     - name
     type: object
+  vo.Record:
+    properties:
+      case_id:
+        description: 案件号，37xxx开头
+        type: string
+      department_info:
+        $ref: '#/definitions/vo.DepartmentVO'
+        description: 部门信息，新建不需要填写
+        type: object
+      id:
+        description: ID 新建不需要填写
+        type: integer
+      name:
+        description: 记录介绍
+        type: string
+      path:
+        description: 截图/材料等地址
+        type: string
+      submitter:
+        description: 录入人, 新建不需要填写
+        type: string
+      submitter_phone:
+        description: 录入人电话，新建不需要填写
+        type: string
+    required:
+    - case_id
+    - name
+    - path
+    type: object
+  vo.Suggestion:
+    properties:
+      case_id:
+        description: 案件号，37xxx开头
+        type: string
+      content:
+        description: 意见
+        type: string
+      department:
+        description: 部门名称，新建不需要填写
+        type: string
+      department_info:
+        $ref: '#/definitions/vo.DepartmentVO'
+        description: 部门信息，新建不需要填写
+        type: object
+      id:
+        description: ID，新建不需要填写
+        type: integer
+      submitter:
+        description: 录入人，新建不需要填写
+        type: string
+      submitter_phone:
+        description: 录入人电话，新建不需要填写
+        type: string
+    required:
+    - case_id
+    - content
+    type: object
   vo.UserData:
     properties:
       claims:
@@ -596,9 +678,6 @@ definitions:
       phone:
         example: "13800138000"
         type: string
-    required:
-    - email
-    - phone
     type: object
 info:
   contact:
@@ -779,6 +858,40 @@ paths:
       summary: 上传资源
       tags:
       - utils
+  /api/v1/blockchain/history/case/:caseId:
+    get:
+      description: 通过case 案件号码（37开头）获取其历史信息，可支持分页
+      parameters:
+      - description: 页码
+        in: query
+        name: page
+        required: true
+        type: number
+      - description: 页大小
+        in: query
+        name: pageSize
+        required: true
+        type: number
+      - description: 案件号(37开头)
+        in: path
+        name: caseId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/vo.CommonData'
+        "401":
+          description: 没有认证
+          schema:
+            $ref: '#/definitions/vo.Common'
+      summary: 通过case 案件号码（37开头）获取其历史信息，可支持分页
+      tags:
+      - case
+      - blockchain
   /api/v1/case/:
     get:
       consumes:
@@ -817,6 +930,12 @@ paths:
   /api/v1/case/caseId/:caseId:
     get:
       description: 获取单一Case，通过CaseID 例子：3711002020063019254015935163407436142
+      parameters:
+      - description: 不是案件号码,不是案件id
+        in: path
+        name: caseId
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -864,6 +983,12 @@ paths:
   /api/v1/case/delete/:id:
     get:
       description: 删除单一Case，一般用户只可以删除自己的，特殊权限者可以删除任何人的，注意：如果案件正在处理中，则无法删除
+      parameters:
+      - description: 案件id,不是案件号码
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -881,6 +1006,12 @@ paths:
   /api/v1/case/id/:id:
     get:
       description: 获取单一Case， 例子：9
+      parameters:
+      - description: 案件id,不是案件号码
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -893,6 +1024,41 @@ paths:
           schema:
             $ref: '#/definitions/vo.Common'
       summary: 通过ID（主键）获取case
+      tags:
+      - case
+  /api/v1/case/status_change/:id:
+    post:
+      consumes:
+      - application/json
+      description: 申请人只可以确认、拒绝状态；管理人员可以设置任何状态 StatusSubmitted= 0 已提交；StatusPending = 1 正在处理；StatusResultConfirming = 2 当事人等待确认调解结果；StatusRefused =3 拒绝调解；StatusConfirmed=4 确认调解；StatusCompleted=5；结束调解               // 调解结束
+      parameters:
+      - description: 案件模型id，注意：不是案件号
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 提交表单
+        in: body
+        name: case
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CaseStatusChangeForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/vo.CommonData'
+        "401":
+          description: 没有认证
+          schema:
+            $ref: '#/definitions/vo.Common'
+        "422":
+          description: 绑定失败
+          schema:
+            $ref: '#/definitions/vo.Common'
+      summary: 修改调解案件的状态
       tags:
       - case
   /api/v1/case/update/:id:
@@ -1186,6 +1352,116 @@ paths:
       summary: 修改劳动争议案件审判要素表
       tags:
       - labor
+  /api/v1/record/create:
+    post:
+      consumes:
+      - application/json
+      description: 由管理员或者部门人员创建记录
+      parameters:
+      - description: 提交表单
+        in: body
+        name: case
+        required: true
+        schema:
+          $ref: '#/definitions/vo.Record'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/vo.CommonData'
+        "401":
+          description: 没有认证
+          schema:
+            $ref: '#/definitions/vo.Common'
+        "422":
+          description: 绑定失败
+          schema:
+            $ref: '#/definitions/vo.Common'
+      summary: 根据 CaseID 创建记录
+      tags:
+      - case
+      - record
+  /api/v1/record/delete/:id:
+    get:
+      description: 根据record 的id号码删除record，只有管理员、部门人员可以操作
+      parameters:
+      - description: 表单id
+        in: path
+        name: id
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 正常业务处理
+          schema:
+            $ref: '#/definitions/vo.CommonData'
+        "401":
+          description: 未验证
+          schema:
+            $ref: '#/definitions/vo.Common'
+      summary: 根据record 的id号码删除record
+      tags:
+      - labor
+      - record
+  /api/v1/suggestion/create:
+    post:
+      consumes:
+      - application/json
+      description: 由管理员或者部门人员创建部门建议
+      parameters:
+      - description: 提交表单
+        in: body
+        name: case
+        required: true
+        schema:
+          $ref: '#/definitions/vo.Suggestion'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/vo.CommonData'
+        "401":
+          description: 没有认证
+          schema:
+            $ref: '#/definitions/vo.Common'
+        "422":
+          description: 绑定失败
+          schema:
+            $ref: '#/definitions/vo.Common'
+      summary: 根据 CaseID 创建部门建议
+      tags:
+      - case
+      - suggestion
+  /api/v1/suggestion/delete/:id:
+    get:
+      description: 根据部门建议 的id号码删除，只有管理员、部门人员可以操作
+      parameters:
+      - description: 表单id
+        in: path
+        name: id
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 正常业务处理
+          schema:
+            $ref: '#/definitions/vo.CommonData'
+        "401":
+          description: 未验证
+          schema:
+            $ref: '#/definitions/vo.Common'
+      summary: 根据部门建议 的id号码删除
+      tags:
+      - labor
+      - suggestion
   /api/v1/test/case/template:
     get:
       description: 获取申请调解案件的上传模板，测试用

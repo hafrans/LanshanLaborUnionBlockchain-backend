@@ -2,6 +2,7 @@ package v1
 
 import (
 	"RizhaoLanshanLabourUnion/security/jwt/jwtmodel"
+	"RizhaoLanshanLabourUnion/services/blockchain"
 	"RizhaoLanshanLabourUnion/services/dao"
 	"RizhaoLanshanLabourUnion/services/models"
 	"RizhaoLanshanLabourUnion/services/models/utils"
@@ -105,6 +106,9 @@ func CreateNewCaseByApplicant(ctx *gin.Context) {
 			ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, err.Error()))
 			return
 		} else {
+			// 记录
+			blockchain.CreateHistoryByCase("创建调解案件", result, claims.Id)
+
 			ctx.JSON(respcode.HttpOK, vo.CommonData{
 				Common: vo.GenerateCommonResponseHead(respcode.GenericSuccess, "success"),
 				Data:   utils.PopulateCaseFullModelToFullForm(result),
@@ -201,6 +205,9 @@ func UpdateCaseByApplicant(ctx *gin.Context) {
 				ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, err.Error()))
 				return
 			} else {
+				// 记录
+				blockchain.CreateHistoryByCase("修改调解案件", result, claims.Id)
+
 				ctx.JSON(respcode.HttpOK, vo.CommonData{
 					Common: vo.GenerateCommonResponseHead(respcode.GenericSuccess, "success"),
 					Data:   utils.PopulateCaseFullModelToFullForm(result),
@@ -248,6 +255,7 @@ func GetCaseFirstSubmitFormTemplate(ctx *gin.Context) {
 // @Description 获取单一Case， 例子：9
 // @Tags case
 // @Produce json
+// @Param id path integer true "案件id,不是案件号码"
 // @Success 200 {object} vo.CommonData "成功"
 // @Failure 401 {object} vo.Common "没有认证"
 // @Router /api/v1/case/id/:id [get]
@@ -281,6 +289,7 @@ func GetCaseById(ctx *gin.Context) {
 // @Description 获取单一Case，通过CaseID 例子：3711002020063019254015935163407436142
 // @Tags case
 // @Produce json
+// @Param caseId path string true "不是案件号码,不是案件id"
 // @Success 200 {object} vo.CommonData "成功"
 // @Failure 401 {object} vo.Common "没有认证"
 // @Router /api/v1/case/caseId/:caseId [get]
@@ -377,6 +386,7 @@ func GetCaseList(ctx *gin.Context) {
 // @Description 删除单一Case，一般用户只可以删除自己的，特殊权限者可以删除任何人的，注意：如果案件正在处理中，则无法删除
 // @Tags case
 // @Produce json
+// @Param id path integer true "案件id,不是案件号码"
 // @Success 200 {object} vo.CommonData "成功"
 // @Failure 401 {object} vo.Common "没有认证"
 // @Router /api/v1/case/delete/:id [get]
@@ -391,7 +401,7 @@ func DeleteCaseById(ctx *gin.Context) {
 		cases, cErr := dao.GetCaseNotPreloadModelById(int64(id))
 		if cErr != nil {
 			if cErr == sql.ErrNoRows {
-				ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "记录不存在"))
+				ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "案件不存在"))
 				return
 			} else {
 				ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, cErr.Error()))
@@ -409,6 +419,10 @@ func DeleteCaseById(ctx *gin.Context) {
 		if cases.UserID == claims.Id || claims.UserType == models.USER_TYPE_ADMIN { // 如果是个人或者 管理员
 			// 执行删除
 			if dao.DeleteCaseById(cases.ID) {
+
+				// 记录
+				blockchain.CreateHistoryByCase("删除调解案件", cases, claims.Id)
+
 				ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericSuccess, "删除成功"))
 			} else {
 				ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "删除失败"))
@@ -416,6 +430,77 @@ func DeleteCaseById(ctx *gin.Context) {
 
 		} else {
 			ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "删除失败,您没有删除该案件的权限"))
+		}
+
+	}
+
+}
+
+// Update Status case by id
+// @Summary 修改调解案件的状态
+// @Description 申请人只可以确认、拒绝状态；管理人员可以设置任何状态 StatusSubmitted= 0 已提交；StatusPending = 1 正在处理；StatusResultConfirming = 2 当事人等待确认调解结果；StatusRefused =3 拒绝调解；StatusConfirmed=4 确认调解；StatusCompleted=5；结束调解               // 调解结束
+// @Tags case
+// @Accept json
+// @Produce json
+// @Param id path integer true  "案件模型id，注意：不是案件号"
+// @Param case body vo.CaseStatusChangeForm true "提交表单"
+// @Success 200 {object} vo.CommonData "成功"
+// @Failure 422 {object} vo.Common "绑定失败"
+// @Failure 401 {object} vo.Common "没有认证"
+// @Router /api/v1/case/status_change/:id [post]
+func ChangeCaseStatusById(ctx *gin.Context) {
+	claims := jwtmodel.ExtractUserClaimsFromGinContext(ctx)
+
+	if id, err := strconv.Atoi(ctx.Param("id")); err != nil {
+		log.Println(err.Error())
+		ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "invalid id"))
+	} else {
+		cases, cErr := dao.GetCaseNotPreloadModelById(int64(id))
+		if cErr != nil {
+			if cErr == sql.ErrNoRows {
+				ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "案件不存在"))
+				return
+			} else {
+				ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, cErr.Error()))
+				return
+			}
+		}
+		var form vo.CaseStatusChangeForm
+		if err := ctx.ShouldBindJSON(&form); err != nil {
+			log.Println(err)
+			ctx.JSON(respcode.HttpBindingFailed, vo.GenerateCommonResponseHead(respcode.GenericFailed, err.Error()))
+			return
+		} else {
+
+			// 如果是用户
+			if claims.UserType == models.USER_TYPE_LABOR && claims.Id == cases.UserID {
+				if cases.Status == models.StatusResultConfirming || form.Status == models.StatusRefused || form.Status == models.StatusConfirmed { // 等待用户确认阶段，或者确认/拒绝反悔的时候
+					if form.Status == models.StatusRefused || form.Status == models.StatusConfirmed { // 用户可以在确认接受或者拒绝调解的时候选择状态
+						cases.Status = form.Status
+					}
+				} else {
+					log.Println(err)
+					ctx.JSON(respcode.HttpBindingFailed, vo.GenerateCommonResponseHead(respcode.GenericFailed, "您无法修改本案件的状态"))
+					return
+				}
+			} else if claims.UserType == models.USER_TYPE_ADMIN || claims.UserType == models.USER_TYPE_DEPARTMENT {
+				// 管理员或者部门人员可以修改
+				cases.Status = form.Status
+			} else {
+				log.Println(err)
+				ctx.JSON(respcode.HttpBindingFailed, vo.GenerateCommonResponseHead(respcode.GenericFailed, "您无法修改本案件的状态"))
+				return
+			}
+
+			// 开始修改
+			if dao.UpdateCase(cases) {
+				// 记录
+				blockchain.CreateHistoryByCase("修改调解案件状态", cases, claims.Id)
+
+				ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericSuccess, "状态修改成功"))
+			} else {
+				ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "状态修改失败"))
+			}
 		}
 
 	}

@@ -45,36 +45,6 @@ type Material struct {
 	CaseID string `json:"case_id" gorm:"type:varchar(64);index"`
 }
 
-// 调解笔录
-type Record struct {
-	Model
-	// 记录介绍
-	Name string `json:"record_name"`
-	// caseID， 新建表单时不要上传该信息
-	CaseID string `json:"case_id"  gorm:"type:varchar(64);index"`
-	// 截图/材料等地址
-	Path string `json:"record_path"`
-
-	// 谁录入的笔录
-	UserID int64 `json:"-" `
-	User   *User `json:"user,omitempty"`
-}
-
-// 部门调解意见
-type Suggestion struct {
-	Model
-	// 部门名称
-	Department string `json:"suggestion_department"`
-	// 意见
-	Content string `json:"suggestion_content"`
-	// caseID， 新建表单时不要上传该信息
-	CaseID string `json:"case_id" gorm:"type:varchar(64);index"`
-
-	// 谁录入的笔录
-	UserID int64 `json:"-"`
-	User   *User `json:"user,omitempty"`
-}
-
 // 案件 many to many
 type Case struct {
 	Model
@@ -92,9 +62,9 @@ type Case struct {
 
 	Employer // 用工单位
 
-	Title string `json:"title" binding:"required"` // 调解事项
+	Title string `json:"title" binding:"required" gorm:"type:text"` // 调解事项
 
-	Content string `json:"content" binding:"required"` // 调解事实与理由
+	Content string `json:"content" binding:"required" gorm:"type:text"` // 调解事实与理由
 
 	FormID int64             `json:"-"` // 表单
 	Form   *LaborArbitration `gorm:"foreignkey:FormID"`
@@ -105,12 +75,4 @@ type Case struct {
 
 	Suggestions []*Suggestion `json:"suggestions" gorm:"foreignkey:CaseID;association_foreignkey:CaseID"` // 部门处理意见
 
-}
-
-// 案件
-type CaseV2 struct {
-	Model
-	UserId      int64      `json:"user_id"`
-	ApplicantId int64      `json:"applicant_id"`
-	Applicant   *Applicant `json:"applicant"`
 }

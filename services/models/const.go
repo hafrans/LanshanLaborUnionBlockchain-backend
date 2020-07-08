@@ -49,7 +49,7 @@ const (
 const (
 	StatusSubmitted        = iota // 已提交
 	StatusPending                 // 正在处理
-	StatusResultConfirming        // 当事人确认调解结果
+	StatusResultConfirming        // 当事人等待确认调解结果
 	StatusRefused                 // 拒绝调解
 	StatusConfirmed               // 确认调解
 	StatusCompleted               // 调解结束

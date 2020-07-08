@@ -29,7 +29,7 @@ func GetCasePreloadedModelById(id int64) (*models.Case, error) {
 
 	var model models.Case
 
-	result := db.Preload("Category").Preload("Form").Preload("Materials").Preload("Records").Preload("Suggestions").First(&model, id)
+	result := db.Set("gorm:auto_preload", true).First(&model, id)
 	if result.Error != nil {
 		log.Println(result.Error)
 		return nil, result.Error
@@ -54,7 +54,7 @@ func GetCaseNotPreloadModelById(id int64) (*models.Case, error) {
 
 func GetCasePreloadedModelByCaseID(caseId string) (*models.Case, error) {
 	var model models.Case
-	result := db.Preload("Category").Preload("Form").Preload("Materials").Preload("Records").Preload("Suggestions").Where("case_id = ?", caseId).First(&model)
+	result := db.Set("gorm:auto_preload", true).Where("case_id = ?", caseId).First(&model)
 	if result.Error != nil {
 		log.Println(result.Error)
 		return nil, result.Error
@@ -116,7 +116,7 @@ func GetCasesAllPaginatedByCaseId(caseId *string, pageNum, pageSize int, userId 
 		log.Println(result.Error)
 		return nil, totalCount, result.Error
 	} else {
-		return cases, 0, nil
+		return cases, totalCount, nil
 	}
 
 }

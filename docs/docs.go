@@ -285,6 +285,56 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/blockchain/history/case/:caseId": {
+            "get": {
+                "description": "通过case 案件号码（37开头）获取其历史信息，可支持分页",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "case",
+                    "blockchain"
+                ],
+                "summary": "通过case 案件号码（37开头）获取其历史信息，可支持分页",
+                "parameters": [
+                    {
+                        "type": "number",
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "页大小",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "案件号(37开头)",
+                        "name": "caseId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/vo.CommonData"
+                        }
+                    },
+                    "401": {
+                        "description": "没有认证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/case/": {
             "get": {
                 "description": "获取所有的案件，非管理员只能看到自己的，管理员能看到全部人的",
@@ -347,6 +397,15 @@ var doc = `{
                     "case"
                 ],
                 "summary": "通过Case ID（调解申请号）获取case",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "不是案件号码,不是案件id",
+                        "name": "caseId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "成功",
@@ -419,6 +478,15 @@ var doc = `{
                     "case"
                 ],
                 "summary": "通过 ID（调解案件ID，不是case_id）删除case",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "案件id,不是案件号码",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "成功",
@@ -445,6 +513,15 @@ var doc = `{
                     "case"
                 ],
                 "summary": "通过ID（主键）获取case",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "案件id,不是案件号码",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "成功",
@@ -454,6 +531,59 @@ var doc = `{
                     },
                     "401": {
                         "description": "没有认证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/case/status_change/:id": {
+            "post": {
+                "description": "申请人只可以确认、拒绝状态；管理人员可以设置任何状态 StatusSubmitted= 0 已提交；StatusPending = 1 正在处理；StatusResultConfirming = 2 当事人等待确认调解结果；StatusRefused =3 拒绝调解；StatusConfirmed=4 确认调解；StatusCompleted=5；结束调解               // 调解结束",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "case"
+                ],
+                "summary": "修改调解案件的状态",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "案件模型id，注意：不是案件号",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "提交表单",
+                        "name": "case",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.CaseStatusChangeForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/vo.CommonData"
+                        }
+                    },
+                    "401": {
+                        "description": "没有认证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    },
+                    "422": {
+                        "description": "绑定失败",
                         "schema": {
                             "$ref": "#/definitions/vo.Common"
                         }
@@ -895,6 +1025,172 @@ var doc = `{
                     },
                     "500": {
                         "description": "表单绑定失败",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/record/create": {
+            "post": {
+                "description": "由管理员或者部门人员创建记录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "case",
+                    "record"
+                ],
+                "summary": "根据 CaseID 创建记录",
+                "parameters": [
+                    {
+                        "description": "提交表单",
+                        "name": "case",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.Record"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/vo.CommonData"
+                        }
+                    },
+                    "401": {
+                        "description": "没有认证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    },
+                    "422": {
+                        "description": "绑定失败",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/record/delete/:id": {
+            "get": {
+                "description": "根据record 的id号码删除record，只有管理员、部门人员可以操作",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "labor",
+                    "record"
+                ],
+                "summary": "根据record 的id号码删除record",
+                "parameters": [
+                    {
+                        "type": "number",
+                        "description": "表单id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "正常业务处理",
+                        "schema": {
+                            "$ref": "#/definitions/vo.CommonData"
+                        }
+                    },
+                    "401": {
+                        "description": "未验证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/suggestion/create": {
+            "post": {
+                "description": "由管理员或者部门人员创建部门建议",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "case",
+                    "suggestion"
+                ],
+                "summary": "根据 CaseID 创建部门建议",
+                "parameters": [
+                    {
+                        "description": "提交表单",
+                        "name": "case",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.Suggestion"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/vo.CommonData"
+                        }
+                    },
+                    "401": {
+                        "description": "没有认证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    },
+                    "422": {
+                        "description": "绑定失败",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/suggestion/delete/:id": {
+            "get": {
+                "description": "根据部门建议 的id号码删除，只有管理员、部门人员可以操作",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "labor",
+                    "suggestion"
+                ],
+                "summary": "根据部门建议 的id号码删除",
+                "parameters": [
+                    {
+                        "type": "number",
+                        "description": "表单id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "正常业务处理",
+                        "schema": {
+                            "$ref": "#/definitions/vo.CommonData"
+                        }
+                    },
+                    "401": {
+                        "description": "未验证",
                         "schema": {
                             "$ref": "#/definitions/vo.Common"
                         }
@@ -1380,6 +1676,17 @@ var doc = `{
                 }
             }
         },
+        "vo.CaseStatusChangeForm": {
+            "type": "object",
+            "required": [
+                "status"
+            ],
+            "properties": {
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
         "vo.Common": {
             "type": "object",
             "properties": {
@@ -1414,6 +1721,31 @@ var doc = `{
                 "timestamp": {
                     "type": "string",
                     "example": "2048-05-06 12:34:56"
+                }
+            }
+        },
+        "vo.DepartmentVO": {
+            "type": "object",
+            "properties": {
+                "contact": {
+                    "description": "机构联系方式",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "机构介绍",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "id",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "机构、单位名称",
+                    "type": "string"
+                },
+                "service": {
+                    "description": "机构提供的服务",
+                    "type": "string"
                 }
             }
         },
@@ -1805,6 +2137,83 @@ var doc = `{
                 }
             }
         },
+        "vo.Record": {
+            "type": "object",
+            "required": [
+                "case_id",
+                "name",
+                "path"
+            ],
+            "properties": {
+                "case_id": {
+                    "description": "案件号，37xxx开头",
+                    "type": "string"
+                },
+                "department_info": {
+                    "description": "部门信息，新建不需要填写",
+                    "type": "object",
+                    "$ref": "#/definitions/vo.DepartmentVO"
+                },
+                "id": {
+                    "description": "ID 新建不需要填写",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "记录介绍",
+                    "type": "string"
+                },
+                "path": {
+                    "description": "截图/材料等地址",
+                    "type": "string"
+                },
+                "submitter": {
+                    "description": "录入人, 新建不需要填写",
+                    "type": "string"
+                },
+                "submitter_phone": {
+                    "description": "录入人电话，新建不需要填写",
+                    "type": "string"
+                }
+            }
+        },
+        "vo.Suggestion": {
+            "type": "object",
+            "required": [
+                "case_id",
+                "content"
+            ],
+            "properties": {
+                "case_id": {
+                    "description": "案件号，37xxx开头",
+                    "type": "string"
+                },
+                "content": {
+                    "description": "意见",
+                    "type": "string"
+                },
+                "department": {
+                    "description": "部门名称，新建不需要填写",
+                    "type": "string"
+                },
+                "department_info": {
+                    "description": "部门信息，新建不需要填写",
+                    "type": "object",
+                    "$ref": "#/definitions/vo.DepartmentVO"
+                },
+                "id": {
+                    "description": "ID，新建不需要填写",
+                    "type": "integer"
+                },
+                "submitter": {
+                    "description": "录入人，新建不需要填写",
+                    "type": "string"
+                },
+                "submitter_phone": {
+                    "description": "录入人电话，新建不需要填写",
+                    "type": "string"
+                }
+            }
+        },
         "vo.UserData": {
             "type": "object",
             "properties": {
@@ -1888,10 +2297,6 @@ var doc = `{
         },
         "vo.UserUpdateInfo": {
             "type": "object",
-            "required": [
-                "email",
-                "phone"
-            ],
             "properties": {
                 "email": {
                     "type": "string",
