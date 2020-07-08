@@ -355,8 +355,8 @@ func UpdateLaborArbitrationForm(ctx *gin.Context) {
 			}
 
 			if caseCount > 0 { // 说明有依赖 ， 有依赖不能修改
-				ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "有调解案件依赖该表单，不能修改"))
-				return
+				//ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "有调解案件依赖该表单，不能修改"))
+				//return
 			}
 
 			targetForm, err = dao.GetLaborArbitrationById(int64(formId)) // 先获取有没有这个form 一般是有的

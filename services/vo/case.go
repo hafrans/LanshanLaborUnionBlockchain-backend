@@ -54,7 +54,7 @@ type Material struct {
 type CaseFirstSubmitForm struct {
 
 	// 类型id
-	CategoryID int64 `json:"category_id"`
+	CategoryID int64 `json:"category_id" binding:"required"`
 
 	// 1.申请人
 	Applicant Applicant `json:"applicant" binding:"required,dive"`
