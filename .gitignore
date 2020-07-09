@@ -6,3 +6,4 @@ gin-bin.exe
 *.txt
 gin-bin.exe~
 /runtime/static/**
+main

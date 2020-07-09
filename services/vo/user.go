@@ -45,6 +45,7 @@ type UserRegisterLaborForm struct {
 	Password        string    `json:"password" form:"password" binding:"required,min=3,max=20"`
 	ConfirmPassword string    `json:"confirm_password" binding:"required,eqfield=Password"`
 	Phone           string    `json:"phone" binding:"required,numeric" example:"13800138000"`
+	Email           string    `json:"email" binding:"required,email" example:"test@1234.com"`
 	Applicant       Applicant `json:"applicant" binding:"required,dive"`
 }
 
@@ -53,5 +54,6 @@ type UserRegisterEmployerForm struct {
 	Password        string   `json:"password" form:"password" binding:"required,min=3,max=20"`
 	ConfirmPassword string   `json:"confirm_password" binding:"required,eqfield=Password"`
 	Phone           string   `json:"phone" binding:"required,numeric" example:"13800138000"`
+	Email           string   `json:"email" binding:"required,email" example:"test@1234.com"`
 	Employer        Employer `json:"employer" binding:"required,dive"`
 }

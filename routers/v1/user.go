@@ -154,7 +154,7 @@ func RegisterNewLaborUser(ctx *gin.Context) {
 		profile.ApplicantNationality = registerForm.Applicant.Nationality
 		profile.ApplicantName = registerForm.Applicant.Name
 
-		result, err := dao.CreateUserWithProfile(registerForm.Applicant.Name, registerForm.Password, "", registerForm.Phone, models.USER_TYPE_LABOR, false, false, true, 0, &profile)
+		result, err := dao.CreateUserWithProfile(registerForm.Applicant.Name, registerForm.Password, registerForm.Email, registerForm.Phone, models.USER_TYPE_LABOR, false, false, true, 0, &profile)
 
 		if err != nil {
 			if strings.Contains(err.Error(), "Duplicate") {
@@ -204,7 +204,7 @@ func RegisterNewEmployerUser(ctx *gin.Context) {
 		profile.EmployerUniformSocialCreditCode = registerForm.Employer.UniformSocialCreditCode
 		profile.EmployerLegalRepresentative = registerForm.Employer.LegalRepresentative
 
-		result, err := dao.CreateUserWithProfile(registerForm.Employer.LegalRepresentative, registerForm.Password, "", registerForm.Phone, models.USER_TYPE_EMPLOYER, false, false, true, 0, &profile)
+		result, err := dao.CreateUserWithProfile(registerForm.Employer.LegalRepresentative, registerForm.Password, registerForm.Email, registerForm.Phone, models.USER_TYPE_EMPLOYER, false, false, true, 0, &profile)
 
 		if err != nil {
 			if strings.Contains(err.Error(), "Duplicate") {
