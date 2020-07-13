@@ -3,6 +3,7 @@ package utils
 import (
 	"RizhaoLanshanLabourUnion/services/models"
 	"RizhaoLanshanLabourUnion/services/vo"
+	"RizhaoLanshanLabourUnion/utils"
 )
 
 func PopulateHistoryV1FromModelToVO(model *models.HistoryV1) *vo.SimplifiedHistory {
@@ -14,6 +15,7 @@ func PopulateHistoryV1FromModelToVO(model *models.HistoryV1) *vo.SimplifiedHisto
 		Content:           model.Content,
 		CaseID:            model.CaseID,
 		Operation:         model.Operation,
+		CreatedAt: utils.GetTime(model.CreatedAt),
 	}
 }
 

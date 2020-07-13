@@ -62,7 +62,7 @@ func CreateSuggestion(ctx *gin.Context) {
 				ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "部门建议创建异常，但系统数据已成功提交"))
 			} else {
 				// 记录
-				blockchain.CreateHistoryByUsingModel(suggestion.CaseID, "创建笔录", suggestion, claims.Id)
+				blockchain.CreateHistoryByUsingModel(suggestion.CaseID, "创建部门建议", suggestion, claims.Id)
 				ctx.JSON(respcode.HttpOK, vo.CommonData{
 					Common: vo.GenerateCommonResponseHead(respcode.GenericSuccess, "success"),
 					Data:   utils.PopulateSuggestionFromModelToVO(suggestion),
@@ -102,7 +102,7 @@ func DeleteSuggestion(ctx *gin.Context) {
 		} else {
 
 			// 记录
-			blockchain.CreateHistoryByUsingModel(suggestion.CaseID, "删除笔录", suggestion, claims.Id)
+			blockchain.CreateHistoryByUsingModel(suggestion.CaseID, "删除部门建议", suggestion, claims.Id)
 
 			if dao.DeleteSuggestionById(int64(suggestionId)) {
 				ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericSuccess, "部门建议删除成功"))

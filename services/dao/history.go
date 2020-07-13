@@ -36,7 +36,7 @@ func GetHistoryAllPaginatedByCaseId(pageNum, pageSize int, caseId *string) ([]*m
 	pendingDb := db.Model(&models.HistoryV1{})
 
 	if caseId != nil && *caseId != "" {
-		pendingDb = pendingDb.Where("case_id like ?", "%"+*caseId+"%")
+		pendingDb = pendingDb.Where("case_id =  ?", *caseId)
 	}
 
 	result := pendingDb.Count(&totalCount).Offset(pageSize * (pageNum - 1)).Limit(pageSize).Find(&histories)
