@@ -345,8 +345,14 @@ func GetCaseList(ctx *gin.Context) {
 	var model []*models.Case
 	var totalCount int
 
-	if claims.UserType == models.USER_TYPE_LABOR || claims.UserType == models.USER_TYPE_EMPLOYER { // 如果是普通用户
+	if claims.UserType == models.USER_TYPE_LABOR { // 如果是普通用户
 		model, totalCount, err = dao.GetCasesAllPaginatedByCaseId(&caseId, pageNum, pageCount, &claims.Id)
+	} else if claims.UserType == models.USER_TYPE_EMPLOYER { // 单位用户
+		user, _ := dao.GetUserById(claims.Id)
+		model, totalCount, err = dao.GetCasesAllPaginatedByCaseIdAndUSSC(&caseId,
+			                                                             pageNum,
+			                                                             pageCount,
+			                                                             &user.UserProfile.EmployerUniformSocialCreditCode)
 	} else {
 		model, totalCount, err = dao.GetCasesAllPaginatedByCaseId(&caseId, pageNum, pageCount, nil)
 	}

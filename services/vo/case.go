@@ -97,6 +97,7 @@ type CaseFullResultForm struct {
 	Materials   []*Material           `json:"materials"`
 	Records     []*Record             `json:"records"`
 	Suggestions []*Suggestion         `json:"suggestions"`
+	Comments    []*Comment            `json:"comments"`
 }
 
 type SimplifiedCaseListItem struct {

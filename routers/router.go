@@ -84,8 +84,8 @@ func InitApiV1Routers(apiV1 *gin.RouterGroup) {
 	apiSuggestion.GET("/delete/:id", v1.DeleteSuggestion)
 
 	apiComment := apiV1.Group("/comment")
-	apiComment.POST("/create", v1.CreateSuggestion)
-	apiComment.GET("/delete/:id", v1.DeleteSuggestion)
+	apiComment.POST("/create", v1.AddComment)
+	apiComment.GET("/delete/:id", v1.DeleteComment)
 
 	apiBlockChain := apiV1.Group("/blockchain")
 	apiBlockChain.GET("/history/case/:caseId", v1.GetHistoryByCaseID)

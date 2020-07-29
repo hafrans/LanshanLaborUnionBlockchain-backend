@@ -104,8 +104,11 @@ func PopulateCaseFullModelToFullForm(model *models.Case) *vo.CaseFullResultForm 
 		Materials:   PopulateMaterialListFromModelToVO(model.Materials),
 		Records:     PopulateRecordListFromModelToVO(model.Records),
 		Suggestions: PopulateSuggestionListFromModelToVO(model.Suggestions),
+		Comments:    PopulateCommentListFromModelToVO(model.Comments),
 	}
 
 	return form
 
 }
+
+

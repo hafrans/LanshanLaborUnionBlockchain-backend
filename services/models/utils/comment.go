@@ -25,3 +25,17 @@ func PopulateCommentFromModelToVO(comment *models.Comment) *vo.Comment{
 
 	return vo
 }
+
+
+// 将 Comment 的 model list 转为 vo
+func PopulateCommentListFromModelToVO(model []*models.Comment) []*vo.Comment {
+
+	length := len(model)
+	result := make([]*vo.Comment, 0, length)
+	for _, v := range model {
+		result = append(result, PopulateCommentFromModelToVO(v))
+	}
+
+	return result
+}
+

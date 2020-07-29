@@ -95,6 +95,7 @@ func GetCasesAllPaginatedOwnByUserId(pageNum, pageSize int, userId *int64) ([]*m
 	}
 }
 
+// 劳动者、管理员等获取自己的信息
 func GetCasesAllPaginatedByCaseId(caseId *string, pageNum, pageSize int, userId *int64) ([]*models.Case, int, error) {
 
 	var cases []*models.Case
@@ -108,6 +109,33 @@ func GetCasesAllPaginatedByCaseId(caseId *string, pageNum, pageSize int, userId 
 
 	if userId != nil && *userId != 0 {
 		pendingDb = pendingDb.Where("user_id = ?", userId)
+	}
+
+	result := pendingDb.Count(&totalCount).Offset(pageSize * (pageNum - 1)).Limit(pageSize).Find(&cases)
+
+	if result.Error != nil {
+		log.Println(result.Error)
+		return nil, totalCount, result.Error
+	} else {
+		return cases, totalCount, nil
+	}
+
+}
+
+// 用工单位获取自己的案件信息
+func GetCasesAllPaginatedByCaseIdAndUSSC(caseId *string, pageNum, pageSize int, ussc *string) ([]*models.Case, int, error) {
+
+	var cases []*models.Case
+	var totalCount int
+
+	pendingDb := db.Model(&models.Case{})
+
+	if caseId != nil && *caseId != "" {
+		pendingDb = pendingDb.Where("case_id like ?", "%"+*caseId+"%")
+	}
+
+	if ussc != nil && *ussc != "" {
+		pendingDb = pendingDb.Where("employer_uniform_social_credit_code = ?", ussc)
 	}
 
 	result := pendingDb.Count(&totalCount).Offset(pageSize * (pageNum - 1)).Limit(pageSize).Find(&cases)

@@ -11,11 +11,11 @@ type Comment struct {
 	Content string `json:"content" binding:"required"`
 
 	// 提交者
-	Submitter string `json:"omitempty,submitter"`
+	Submitter string `json:"submitter,omitempty"`
 
 	// 提交者类型
-	SubmitterType int  `json:"omitempty,submitter_type"`
+	SubmitterType int `json:"submitter_type,omitempty"`
 
 	// 提交者联系方式
-	SubmitterPhone string `json:"omitempty,submitter_phone"`
+	SubmitterPhone string `json:"submitter_phone,omitempty"`
 }

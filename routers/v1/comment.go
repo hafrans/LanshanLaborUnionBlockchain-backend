@@ -46,23 +46,22 @@ func AddComment(ctx *gin.Context) {
 			return
 		} else {
 
-			var user *models.User
+			user, err := dao.GetUserById(claims.Id)
+			if err != nil {
+				ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "用户状态获取异常"))
+				return
+			}
+
 			// 如果是当事人才可以添加内容
 			if claims.UserType == models.USER_TYPE_LABOR || claims.UserType == models.USER_TYPE_EMPLOYER {
 				// 需要检查劳动者身份证
-				user, err := dao.GetUserById(claims.Id)
-				if err != nil {
-					ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "用户状态获取异常"))
-					return
-				}
-
 				if claims.UserType == models.USER_TYPE_LABOR {
 					if user.UserProfile.ApplicantIdentityNumber != myCase.ApplicantIdentityNumber {
 						ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "非本人填写对质信息"))
 						return
 					}
 				}
-
+				// 检查用工单位ussc
 				if claims.UserType == models.USER_TYPE_EMPLOYER {
 					if user.UserProfile.EmployerUniformSocialCreditCode != myCase.EmployerUniformSocialCreditCode {
 						ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "非本人填写对质信息"))
