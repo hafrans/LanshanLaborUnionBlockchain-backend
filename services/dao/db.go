@@ -73,6 +73,7 @@ func CreateTables() {
 	db.DropTableIfExists(&models.Suggestion{})
 	db.DropTableIfExists(&models.Material{})
 	db.DropTableIfExists(&models.Record{})
+	db.DropTableIfExists(&models.Comment{})
 
 	db.DropTableIfExists(&models.HistoryV1{})
 	//========================================
@@ -91,6 +92,7 @@ func CreateTables() {
 	db.CreateTable(&models.Record{})
 	db.CreateTable(&models.Material{})
 	db.CreateTable(&models.Suggestion{})
+	db.CreateTable(&models.Comment{})
 	db.CreateTable(&models.Case{})
 
 	db.CreateTable(&models.LaborArbitration{})

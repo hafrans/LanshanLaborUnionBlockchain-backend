@@ -71,6 +71,8 @@ type Case struct {
 
 	Materials []*Material `json:"materials" gorm:"foreignkey:CaseID;association_foreignkey:CaseID"` // 证据材料
 
+	Comments []*Comment `json:"comments" gorm:"foreignkey:CaseID;association_foreignkey:CaseID"` // 双方陈述
+
 	Records []*Record `json:"records" gorm:"foreignkey:CaseID;association_foreignkey:CaseID"` // 笔录
 
 	Suggestions []*Suggestion `json:"suggestions" gorm:"foreignkey:CaseID;association_foreignkey:CaseID"` // 部门处理意见

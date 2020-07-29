@@ -111,7 +111,7 @@ func pingHandler(ctx *gin.Context) {
 
 	//dao.GetExternalDB().DropTableIfExists(&models.HistoryV1{})
 	//dao.GetExternalDB().CreateTable(&models.HistoryV1{})
-
+	//dao.GetExternalDB().CreateTable(&models.Comment{})
 
 	ctx.JSON(200, gin.H{
 		"status":  0,

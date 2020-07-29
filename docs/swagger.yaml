@@ -193,6 +193,7 @@ definitions:
         type: string
     required:
     - applicant
+    - category_id
     - content
     - form_id
     - respondent
@@ -204,6 +205,21 @@ definitions:
         type: integer
     required:
     - status
+    type: object
+  vo.Comment:
+    properties:
+      case_id:
+        description: 关联案件号
+        type: string
+      content:
+        description: 对质内容
+        type: string
+      omitempty:
+        description: 提交者联系方式
+        type: string
+    required:
+    - case_id
+    - content
     type: object
   vo.Common:
     properties:
@@ -636,6 +652,9 @@ definitions:
     properties:
       confirm_password:
         type: string
+      email:
+        example: test@1234.com
+        type: string
       employer:
         $ref: '#/definitions/vo.Employer'
         type: object
@@ -647,6 +666,7 @@ definitions:
         type: string
     required:
     - confirm_password
+    - email
     - employer
     - password
     - phone
@@ -658,6 +678,9 @@ definitions:
         type: object
       confirm_password:
         type: string
+      email:
+        example: test@1234.com
+        type: string
       password:
         description: Username        string    `json:"username" form:"username" binding:"required,min=3,max=20"`
         type: string
@@ -667,6 +690,7 @@ definitions:
     required:
     - applicant
     - confirm_password
+    - email
     - password
     - phone
     type: object
@@ -688,7 +712,7 @@ info:
   license: {}
   termsOfService: http://hafrans.com
   title: 岚山区劳动争议调解区块链平台
-  version: 0.0.2
+  version: 0.9.9
 paths:
   /api/auth/captcha/:id:
     get:
@@ -1114,6 +1138,61 @@ paths:
       tags:
       - category
       - case
+  /api/v1/comment/create:
+    post:
+      consumes:
+      - application/json
+      description: 由双方人员创建对质信息，管理员不干涉，但是可以进行添加
+      parameters:
+      - description: 提交表单
+        in: body
+        name: case
+        required: true
+        schema:
+          $ref: '#/definitions/vo.Comment'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/vo.CommonData'
+        "401":
+          description: 没有认证
+          schema:
+            $ref: '#/definitions/vo.Common'
+        "422":
+          description: 绑定失败
+          schema:
+            $ref: '#/definitions/vo.Common'
+      summary: 根据 CaseID 创建双方对质信息
+      tags:
+      - case
+      - comment
+  /api/v1/comment/delete/:id:
+    get:
+      description: 根据comment 的id号码删除comment，只有管理员、部门人员、以及创建者可以操作
+      parameters:
+      - description: comment id
+        in: path
+        name: id
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 正常业务处理
+          schema:
+            $ref: '#/definitions/vo.CommonData'
+        "401":
+          description: 未验证
+          schema:
+            $ref: '#/definitions/vo.Common'
+      summary: 根据comment 的id号码删除comment
+      tags:
+      - labor
+      - comment
   /api/v1/department/create:
     post:
       consumes:

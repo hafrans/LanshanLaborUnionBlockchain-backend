@@ -671,6 +671,89 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/comment/create": {
+            "post": {
+                "description": "由双方人员创建对质信息，管理员不干涉，但是可以进行添加",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "case",
+                    "comment"
+                ],
+                "summary": "根据 CaseID 创建双方对质信息",
+                "parameters": [
+                    {
+                        "description": "提交表单",
+                        "name": "case",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.Comment"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/vo.CommonData"
+                        }
+                    },
+                    "401": {
+                        "description": "没有认证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    },
+                    "422": {
+                        "description": "绑定失败",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/comment/delete/:id": {
+            "get": {
+                "description": "根据comment 的id号码删除comment，只有管理员、部门人员、以及创建者可以操作",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "labor",
+                    "comment"
+                ],
+                "summary": "根据comment 的id号码删除comment",
+                "parameters": [
+                    {
+                        "type": "number",
+                        "description": "comment id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "正常业务处理",
+                        "schema": {
+                            "$ref": "#/definitions/vo.CommonData"
+                        }
+                    },
+                    "401": {
+                        "description": "未验证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/department/create": {
             "post": {
                 "description": "创建单位，只有管理员可以使用",
@@ -1635,6 +1718,7 @@ var doc = `{
             "type": "object",
             "required": [
                 "applicant",
+                "category_id",
                 "content",
                 "form_id",
                 "respondent",
@@ -1684,6 +1768,27 @@ var doc = `{
             "properties": {
                 "status": {
                     "type": "integer"
+                }
+            }
+        },
+        "vo.Comment": {
+            "type": "object",
+            "required": [
+                "case_id",
+                "content"
+            ],
+            "properties": {
+                "case_id": {
+                    "description": "关联案件号",
+                    "type": "string"
+                },
+                "content": {
+                    "description": "对质内容",
+                    "type": "string"
+                },
+                "omitempty": {
+                    "description": "提交者联系方式",
+                    "type": "string"
                 }
             }
         },
@@ -2247,6 +2352,7 @@ var doc = `{
             "type": "object",
             "required": [
                 "confirm_password",
+                "email",
                 "employer",
                 "password",
                 "phone"
@@ -2254,6 +2360,10 @@ var doc = `{
             "properties": {
                 "confirm_password": {
                     "type": "string"
+                },
+                "email": {
+                    "type": "string",
+                    "example": "test@1234.com"
                 },
                 "employer": {
                     "type": "object",
@@ -2274,6 +2384,7 @@ var doc = `{
             "required": [
                 "applicant",
                 "confirm_password",
+                "email",
                 "password",
                 "phone"
             ],
@@ -2284,6 +2395,10 @@ var doc = `{
                 },
                 "confirm_password": {
                     "type": "string"
+                },
+                "email": {
+                    "type": "string",
+                    "example": "test@1234.com"
                 },
                 "password": {
                     "description": "Username        string    ` + "`" + `json:\"username\" form:\"username\" binding:\"required,min=3,max=20\"` + "`" + `",
@@ -2322,7 +2437,7 @@ type swaggerInfo struct {
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
-	Version:     "0.0.2",
+	Version:     "0.9.9",
 	Host:        "",
 	BasePath:    "",
 	Schemes:     []string{},
