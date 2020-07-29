@@ -8,7 +8,7 @@ type Record struct {
 	// caseID， 新建表单时不要上传该信息
 	CaseID string `json:"case_id"  gorm:"type:varchar(64);index"`
 	// 截图/材料等地址
-	Path string `json:"record_path"`
+	Path string `json:"record_path" gorm:"type:text"`
 
 	// 谁录入的笔录
 	UserID int64 `json:"-" `

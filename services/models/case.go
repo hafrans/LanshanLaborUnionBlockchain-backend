@@ -10,9 +10,9 @@ type Applicant struct {
 	// 生日
 	ApplicantBirthday *utils.Date `json:"applicant_birth" form:"applicant_birth" gorm:"type:date"`
 	// 民族
-	ApplicantNationality string `json:"applicant_nationality" form:"applicant_nationality" gorm:"type:varchar(32);not null"`
+	ApplicantNationality string `json:"applicant_nationality" form:"applicant_nationality" gorm:"type:varchar(64);not null"`
 	// 身份证号
-	ApplicantIdentityNumber string `json:"applicant_id" form:"applicant_id" gorm:"type:varchar(20);not null"`
+	ApplicantIdentityNumber string `json:"applicant_id" form:"applicant_id" gorm:"type:varchar(20);not null;index:id_number"`
 	// 联系方式
 	ApplicantContact string `json:"applicant_contact" form:"applicant_contact" gorm:"type:varchar(32)"`
 	// 地址
@@ -27,7 +27,7 @@ type Employer struct {
 	// 法人
 	EmployerLegalRepresentative string `json:"employer_faren" form:"employer_faren" gorm:"type:varchar(128);not null"`
 	// 识别号
-	EmployerUniformSocialCreditCode string `json:"employer_uscc" form:"employer_uscc" gorm:"type:varchar(32);not null"`
+	EmployerUniformSocialCreditCode string `json:"employer_uscc" form:"employer_uscc" gorm:"type:varchar(32);not null;index:ussc"`
 	// 联系方式
 	EmployerContact string `json:"employer_contact" form:"employer_contact" gorm:"type:varchar(32)"`
 	// 地址
@@ -40,7 +40,7 @@ type Material struct {
 	// 材料介绍
 	Name string `json:"name" binding:"required"`
 	// 材料资源path
-	Path *string `json:"path" binding:"omitempty"`
+	Path *string `json:"path" binding:"omitempty" gorm:"type:text"`
 	// caseID， 新建表单时不要上传该信息
 	CaseID string `json:"case_id" gorm:"type:varchar(64);index"`
 }
