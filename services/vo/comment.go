@@ -2,7 +2,7 @@ package vo
 
 type Comment struct {
 	// 对质ID
-	ID int64 `json:"omitempty,id"`
+	ID int64 `json:"id,omitempty"`
 
 	// 关联案件号
 	CaseID string `json:"case_id" binding:"required"`

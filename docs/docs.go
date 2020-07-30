@@ -1786,9 +1786,21 @@ var doc = `{
                     "description": "对质内容",
                     "type": "string"
                 },
-                "omitempty": {
+                "id": {
+                    "description": "对质ID",
+                    "type": "integer"
+                },
+                "submitter": {
+                    "description": "提交者",
+                    "type": "string"
+                },
+                "submitter_phone": {
                     "description": "提交者联系方式",
                     "type": "string"
+                },
+                "submitter_type": {
+                    "description": "提交者类型",
+                    "type": "integer"
                 }
             }
         },
