@@ -18,6 +18,7 @@ require (
 	github.com/smartystreets/goconvey v1.6.4 // indirect
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.6
+	github.com/tencentcloud/tencentcloud-sdk-go v3.0.225+incompatible // indirect
 	golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
 	golang.org/x/net v0.0.0-20200528225125-3c3fba18258b // indirect
 	golang.org/x/sys v0.0.0-20200602100848-8d3cce7afc34 // indirect

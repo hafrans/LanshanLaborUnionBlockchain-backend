@@ -11,3 +11,10 @@ TablePrefix = ls_
 Realm = lanshan
 Key = hafranslanshan123
 IdentityKey = id
+
+
+[QQMeeting]
+AppID = 123456789
+SDKID = 23456789
+SecretID = gfCuPXeBAC7jRL0hybQ3zrFVlM5ZwYsSmOXC
+SecretKey = zTMX9Z2dze1kSq54C3pNGuxTgTyRmDbE

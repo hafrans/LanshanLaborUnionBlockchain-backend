@@ -5,10 +5,10 @@ import (
 )
 
 const (
-	USER_TYPE_ADMIN      = 1
-	USER_TYPE_LABOR      = 2
-	USER_TYPE_EMPLOYER   = 3
-	USER_TYPE_DEPARTMENT = 4
+	USER_TYPE_ADMIN      = 1 // 系统管理员
+	USER_TYPE_LABOR      = 2 // 劳动者
+	USER_TYPE_EMPLOYER   = 3 // 用人单位
+	USER_TYPE_DEPARTMENT = 4 // 部门管理员
 )
 
 type User struct {
