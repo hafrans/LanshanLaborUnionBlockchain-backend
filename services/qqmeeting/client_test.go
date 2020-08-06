@@ -2,11 +2,7 @@ package qqmeeting_test
 
 import (
 	"RizhaoLanshanLabourUnion/services/qqmeeting"
-	"crypto"
-	"crypto/hmac"
-	"encoding/hex"
 	"io/ioutil"
-	"log"
 	"strconv"
 	"testing"
 	"time"
@@ -14,19 +10,6 @@ import (
 
 var meeting = qqmeeting.Meeting{
 
-}
-
-func TestNewRequest2(t *testing.T) {
-
-	str := `GET
-X-TC-Key=gfpuPNeBAq7jRL0hybQ3zrFVlM5ZwYsSmOTC&X-TC-Nonce=18081&X-TC-Timestamp=1596535863
-/v1/users/list?page=1&page_size=1
-`
-	hm := hmac.New(crypto.SHA256.New, []byte("zVMF9Z0erw1kSH54CBpNGu6cgxyRmDbX"))
-	hm.Write([]byte(str))
-	result := hm.Sum(nil)
-	log.Printf("%x\n", result)
-	log.Println(hex.EncodeToString(result))
 }
 
 func TestNewRequest(t *testing.T) {
