@@ -20,6 +20,10 @@ import (
 	"time"
 )
 
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
+
 // Describe A Request
 type MeetingRequestDescriptor struct {
 	Url    string
@@ -58,11 +62,12 @@ type Pager struct {
 }
 
 type Meeting struct {
-	SecretKey string
-	SecretID  string
-	AppID     string
-	SdkId     string
-	Version   string
+	SecretKey  string
+	SecretID   string
+	AppID      string
+	SdkId      string
+	Version    string // 软件版本，用于调试
+	Registered int    // 企业用户管理，最好开，否则主持人的功能用不了
 }
 
 // RequestBody Descriptor
@@ -84,11 +89,11 @@ type Request struct {
 }
 
 var proxyUrl, _ = url.Parse("http://127.0.0.1:18080")
-var client *http.Client = &http.Client{
+var client = &http.Client{
 
 	Transport: &http.Transport{
-		//Proxy: http.ProxyURL(proxyUrl),
-		Proxy: http.ProxyFromEnvironment,
+		Proxy: http.ProxyURL(proxyUrl),
+		//Proxy: http.ProxyFromEnvironment,
 		DialContext: (&net.Dialer{
 			Timeout:   30 * time.Second,
 			KeepAlive: 30 * time.Second,
@@ -118,11 +123,10 @@ func newMeetingRequest(method, path, body string, meeting Meeting) *Request {
 
 	req.Timestamp = time.Now().Unix()
 	req.Key = meeting.SecretID
-	rand.Seed(time.Now().UnixNano())
 	req.Nonce = rand.Intn(10000) + 10000
 	req.Version = meeting.Version
 	req.AppID = meeting.AppID
-	req.Registered = 0
+	req.Registered = meeting.Registered
 	req.SdkId = meeting.SdkId
 
 	return req
@@ -209,7 +213,7 @@ func (meeting Meeting) Do(req MeetingRequest) (MeetingResponse, error) {
 	val := reflect.ValueOf(req)
 
 	params := make([]interface{}, 0, 3)
-	queries := url.Values{}
+	queries := NewQueryValues()
 
 	// inject params and queries
 	for i := 0; i < typ.NumField(); i++ {
@@ -286,5 +290,4 @@ func (meeting Meeting) Do(req MeetingRequest) (MeetingResponse, error) {
 		}
 
 	}
-	return nil, nil
 }
