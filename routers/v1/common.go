@@ -53,7 +53,7 @@ func ApiIndexHandler(ctx *gin.Context) {
 // @Param file query string true "要上传的资源"
 // @Success 200 {object} vo.Common
 // @Failure 401 {object} vo.Common
-// @Router /api/v1/ [get]
+// @Router /api/v1/upload [get]
 func UploadAssets(ctx *gin.Context) {
 
 	file, err := ctx.FormFile("file")

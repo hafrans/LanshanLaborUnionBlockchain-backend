@@ -232,9 +232,9 @@
         },
         "/api/v1/": {
             "get": {
-                "description": "上传资源 ，支持 pdf,doc,docx,pdfx,txt,mp3,zip,jpg,gif,jpeg,png格式",
+                "description": "测试在登录情况下是否可以访问",
                 "consumes": [
-                    "multipart/form-data"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
@@ -242,16 +242,7 @@
                 "tags": [
                     "utils"
                 ],
-                "summary": "上传资源",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "要上传的资源",
-                        "name": "file",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
+                "summary": "ApiIndex",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1317,6 +1308,44 @@
                     },
                     "500": {
                         "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/upload": {
+            "get": {
+                "description": "上传资源 ，支持 pdf,doc,docx,pdfx,txt,mp3,zip,jpg,gif,jpeg,png格式",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "utils"
+                ],
+                "summary": "上传资源",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "要上传的资源",
+                        "name": "file",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/vo.Common"
                         }

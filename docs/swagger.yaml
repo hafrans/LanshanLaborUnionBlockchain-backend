@@ -869,14 +869,8 @@ paths:
   /api/v1/:
     get:
       consumes:
-      - multipart/form-data
-      description: 上传资源 ，支持 pdf,doc,docx,pdfx,txt,mp3,zip,jpg,gif,jpeg,png格式
-      parameters:
-      - description: 要上传的资源
-        in: query
-        name: file
-        required: true
-        type: string
+      - application/json
+      description: 测试在登录情况下是否可以访问
       produces:
       - application/json
       responses:
@@ -888,7 +882,7 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/vo.Common'
-      summary: 上传资源
+      summary: ApiIndex
       tags:
       - utils
   /api/v1/blockchain/history/case/:caseId:
@@ -1590,6 +1584,31 @@ paths:
       tags:
       - test
       - labor
+  /api/v1/upload:
+    get:
+      consumes:
+      - multipart/form-data
+      description: 上传资源 ，支持 pdf,doc,docx,pdfx,txt,mp3,zip,jpg,gif,jpeg,png格式
+      parameters:
+      - description: 要上传的资源
+        in: query
+        name: file
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/vo.Common'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/vo.Common'
+      summary: 上传资源
+      tags:
+      - utils
   /api/v1/user/info:
     get:
       description: 获取用户信息
