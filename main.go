@@ -6,14 +6,13 @@ import (
 	"RizhaoLanshanLabourUnion/security"
 	"RizhaoLanshanLabourUnion/security/jwt"
 	"RizhaoLanshanLabourUnion/services/dao"
+	"RizhaoLanshanLabourUnion/services/models"
 	"RizhaoLanshanLabourUnion/services/qqmeeting"
 	"RizhaoLanshanLabourUnion/utils"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
-	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"time"
@@ -37,6 +36,7 @@ func main() {
 	dao.TryInitializeTables()
 	security.InitRBAC()
 	jwt.InitJwt()
+	qqmeeting.InitMeeting()
 
 
 	// initialize api services
@@ -118,26 +118,7 @@ func pingHandler(ctx *gin.Context) {
 	//dao.GetExternalDB().DropTableIfExists(&models.HistoryV1{})
 	//dao.GetExternalDB().CreateTable(&models.HistoryV1{})
 	//dao.GetExternalDB().CreateTable(&models.Comment{})
-	var meeting = qqmeeting.Meeting{
-		SdkId: "2007311934",
-		AppID: "231642809",
-		SecretID: "gfpuPNeBAq7jRL0hybQ3zrFVlM5ZwYsSmOTC",
-		SecretKey: "zVMF9Z0erw1kSH54CBpNGu6cgxyRmDbX",
-	}
-	req, err := qqmeeting.NewRequest("GET","https://api.meeting.qq.com/v1/users/list?page=1&page_size=1","",meeting)
-	if err != nil {
-		log.Println(err)
-	}else{
-		client := &http.Client{}
-		resp, err := client.Do(req)
-		if err != nil {
-			log.Println(err)
-		}else{
-			content, _ := ioutil.ReadAll(resp.Body)
-			log.Println(string(content))
-		}
-	}
-
+	dao.GetExternalDB().CreateTable(&models.Meeting{})
 	ctx.JSON(200, gin.H{
 		"status":  0,
 		"message": "pong",

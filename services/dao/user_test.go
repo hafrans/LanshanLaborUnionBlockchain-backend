@@ -10,9 +10,9 @@ import (
 )
 
 func init() {
-	utils.InitSettings()
+	utils.InitTestSetting()
 	dao.InitDB()
-	dao.CreateTables()
+	// dao.CreateTables()
 }
 
 var id int64

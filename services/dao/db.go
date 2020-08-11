@@ -76,6 +76,8 @@ func CreateTables() {
 	db.DropTableIfExists(&models.Comment{})
 
 	db.DropTableIfExists(&models.HistoryV1{})
+
+	db.DropTableIfExists(&models.Meeting{})
 	//========================================
 
 	// 有many to many 的先创建
@@ -98,6 +100,7 @@ func CreateTables() {
 	db.CreateTable(&models.LaborArbitration{})
 
 	db.CreateTable(&models.HistoryV1{})
+	db.CreateTable(&models.Meeting{})
 
 	InitInformation()
 

@@ -7,10 +7,10 @@ import (
 )
 
 func InitDepartment() {
-	CreateDepartment("[测试]莒州市总工会", "暂时无描述", "测试、调解、测试、调解", "0633-8888888")
-	CreateDepartment("[测试]莒州市中级人民法院", "暂时无描述", "测试、调解、测试、调解", "0633-7777777")
+	CreateDepartment("日照市岚山区总工会", "暂时无描述", "测试、调解、测试、调解", "0633-8888888")
+	CreateDepartment("日照市岚山区人民法院", "暂时无描述", "测试、调解、测试、调解", "0633-7777777")
 	CreateDepartment("[测试]莒州市劳动仲裁委员会", "暂时无描述", "测试、调解、测试、调解", "0633-6666666")
-	CreateDepartment("[测试]莒州市人社局", "暂时无描述", "测试、调解、测试、调解", "0633-5555555")
+	CreateDepartment("日照市岚山区人社局", "暂时无描述", "测试、调解、测试、调解", "0633-5555555")
 }
 
 func CreateDepartment(name, description, service, contact string) (*models.Department, error) {

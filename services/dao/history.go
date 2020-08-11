@@ -11,21 +11,36 @@ func CreateNewHistory(caseId, operation, content string, userID int64, operation
 
 	user, _ := GetUserById(userID)
 
-	model := models.HistoryV1{
-		CaseID:            caseId,
-		Content:           content,
-		UserID:            userID,
-		User:              user.UserName,
-		OperationHash:     operationHash,
-		PrevOperationHash: prevHash,
-		Operation:         operation,
+	var model *models.HistoryV1
+
+	if user.DepartmentID != nil {
+		model = &models.HistoryV1{
+			CaseID:            caseId,
+			Content:           content,
+			UserID:            userID,
+			User:              user.Department.Name + "\n" + user.UserName,
+			OperationHash:     operationHash,
+			PrevOperationHash: prevHash,
+			Operation:         operation,
+		}
+	} else {
+		model = &models.HistoryV1{
+			CaseID:            caseId,
+			Content:           content,
+			UserID:            userID,
+			User:              user.UserName,
+			OperationHash:     operationHash,
+			PrevOperationHash: prevHash,
+			Operation:         operation,
+		}
 	}
+
 	result := db.Create(&model)
 	if result.Error != nil {
 		log.Println(result.Error)
 		return nil, result.Error
 	} else {
-		return &model, nil
+		return model, nil
 	}
 }
 

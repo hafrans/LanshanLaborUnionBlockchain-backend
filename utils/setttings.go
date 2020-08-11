@@ -67,6 +67,7 @@ func InitTestSetting() {
 	if cfg, err := ini.Load("E:\\GolangProjects\\RizhaoLanshanLabourUnion\\conf\\conf.ini"); err == nil {
 		mapTo(cfg, "database", DatabaseSettings)
 		mapTo(cfg, "jwt", JWTSettings)
+		mapTo(cfg, "QQMeeting", QQMeetingSettings)
 	} else {
 		log.Fatalln("Config Settings Load Failed " + err.Error())
 	}
