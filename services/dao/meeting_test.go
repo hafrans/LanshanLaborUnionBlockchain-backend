@@ -6,6 +6,7 @@ import (
 	"RizhaoLanshanLabourUnion/services/qqmeeting"
 	"RizhaoLanshanLabourUnion/utils"
 	"testing"
+	"time"
 )
 
 func init(){
@@ -17,8 +18,8 @@ func init(){
 func TestCreateMeeting(t *testing.T) {
 	meeting := &models.Meeting{
 		JoinUrl: "asdsad",
-		EndTime: utils.NowTime(),
-		StartTime: utils.NowTime(),
+		EndTime: time.Now(),
+		StartTime: time.Now(),
 		MeetingCode: "213214214",
 		MeetingID: "21181651",
 		Subject: "asdbiwuqbdouqw",
@@ -31,3 +32,13 @@ func TestCreateMeeting(t *testing.T) {
 	dao.CreateMeeting(meeting)
 }
 
+
+func TestGetMeetingAllWithConditionPaginated(t *testing.T) {
+
+	_,b,c := dao.GetMeetingAllWithConditionPaginated(nil, nil, true, 1, 22)
+	if c != nil {
+		t.Error(c)
+	}else{
+		t.Log("TOTAL:",b)
+	}
+}

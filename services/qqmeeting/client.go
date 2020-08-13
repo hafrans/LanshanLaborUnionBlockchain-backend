@@ -88,12 +88,11 @@ type Request struct {
 	ContentLength string `json:"Content-Length"`
 }
 
-var proxyUrl, _ = url.Parse("http://127.0.0.1:18080")
+//var proxyUrl, _ = url.Parse("http://127.0.0.1:18080")
 var client = &http.Client{
-
 	Transport: &http.Transport{
-		Proxy: http.ProxyURL(proxyUrl),
-		//Proxy: http.ProxyFromEnvironment,
+		//Proxy: http.ProxyURL(proxyUrl),
+		Proxy: http.ProxyFromEnvironment,
 		DialContext: (&net.Dialer{
 			Timeout:   30 * time.Second,
 			KeepAlive: 30 * time.Second,

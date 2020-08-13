@@ -2,6 +2,7 @@ package dao
 
 import (
 	"RizhaoLanshanLabourUnion/services/models"
+	"RizhaoLanshanLabourUnion/utils"
 	"log"
 )
 
@@ -16,9 +17,7 @@ func CreateMeeting(model *models.Meeting) (*models.Meeting, error) {
 }
 
 func DeleteMeetingByID(id int64) bool {
-
 	result := db.Delete(&models.Meeting{}, id)
-
 	if result.Error != nil {
 		log.Println(result.Error)
 		return false
@@ -47,7 +46,7 @@ func GetMeetingAllWithConditionPaginated(caseId *string, userId *int64, filterOl
 	pendingDB := db.Set("gorm:auto_preload", true).Model(&models.Meeting{})
 
 	if caseId != nil && *caseId != "" {
-		pendingDB = pendingDB.Where("case_id = ?", caseId)
+		pendingDB = pendingDB.Where("case_id LIKE ?", "%"+*caseId+"%")
 	}
 
 	if userId != nil && *userId != 0 {
@@ -58,13 +57,38 @@ func GetMeetingAllWithConditionPaginated(caseId *string, userId *int64, filterOl
 		pendingDB = pendingDB.Where("end_time > NOW()")
 	}
 
-	result := pendingDB.Count(&totalCount).Count(pageSize).Offset((pageNum - 1) * pageSize).Find(&meetings)
+	result := pendingDB.Count(&totalCount).Limit(pageSize).Offset((pageNum - 1) * pageSize).Find(&meetings)
 
 	if result.Error != nil {
 		log.Println(result.Error)
 		return nil, totalCount, result.Error
-	}else{
+	} else {
 		return meetings, totalCount, nil
 	}
 
+}
+
+// 获取所有关联的会议
+func GetMeetingAllRelatedPaginated(userId int64, filterOld bool, pageNum, pageSize int) ([]*models.Meeting, int, error) {
+
+	var list []*models.Meeting
+	var totalCount int
+	var tablePrefix = utils.DatabaseSettings.TablePrefix
+	pendingDB := db.Set("gorm:auto_preload", true).
+		Table(tablePrefix+"meeting").
+		Model(&models.Meeting{}).
+		Joins("JOIN "+tablePrefix+"meeting_personnel as mp on mp.meeting_id = "+tablePrefix+"meeting.id").
+		Where("mp.user_id = ?", userId)
+
+	if filterOld {
+		pendingDB = pendingDB.Where(tablePrefix+"meeting.end_time > NOW()")
+	}
+
+	result := pendingDB.Count(&totalCount).Limit(pageSize).Offset((pageNum - 1) * pageSize).Find(&list)
+	if result.Error != nil {
+		log.Println(result.Error)
+		return nil, totalCount, result.Error
+	} else {
+		return list, totalCount, nil
+	}
 }

@@ -90,4 +90,11 @@ func InitApiV1Routers(apiV1 *gin.RouterGroup) {
 	apiBlockChain := apiV1.Group("/blockchain")
 	apiBlockChain.GET("/history/case/:caseId", v1.GetHistoryByCaseID)
 
+	apiMeeting := apiV1.Group("/meeting")
+	apiMeeting.GET("/account/create", v1.CreateMeetingAccount)
+	apiMeeting.GET("/account/delete", v1.DeleteAccount)
+	apiMeeting.POST("/create", v1.CreateMeeting)
+	apiMeeting.GET("/list", v1.GetMyMeetingList)
+
+
 }

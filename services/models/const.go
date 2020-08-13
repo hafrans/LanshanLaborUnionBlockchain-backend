@@ -55,3 +55,7 @@ const (
 	StatusCompleted               // 调解结束
 )
 
+const (
+	MeetingRoleHost    = 1 + iota // 主持人
+	MeetingRoleInvitee            // 参与者
+)

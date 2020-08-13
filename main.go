@@ -6,13 +6,14 @@ import (
 	"RizhaoLanshanLabourUnion/security"
 	"RizhaoLanshanLabourUnion/security/jwt"
 	"RizhaoLanshanLabourUnion/services/dao"
-	"RizhaoLanshanLabourUnion/services/models"
 	"RizhaoLanshanLabourUnion/services/qqmeeting"
 	"RizhaoLanshanLabourUnion/utils"
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -38,7 +39,6 @@ func main() {
 	jwt.InitJwt()
 	qqmeeting.InitMeeting()
 
-
 	// initialize api services
 	port, ok := os.LookupEnv("PORT")
 	if !ok {
@@ -51,7 +51,6 @@ func main() {
 	router.MaxMultipartMemory = 20 << 20 // 20MiB
 
 	gin.DisableConsoleColor()
-
 
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
@@ -118,7 +117,13 @@ func pingHandler(ctx *gin.Context) {
 	//dao.GetExternalDB().DropTableIfExists(&models.HistoryV1{})
 	//dao.GetExternalDB().CreateTable(&models.HistoryV1{})
 	//dao.GetExternalDB().CreateTable(&models.Comment{})
-	dao.GetExternalDB().CreateTable(&models.Meeting{})
+	//dao.GetExternalDB().CreateTable(&models.Meeting{})
+	// dao.GetExternalDB().CreateTable(&models.MeetingPersonnel{})
+
+	a, b, _ := dao.GetMeetingAllRelatedPaginated(1, true, 1, 20)
+	log.Println(b)
+	resp, _ := json.Marshal(a)
+	log.Println(string(resp))
 	ctx.JSON(200, gin.H{
 		"status":  0,
 		"message": "pong",
