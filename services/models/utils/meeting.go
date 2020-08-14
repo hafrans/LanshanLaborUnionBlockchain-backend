@@ -26,6 +26,8 @@ func PopulateMeetingFromModelToVO(model *models.Meeting) *vo.MeetingVO {
 		JoinUrl:     model.JoinUrl,
 		Subject:     model.Subject,
 		MeetingCode: model.MeetingCode,
+		Password:    model.Password,
+		Type:        model.Type,
 	}
 
 	return vo

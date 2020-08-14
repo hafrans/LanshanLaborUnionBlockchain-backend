@@ -24,7 +24,7 @@ type MeetingVO struct {
 	Creator     string      `json:"creator"`
 	Host        []string    `json:"host"`
 	Type        int         `json:"type"`
-	Password    string      `json:"password"`
+	Password    *string     `json:"password"`
 }
 
 type MeetingCreateForm struct {

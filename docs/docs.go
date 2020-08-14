@@ -1170,6 +1170,38 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/meeting/cancel/:id": {
+            "get": {
+                "description": "取消会议，只有管理员和创建会议者可以取消",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "meeting"
+                ],
+                "summary": "取消会议",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/vo.CommonData"
+                        }
+                    },
+                    "401": {
+                        "description": "未验证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/meeting/create": {
             "post": {
                 "description": "创建会议，只有管理员和部门人员可以创建",

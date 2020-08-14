@@ -126,6 +126,73 @@ func DeleteAccount(ctx *gin.Context) {
 	}
 }
 
+// CancelMeeting
+// @Summary 取消会议
+// @Description 取消会议，只有管理员和创建会议者可以取消
+// @Tags meeting
+// @Produce json
+// @Success 200 {object} vo.CommonData
+// @Failure 401 {object} vo.Common "未验证"
+// @Failure 500 {object} vo.Common "服务器错误"
+// @Router /api/v1/meeting/cancel/:id [get]
+func CancelMeeting(ctx *gin.Context) {
+
+	claims := jwtmodel.ExtractUserClaimsFromGinContext(ctx)
+	meetingId, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "会议ID无效"))
+		return
+	}
+	// check roles
+	if claims.UserType != models.USER_TYPE_ADMIN && claims.UserType != models.USER_TYPE_DEPARTMENT {
+		ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "您没有权限取消会议"))
+	} else {
+		// 检查归属
+		meeting, err := dao.GetMeetingByID(int64(meetingId))
+
+		if err != nil {
+			if err == sql.ErrNoRows || err == gorm.ErrRecordNotFound {
+				ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "该会议不存在"))
+			} else {
+				log.Println(err)
+				ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "未知错误"+err.Error()))
+			}
+			return
+		}
+
+		if claims.UserType == models.USER_TYPE_DEPARTMENT && meeting.UserID != claims.Id {
+			// 部门管理员，不是创建这个会议的人
+			ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "您没有权限取消会议"))
+			return
+		}
+
+		// 开始删除
+
+		_, err = qqmeeting.MeetingClient.Do(qqmeeting.MeetingCancelRequest{
+			UserID:       meeting.CreatorID,
+			MeetingID:    meeting.MeetingID,
+			ReasonDetail: "管理员或会议创建者主动取消会议",
+			InstanceID:   qqmeeting.InstancePC,
+			ReasonCode:   103,
+		})
+
+		if err == nil { // 删除成功
+			dao.DeleteMeetingByID(int64(meetingId))
+			ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericSuccess, "会议取消成功"))
+		} else {
+			res := err.(qqmeeting.MeetingError)
+			if res.Code == qqmeeting.ErrMeetingNotExists || res.Code == qqmeeting.ErrCancelMeetingDestroyed {
+				dao.DeleteMeetingByID(int64(meetingId))
+				ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericSuccess, "会议取消成功"))
+			}else{
+				ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "会议取消失败"+err.Error()))
+			}
+		}
+
+	}
+
+}
+
 // CreateMeeting
 // @Summary 创建会议
 // @Description 创建会议，只有管理员和部门人员可以创建
@@ -170,8 +237,8 @@ func CreateMeeting(ctx *gin.Context) {
 								UserID: userid,
 							},
 						},
-						StartTime:  strconv.Itoa(int(time.Time(*form.StartTime).Unix())),
-						EndTime:    strconv.Itoa(int(time.Time(*form.EndTime).Unix())),
+						StartTime:  strconv.Itoa(int(time.Time(*form.StartTime).Unix()) - 3600*8),
+						EndTime:    strconv.Itoa(int(time.Time(*form.EndTime).Unix()) - 3600*8),
 						InstanceID: qqmeeting.InstancePC,
 						Password:   form.Password,
 						Type:       form.Type,
@@ -218,6 +285,7 @@ func CreateMeeting(ctx *gin.Context) {
 							})
 							ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "会议创建失败"))
 						} else {
+
 							// 添加人员
 							// 先把自己添加
 							_, err = dao.CreateMeetingPersonnel(mod.ID, user, userinfo, models.MeetingRoleHost)
@@ -230,10 +298,32 @@ func CreateMeeting(ctx *gin.Context) {
 							}
 							// 添加完毕
 
+							// 重新获取已加载的会议信息
+							mod, err = dao.GetMeetingByID(mod.ID)
 							ctx.JSON(respcode.HttpOK, vo.CommonData{
-								Common: vo.GenerateCommonResponseHead(respcode.GenericFailed, "会议创建成功"),
+								Common: vo.GenerateCommonResponseHead(respcode.GenericSuccess, "会议创建成功"),
 								Data:   utils.PopulateMeetingFromModelToVO(mod),
 							})
+							/**
+							  "status": 1,
+							    "message": "会议创建成功",
+							    "timestamp": "2020-08-14 13:01:36",
+							    "data": {
+							        "id": 5,
+							        "meeting_code": "508822604",
+							        "case_id": "3711002020071217413815945468986090287",
+							        "subject": "测试会议",
+							        "start_time": "2020-08-14 22:45:56",
+							        "end_time": "2020-08-15 01:45:56",
+							        "join_url": "https://meeting.tencent.com/s/JKt0Mu0hwiMW",
+							        "creator": "李六",
+							        "host": [
+							            "日照市岚山区人民法院 李六"
+							        ],
+							        "type": 1,
+							        "password": null
+							    }
+							*/
 						}
 
 					}
@@ -307,6 +397,7 @@ func GetMyMeetingList(ctx *gin.Context) {
 				"page_num":    pageNum,
 			},
 		})
+
 	}
 
 }

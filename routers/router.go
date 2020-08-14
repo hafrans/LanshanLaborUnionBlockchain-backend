@@ -95,6 +95,6 @@ func InitApiV1Routers(apiV1 *gin.RouterGroup) {
 	apiMeeting.GET("/account/delete", v1.DeleteAccount)
 	apiMeeting.POST("/create", v1.CreateMeeting)
 	apiMeeting.GET("/list", v1.GetMyMeetingList)
-
+	apiMeeting.GET("/cancel/:id", v1.CancelMeeting)
 
 }

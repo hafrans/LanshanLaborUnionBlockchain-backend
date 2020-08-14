@@ -53,6 +53,7 @@ const (
 	ErrPhoneUsed               = 41003
 	ErrCorpID                  = 50000
 	ErrCorpUnavailable         = 50001
+	ErrCancelMeetingDestroyed  = 13603
 	ErrXTcTimestamp            = 190300
 	ErrRequestReplay           = 190301
 	ErrUnauthenticatedSecret   = 190303
