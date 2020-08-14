@@ -7,6 +7,7 @@ import (
 	"RizhaoLanshanLabourUnion/security/jwt"
 	"RizhaoLanshanLabourUnion/services/dao"
 	"RizhaoLanshanLabourUnion/services/qqmeeting"
+	"RizhaoLanshanLabourUnion/services/serviceimpl"
 	"RizhaoLanshanLabourUnion/utils"
 	"encoding/json"
 	"fmt"
@@ -119,10 +120,9 @@ func pingHandler(ctx *gin.Context) {
 	//dao.GetExternalDB().CreateTable(&models.Comment{})
 	//dao.GetExternalDB().CreateTable(&models.Meeting{})
 	// dao.GetExternalDB().CreateTable(&models.MeetingPersonnel{})
+	resp2, _:= serviceimpl.GetTwoParticipantsOfCase("3711002020071217413815945468986090287")
 
-	a, b, _ := dao.GetMeetingAllRelatedPaginated(1, true, 1, 20)
-	log.Println(b)
-	resp, _ := json.Marshal(a)
+	resp, _ := json.Marshal(resp2)
 	log.Println(string(resp))
 	ctx.JSON(200, gin.H{
 		"status":  0,

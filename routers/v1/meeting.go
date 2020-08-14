@@ -7,10 +7,14 @@ import (
 	"RizhaoLanshanLabourUnion/services/models/utils"
 	"RizhaoLanshanLabourUnion/services/qqmeeting"
 	"RizhaoLanshanLabourUnion/services/respcode"
+	"RizhaoLanshanLabourUnion/services/serviceimpl"
 	"RizhaoLanshanLabourUnion/services/vo"
 	"database/sql"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
+	"log"
 	"strconv"
+	"time"
 )
 
 // CreateMeetingAccount
@@ -128,18 +132,119 @@ func DeleteAccount(ctx *gin.Context) {
 // @Tags meeting
 // @Produce json
 // @Accept json
-// @Param meeting body vo.MeetingForm true "新建会议表单"
+// @Param meeting body vo.MeetingCreateForm true "新建会议表单"
 // @Success 200 {object} vo.CommonData
 // @Failure 401 {object} vo.Common "未验证"
 // @Failure 500 {object} vo.Common "服务器错误"
-// @Router /api/v1/meeting/account/create [get]
+// @Router /api/v1/meeting/create [post]
 func CreateMeeting(ctx *gin.Context) {
 	claims := jwtmodel.ExtractUserClaimsFromGinContext(ctx)
 	if claims.UserType != models.USER_TYPE_DEPARTMENT && claims.UserType != models.USER_TYPE_ADMIN {
 		ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "您没有创建会议的权限"))
 	} else {
+		var form vo.MeetingCreateForm
 
+		if err := ctx.ShouldBindJSON(&form); err != nil {
+			log.Println(err.Error())
+			ctx.JSON(respcode.HttpBindingFailed, vo.GenerateCommonResponseHead(respcode.GenericFailed, err.Error()))
+			return
+		} else {
+			// check case
+			originCase, err := dao.GetCaseNotPreloadedModelByCaseID(form.CaseID)
+			if err != nil {
+				if err == sql.ErrNoRows || err == gorm.ErrRecordNotFound {
+					ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "该案件不存在"))
+				} else {
+					ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "未知错误"+err.Error()))
+				}
+				return
+			} else {
+				// 先尝试创建用户
+				if userid, user, userinfo, ok := serviceimpl.TryCreateNewMeetingAccount(claims.Id); ok {
 
+					resp, err := qqmeeting.MeetingClient.Do(qqmeeting.MeetingCreateRequest{
+						Subject: form.Subject,
+						UserID:  userid,
+						Hosts: []*qqmeeting.UserObj{
+							{
+								UserID: userid,
+							},
+						},
+						StartTime:  strconv.Itoa(int(time.Time(*form.StartTime).Unix())),
+						EndTime:    strconv.Itoa(int(time.Time(*form.EndTime).Unix())),
+						InstanceID: qqmeeting.InstancePC,
+						Password:   form.Password,
+						Type:       form.Type,
+						Settings: &qqmeeting.Settings{
+							AllowUnmuteSelf: form.AllowUnmuteSelf,
+							MuteAll:         form.MuteAll,
+							MuteEnableJoin:  form.MuteEnableJoin,
+						},
+					})
+
+					if err != nil {
+						// 创建会议失败
+						log.Println(err)
+						return
+					} else {
+
+						res := resp.(qqmeeting.MeetingCreateResponse).MeetingCreationInfo[0]
+
+						model := &models.Meeting{
+							Type:        form.Type,
+							Password:    res.Password,
+							InstanceID:  qqmeeting.InstancePC,
+							UserID:      claims.Id,
+							MeetingID:   res.MeetingID,
+							MeetingCode: res.MeetingCode,
+							Subject:     res.Subject,
+							CaseID:      form.CaseID,
+							JoinUrl:     res.JoinUrl,
+							CreatorID:   userid,
+							StartTime:   time.Time(*form.StartTime),
+							EndTime:     time.Time(*form.EndTime),
+						}
+
+						mod, err := dao.CreateMeeting(model)
+
+						if err != nil {
+							// 先删除
+							_, _ = qqmeeting.MeetingClient.Do(qqmeeting.MeetingCancelRequest{
+								UserID:       userid,
+								MeetingID:    res.MeetingID,
+								InstanceID:   qqmeeting.InstancePC,
+								ReasonCode:   109,
+								ReasonDetail: "平台异常，会议已取消",
+							})
+							ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "会议创建失败"))
+						} else {
+							// 添加人员
+							// 先把自己添加
+							_, err = dao.CreateMeetingPersonnel(mod.ID, user, userinfo, models.MeetingRoleHost)
+							// 再把双方当事人加进去
+							participants, err := serviceimpl.GetTwoParticipantsOfCase(originCase.CaseID)
+							if err != nil {
+								for _, v := range participants {
+									_, _ = dao.CreateMeetingPersonnel(mod.ID, v, nil, models.MeetingRoleInvitee)
+								}
+							}
+							// 添加完毕
+
+							ctx.JSON(respcode.HttpOK, vo.CommonData{
+								Common: vo.GenerateCommonResponseHead(respcode.GenericFailed, "会议创建成功"),
+								Data:   utils.PopulateMeetingFromModelToVO(mod),
+							})
+						}
+
+					}
+
+				} else {
+					ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "会议接口调用失败"))
+				}
+
+			}
+
+		}
 
 	}
 
@@ -155,7 +260,7 @@ func CreateMeeting(ctx *gin.Context) {
 // @Success 200 {object} vo.CommonData
 // @Failure 401 {object} vo.Common "未验证"
 // @Failure 500 {object} vo.Common "服务器错误"
-// @Router /api/v1/meeting/create [get]
+// @Router /api/v1/meeting/list [get]
 func GetMyMeetingList(ctx *gin.Context) {
 
 	claims := jwtmodel.ExtractUserClaimsFromGinContext(ctx)

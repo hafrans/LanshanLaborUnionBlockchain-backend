@@ -17,14 +17,26 @@ func CreateMeetingPersonnelByModel(model *models.MeetingPersonnel) (*models.Meet
 	}
 }
 
-func CreateMeetingPersonnel(meetingId int64, user *models.User, meetingUserResp qqmeeting.UserDetailQueryResponse, meetingRole int) (*models.MeetingPersonnel, error) {
+func CreateMeetingPersonnel(meetingId int64, user *models.User, meetingUserResp *qqmeeting.UserInfo, meetingRole int) (*models.MeetingPersonnel, error) {
 
-	model := &models.MeetingPersonnel{
-		MeetingID:   meetingId,
-		MeetingRole: meetingRole,
-		Userid:      meetingUserResp.UserID,
-		UserID:      user.ID,
-		Username:    meetingUserResp.Username,
+	var model *models.MeetingPersonnel
+
+	if meetingUserResp == nil {
+		model = &models.MeetingPersonnel{
+			MeetingID:   meetingId,
+			MeetingRole: meetingRole,
+			Userid:      user.Phone,
+			UserID:      user.ID,
+			Username:    user.UserName,
+		}
+	} else {
+		model = &models.MeetingPersonnel{
+			MeetingID:   meetingId,
+			MeetingRole: meetingRole,
+			Userid:      meetingUserResp.UserID,
+			UserID:      user.ID,
+			Username:    meetingUserResp.Username,
+		}
 	}
 
 	result := db.Create(model)
@@ -72,5 +84,3 @@ func UpdateMeetingPersonnel(model *models.MeetingPersonnel) bool {
 		return true
 	}
 }
-
-

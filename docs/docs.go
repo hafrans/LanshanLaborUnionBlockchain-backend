@@ -1106,6 +1106,164 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/meeting/account/create": {
+            "get": {
+                "description": "创建会议专用账户，只有管理员和部门人员可以创建",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "meeting"
+                ],
+                "summary": "创建会议专用账户",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/vo.CommonData"
+                        }
+                    },
+                    "401": {
+                        "description": "未验证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/meeting/account/delete": {
+            "get": {
+                "description": "删除会议专用账户，只有管理员和部门人员可以操作",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "meeting"
+                ],
+                "summary": "删除会议专用账户",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/vo.CommonData"
+                        }
+                    },
+                    "401": {
+                        "description": "未验证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/meeting/create": {
+            "post": {
+                "description": "创建会议，只有管理员和部门人员可以创建",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "meeting"
+                ],
+                "summary": "创建会议",
+                "parameters": [
+                    {
+                        "description": "新建会议表单",
+                        "name": "meeting",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.MeetingCreateForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/vo.CommonData"
+                        }
+                    },
+                    "401": {
+                        "description": "未验证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/meeting/list": {
+            "get": {
+                "description": "列出相关会议，管理员可以看到全部的，部门管理员只可以看到自己的",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "meeting"
+                ],
+                "summary": "列出相关会议",
+                "parameters": [
+                    {
+                        "type": "number",
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "页大小",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/vo.CommonData"
+                        }
+                    },
+                    "401": {
+                        "description": "未验证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/record/create": {
             "post": {
                 "description": "由管理员或者部门人员创建记录",
@@ -2279,6 +2437,61 @@ var doc = `{
                 },
                 "path": {
                     "description": "材料资源path",
+                    "type": "string"
+                }
+            }
+        },
+        "vo.MeetingCreateForm": {
+            "type": "object",
+            "required": [
+                "case_id",
+                "end_time",
+                "meeting_type",
+                "start_time",
+                "subject"
+            ],
+            "properties": {
+                "allow_unmute_self": {
+                    "description": "允许参会者取消静音",
+                    "type": "boolean"
+                },
+                "case_id": {
+                    "type": "string"
+                },
+                "end_time": {
+                    "type": "string"
+                },
+                "hosts": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "invitee": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "meeting_type": {
+                    "description": "会议类型",
+                    "type": "integer"
+                },
+                "mute_all": {
+                    "description": "全体静音",
+                    "type": "boolean"
+                },
+                "mute_enable_join": {
+                    "description": "入会时静音",
+                    "type": "boolean"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "start_time": {
+                    "type": "string"
+                },
+                "subject": {
                     "type": "string"
                 }
             }
