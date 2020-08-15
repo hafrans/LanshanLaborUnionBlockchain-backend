@@ -30,7 +30,7 @@ import (
 
 func main() {
 
-	println("Build Time: ", "202008061756")
+	println("Build Time: ", "2020-08-16 00:01")
 
 	// init all components
 	utils.InitSettings()

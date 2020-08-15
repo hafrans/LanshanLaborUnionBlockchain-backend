@@ -162,6 +162,8 @@ func RegisterNewLaborUser(ctx *gin.Context) {
 					ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "手机号已被注册"))
 				} else if strings.Contains(err.Error(), "email") {
 					ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "E-mail已被注册"))
+				}else {
+					ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "账户信息已被注册，请联系管理员" + err.Error()))
 				}
 			} else {
 				ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "注册失败"+err.Error()))
@@ -212,6 +214,8 @@ func RegisterNewEmployerUser(ctx *gin.Context) {
 					ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "手机号已被注册"))
 				} else if strings.Contains(err.Error(), "email") {
 					ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "E-mail已被注册"))
+				} else {
+					ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "账户信息已被注册，请联系管理员" + err.Error()))
 				}
 			} else {
 				ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "注册失败"+err.Error()))
