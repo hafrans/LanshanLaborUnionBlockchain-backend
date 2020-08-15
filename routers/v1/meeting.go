@@ -29,7 +29,7 @@ import (
 func CreateMeetingAccount(ctx *gin.Context) {
 	claims := jwtmodel.ExtractUserClaimsFromGinContext(ctx)
 	if claims.UserType != models.USER_TYPE_DEPARTMENT && claims.UserType != models.USER_TYPE_ADMIN {
-		ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "您无法创建会议专用账户"))
+		ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "您没有使用会议专用账户的权限，无法操作"))
 	} else {
 		// 先获取用户信息
 
@@ -94,7 +94,7 @@ func CreateMeetingAccount(ctx *gin.Context) {
 func DeleteAccount(ctx *gin.Context) {
 	claims := jwtmodel.ExtractUserClaimsFromGinContext(ctx)
 	if claims.UserType != models.USER_TYPE_DEPARTMENT && claims.UserType != models.USER_TYPE_ADMIN {
-		ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "您无法删除会议专用账户"))
+		ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "您没有使用会议专用账户的权限，无法操作"))
 	} else {
 		// 先获取用户信息
 		user, err := dao.GetUserById(claims.Id)
@@ -184,7 +184,10 @@ func CancelMeeting(ctx *gin.Context) {
 			if res.Code == qqmeeting.ErrMeetingNotExists || res.Code == qqmeeting.ErrCancelMeetingDestroyed {
 				dao.DeleteMeetingByID(int64(meetingId))
 				ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericSuccess, "会议取消成功"))
-			}else{
+			} else if res.Code == qqmeeting.ErrNoPermission {
+				dao.DeleteMeetingByID(int64(meetingId))
+				ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericSuccess, "会议取消成功"))
+			} else {
 				ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "会议取消失败"+err.Error()))
 			}
 		}
@@ -268,8 +271,8 @@ func CreateMeeting(ctx *gin.Context) {
 							CaseID:      form.CaseID,
 							JoinUrl:     res.JoinUrl,
 							CreatorID:   userid,
-							StartTime:   time.Time(*form.StartTime),
-							EndTime:     time.Time(*form.EndTime),
+							StartTime:   form.StartTime,
+							EndTime:     form.EndTime,
 						}
 
 						mod, err := dao.CreateMeeting(model)
@@ -291,8 +294,9 @@ func CreateMeeting(ctx *gin.Context) {
 							_, err = dao.CreateMeetingPersonnel(mod.ID, user, userinfo, models.MeetingRoleHost)
 							// 再把双方当事人加进去
 							participants, err := serviceimpl.GetTwoParticipantsOfCase(originCase.CaseID)
-							if err != nil {
+							if err == nil {
 								for _, v := range participants {
+									log.Println(v.UserName)
 									_, _ = dao.CreateMeetingPersonnel(mod.ID, v, nil, models.MeetingRoleInvitee)
 								}
 							}

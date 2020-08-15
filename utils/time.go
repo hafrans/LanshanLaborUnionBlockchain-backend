@@ -15,8 +15,10 @@ const dateDayFormat = "2006-01-02"
 
 type Time time.Time
 
+var location, _ = time.LoadLocation("Asia/Shanghai")
+
 func (t *Time) UnmarshalJSON(b []byte) error {
-	tx, err := time.Parse("\""+timeFormat+"\"", string(b))
+	tx, err := time.ParseInLocation("\""+timeFormat+"\"", string(b), location)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -74,7 +76,7 @@ func (t *Time) Scan(v interface{}) error {
 type DateMonth time.Time
 
 func (t *DateMonth) UnmarshalJSON(b []byte) error {
-	tx, err := time.Parse("\""+dateFormat+"\"", string(b))
+	tx, err := time.ParseInLocation("\""+dateFormat+"\"", string(b), location)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -132,7 +134,7 @@ func (t *DateMonth) Scan(v interface{}) error {
 type Date time.Time
 
 func (t *Date) UnmarshalJSON(b []byte) error {
-	tx, err := time.Parse("\""+dateDayFormat+"\"", string(b))
+	tx, err := time.ParseInLocation("\""+dateDayFormat+"\"", string(b), location)
 	if err != nil {
 		log.Println(err)
 		return err

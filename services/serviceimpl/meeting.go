@@ -9,7 +9,7 @@ import (
 
 func TryCreateNewMeetingAccount(mUserId int64) (string, *models.User, *qqmeeting.UserInfo, bool) {
 	// 先获取用户信息
-
+	var detailInfo qqmeeting.UserDetailQueryResponse
 	user, err := dao.GetUserById(mUserId)
 
 	if err != nil {
@@ -20,7 +20,10 @@ func TryCreateNewMeetingAccount(mUserId int64) (string, *models.User, *qqmeeting
 	userDetail, err := qqmeeting.MeetingClient.Do(qqmeeting.UserDetailQueryRequest{
 		UserID: user.Phone,
 	})
-	detailInfo := userDetail.(qqmeeting.UserDetailQueryResponse)
+
+	if userDetail != nil {
+		detailInfo = userDetail.(qqmeeting.UserDetailQueryResponse)
+	}
 
 	if err == nil { // 存在用户了
 		return detailInfo.UserID, user, &qqmeeting.UserInfo{UserID: detailInfo.UserID, Username: detailInfo.Username, Phone: detailInfo.Phone, Email: detailInfo.Email}, true

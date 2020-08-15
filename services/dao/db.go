@@ -14,7 +14,7 @@ var db *gorm.DB
 
 func InitDB() {
 	var err error
-	db, err = gorm.Open(utils.DatabaseSettings.Type, fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
+	db, err = gorm.Open(utils.DatabaseSettings.Type, fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Asia%%2FShanghai",
 		utils.DatabaseSettings.User,
 		utils.DatabaseSettings.Password,
 		utils.DatabaseSettings.Host,
@@ -28,6 +28,8 @@ func InitDB() {
 	gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
 		return utils.DatabaseSettings.TablePrefix + defaultTableName
 	}
+
+
 
 	db.SingularTable(true)
 

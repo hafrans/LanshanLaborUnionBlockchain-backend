@@ -3,7 +3,6 @@ package utils
 import (
 	"RizhaoLanshanLabourUnion/services/models"
 	"RizhaoLanshanLabourUnion/services/vo"
-	utils2 "RizhaoLanshanLabourUnion/utils"
 )
 
 func PopulateMeetingFromModelToVO(model *models.Meeting) *vo.MeetingVO {
@@ -20,8 +19,8 @@ func PopulateMeetingFromModelToVO(model *models.Meeting) *vo.MeetingVO {
 		ID:          model.ID,
 		CaseID:      model.CaseID,
 		Creator:     model.User.UserName,
-		EndTime:     utils2.GetTime(model.EndTime),
-		StartTime:   utils2.GetTime(model.StartTime),
+		EndTime:     model.EndTime,
+		StartTime:   model.StartTime,
 		Host:        host,
 		JoinUrl:     model.JoinUrl,
 		Subject:     model.Subject,

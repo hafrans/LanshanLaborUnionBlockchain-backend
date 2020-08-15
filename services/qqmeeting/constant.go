@@ -41,6 +41,7 @@ const (
 	ErrTinyIdOrMeetingId       = 9002
 	ErrMeetingNotExists        = 9003
 	ErrMeetingCreateExceed     = 9008
+	ErrNoPermission            = 9042
 	ErrMeetingQueryExceed      = 9061
 	ErrApiCallUnknownType      = 10000
 	ErrApiCallBadParameter     = 10001

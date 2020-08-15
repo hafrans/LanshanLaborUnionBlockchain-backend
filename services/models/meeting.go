@@ -1,7 +1,7 @@
 package models
 
 import (
-	"time"
+	"RizhaoLanshanLabourUnion/utils"
 )
 
 type Meeting struct {
@@ -14,8 +14,8 @@ type Meeting struct {
 	InstanceID  int                 `json:"instance_id"`
 	Subject     string              `json:"subject"`
 	Type        int                 `json:"type"`
-	StartTime   time.Time           `json:"start_time"`
-	EndTime     time.Time           `json:"end_time"`
+	StartTime   *utils.Time         `json:"start_time"  gorm:"type:datetime"`
+	EndTime     *utils.Time         `json:"end_time" gorm:"type:datetime"`
 	Password    *string             `json:"password"`
 	JoinUrl     string              `json:"join_url"`
 	Personnel   []*MeetingPersonnel `json:"personnel"`
