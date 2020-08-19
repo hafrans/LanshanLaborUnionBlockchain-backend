@@ -19,7 +19,7 @@ type LaborArbitrationForm struct {
 	UpdatedAt *utils.Time `json:"updated_at,omitempty"`
 
 	// 1. 主体性质
-	Subject int `json:"main" binding:"required,number,gte=0,lte=2"`
+	Subject int `json:"main" binding:"required,number,gte=1,lte=4"`
 	// 2. 入职时间
 	HireDate *utils.Date `json:"hire_date" time_format:"2006-01-02" binding:"required"`
 
@@ -49,17 +49,17 @@ type LaborArbitrationForm struct {
 	// 8.2 劳动合同约定的工资构成
 	ContractWageComponent *string `json:"contract_wage_component" binding:"omitempty"`
 	// 8.3 工时制
-	ContractWageType *int `json:"contract_wage_type" binding:"omitempty,number,gte=0,lte=2"`
+	ContractWageType *int `json:"contract_wage_type" binding:"omitempty,number,gte=1,lte=4"`
 
 	// 9. 实发月工资数及工资构成、发放形式、发放周期
 	// 9.1 月工资数
-	Wage float64 `json:"wage" binding:"number,required,gte=0"`
+	Wage float64 `json:"wage" binding:"number,gte=0"`
 	// 9.2 工资构成
 	WageComponent string `json:"wage_component" form:"wage_component"`
 	// 9.3 发放形式
-	PaymentType int `json:"payment_type" binding:"required,gte=0,lte=2"`
+	PaymentType int `json:"payment_type" binding:"required,gte=1,lte=3"`
 	// 9.4 发放周期
-	PaymentCycle int `json:"payment_cycle" binding:"required,gte=0,lte=2"` // 没找到
+	PaymentCycle int `json:"payment_cycle" binding:"required,gte=1,lte=3"` // 没找到
 
 	// 10. 最后一次支付工资时间
 	LastPayment *utils.DateMonth `json:"last_payment" time_format:"2006-01" example:"2010-01"` //格式不对
@@ -74,7 +74,7 @@ type LaborArbitrationForm struct {
 	// 12.1 是否进行社会保险
 	SocialInsuranceApply bool `json:"social_insurance"`
 	// 12.2 社会保险险种
-	SocialInsuranceType *int `json:"social_insurance_type" binding:"omitempty,gte=0,lte=1"`
+	SocialInsuranceType *int `json:"social_insurance_type" binding:"omitempty,gte=1,lte=3"`
 	// 12.3 社会保险缴险时间
 	SocialInsuranceApplyRange [2]*utils.DateMonth `json:"social_insurance_payment_time" time_format:"2006-01"` //格式不对
 
@@ -124,9 +124,9 @@ type LaborArbitrationForm struct {
 	WorkRelatedTreatmentAmountOther *float64 `json:"work_related_treatment_other" binding:"omitempty,number,gte=0"`
 
 	// 18. 加班时间
-	OvertimeWeekday *float64 `json:"normal_overtime"  example:"10"`  // 正常工作日加班小时
-	OvertimeWeekend *float64 `json:"statutory_rest"  example:"10"`   // 法定休息日加班小时
-	OvertimeHoliday *float64 `json:"statutory_holidays"example:"10"` // 法定节假日加班小时
+	OvertimeWeekday *float64 `json:"normal_overtime"  example:"10"`   // 正常工作日加班小时
+	OvertimeWeekend *float64 `json:"statutory_rest"  example:"10"`    // 法定休息日加班小时
+	OvertimeHoliday *float64 `json:"statutory_holidays" example:"10"` // 法定节假日加班小时
 
 	// 19. 加班工资计算基数
 	OvertimeWageBase *float64 `json:"overtime_wage_base" example:"2"`

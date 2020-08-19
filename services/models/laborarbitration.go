@@ -43,7 +43,7 @@ type LaborArbitration struct {
 	// 9. 实发月工资数及工资构成、发放形式、发放周期
 	PaymentType   int     `json:"payment_type" form:"payment_type" gorm:"type:tinyint(1)" binding:"numeric,required"`
 	PaymentCycle  int     `json:"payment_cycle" form:"payment_cycle"  gorm:"type:tinyint(1)" binding:"numeric,required"`
-	Wage          float64 `json:"wage" form:"wage" gorm:"default:0"  binding:"number,required"`
+	Wage          float64 `json:"wage" form:"wage" gorm:"default:0"  binding:"number"`
 	WageComponent string  `json:"wage_component" form:"wage_component" binding:"required" gorm:"type:text"`
 
 	// 10. 最后一次支付工资时间
