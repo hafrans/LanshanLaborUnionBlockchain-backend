@@ -6,6 +6,13 @@ import (
 	"os"
 )
 
+// 短信发送接口
+type SmsSender struct {
+	Account  string
+	Password string
+}
+
+// 数据库
 type Database struct {
 	Type        string
 	User        string
@@ -15,12 +22,14 @@ type Database struct {
 	TablePrefix string
 }
 
+// jwt token 相关
 type JWT struct {
 	Realm       string
 	Key         string
 	IdentityKey string
 }
 
+// 腾讯会议相关
 type QQMeeting struct {
 	AppID     string
 	SDKID     string
@@ -33,6 +42,8 @@ var QQMeetingSettings = &QQMeeting{}
 var DatabaseSettings = &Database{}
 
 var JWTSettings = &JWT{}
+
+var SMSSetting = &SmsSender{}
 
 func mapTo(cfg *ini.File, section string, v interface{}) {
 
@@ -57,6 +68,7 @@ func InitSettings() {
 		mapTo(cfg, "database", DatabaseSettings)
 		mapTo(cfg, "jwt", JWTSettings)
 		mapTo(cfg, "QQMeeting", QQMeetingSettings)
+		mapTo(cfg, "sms", SMSSetting)
 	} else {
 		log.Fatalln("Config Settings Load Failed " + err.Error())
 	}
@@ -67,7 +79,7 @@ func InitTestSetting() {
 	if cfg, err := ini.Load("E:\\GolangProjects\\RizhaoLanshanLabourUnion\\conf\\conf.ini"); err == nil {
 		mapTo(cfg, "database", DatabaseSettings)
 		mapTo(cfg, "jwt", JWTSettings)
-		mapTo(cfg, "QQMeeting", QQMeetingSettings)
+		mapTo(cfg, "sms", SMSSetting)
 	} else {
 		log.Fatalln("Config Settings Load Failed " + err.Error())
 	}

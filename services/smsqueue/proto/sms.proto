@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option go_package = "services/smsqueue/proto";
+
+
+message SendRequest{
+  string account = 1;
+  string password = 2;
+  string phone = 3;
+  string content = 4;
+  string extra = 5;
+}
+
+message SendResponse{
+  int32 status = 1;
+  string message = 2;
+  string rawContent = 3;
+}
+
+
+service UnicomMessagePush{
+  rpc SendMessage(SendRequest) returns (SendResponse);
+}
+
+

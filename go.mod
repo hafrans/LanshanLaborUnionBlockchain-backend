@@ -11,7 +11,8 @@ require (
 	github.com/go-ini/ini v1.57.0
 	github.com/go-openapi/spec v0.19.8 // indirect
 	github.com/go-openapi/swag v0.19.9 // indirect
-	github.com/golang/protobuf v1.4.2 // indirect
+	github.com/golang/protobuf v1.4.2
+	github.com/gorilla/schema v1.2.0
 	github.com/jinzhu/gorm v1.9.12
 	github.com/mailru/easyjson v0.7.1 // indirect
 	github.com/mikespook/gorbac v2.1.0+incompatible
@@ -23,6 +24,8 @@ require (
 	golang.org/x/net v0.0.0-20200528225125-3c3fba18258b // indirect
 	golang.org/x/sys v0.0.0-20200602100848-8d3cce7afc34 // indirect
 	golang.org/x/tools v0.0.0-20200530233709-52effbd89c51 // indirect
+	google.golang.org/grpc v1.31.1
 	gopkg.in/ini.v1 v1.57.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
+
 )
