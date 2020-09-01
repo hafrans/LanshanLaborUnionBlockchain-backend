@@ -10,7 +10,7 @@
             "email": "lvzh@hafrans.com"
         },
         "license": {},
-        "version": "0.9.9"
+        "version": "1.0.0"
     },
     "paths": {
         "/api/auth/captcha/:id": {
@@ -2108,8 +2108,7 @@
                 "main",
                 "parties_dispute_time",
                 "payment_cycle",
-                "payment_type",
-                "wage"
+                "payment_type"
             ],
             "properties": {
                 "arbitration_time": {
@@ -2546,6 +2545,28 @@
                 },
                 "submitter_phone": {
                     "description": "录入人电话，新建不需要填写",
+                    "type": "string"
+                }
+            }
+        },
+        "vo.SMSCaptchaRequest": {
+            "type": "object",
+            "required": [
+                "phone"
+            ],
+            "properties": {
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
+        "vo.SMSCaptchaResponse": {
+            "type": "object",
+            "properties": {
+                "challenge_code": {
+                    "type": "string"
+                },
+                "challenge_time": {
                     "type": "string"
                 }
             }

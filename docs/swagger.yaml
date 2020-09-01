@@ -544,7 +544,6 @@ definitions:
     - parties_dispute_time
     - payment_cycle
     - payment_type
-    - wage
     type: object
   vo.LoginResult:
     properties:
@@ -646,6 +645,20 @@ definitions:
     - case_id
     - name
     - path
+    type: object
+  vo.SMSCaptchaRequest:
+    properties:
+      phone:
+        type: string
+    required:
+    - phone
+    type: object
+  vo.SMSCaptchaResponse:
+    properties:
+      challenge_code:
+        type: string
+      challenge_time:
+        type: string
     type: object
   vo.Suggestion:
     properties:
@@ -760,7 +773,7 @@ info:
   license: {}
   termsOfService: http://hafrans.com
   title: 岚山区劳动争议调解区块链平台
-  version: 0.9.9
+  version: 1.0.0
 paths:
   /api/auth/captcha/:id:
     get:

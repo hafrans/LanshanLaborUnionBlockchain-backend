@@ -18,6 +18,7 @@ type Time time.Time
 var location, _ = time.LoadLocation("Asia/Shanghai")
 
 func (t *Time) UnmarshalJSON(b []byte) error {
+
 	tx, err := time.ParseInLocation("\""+timeFormat+"\"", string(b), location)
 	if err != nil {
 		log.Println(err)

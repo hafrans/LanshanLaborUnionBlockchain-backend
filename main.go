@@ -21,16 +21,15 @@ import (
 )
 
 // @title 岚山区劳动争议调解区块链平台
-// @version 0.9.9
+// @version 1.0.0
 // @description 岚山区劳动争议调解区块链平台，后台采用golang开发，使用gin + gorm + gorbac + jwt开发
 // @termsOfService http://hafrans.com
 // @contact.name Chuuka Ro (Hafrans)
 // @contact.url  http://hafrans.com/support
 // @contact.email lvzh@hafrans.com
-
 func main() {
 
-	println("Build Time: ", "2020-08-19 23:19")
+	println("Build Time: ", "2020-09-01 23:19")
 
 	// init all components
 	utils.InitSettings()

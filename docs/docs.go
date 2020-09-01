@@ -2125,8 +2125,7 @@ var doc = `{
                 "main",
                 "parties_dispute_time",
                 "payment_cycle",
-                "payment_type",
-                "wage"
+                "payment_type"
             ],
             "properties": {
                 "arbitration_time": {
@@ -2567,6 +2566,28 @@ var doc = `{
                 }
             }
         },
+        "vo.SMSCaptchaRequest": {
+            "type": "object",
+            "required": [
+                "phone"
+            ],
+            "properties": {
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
+        "vo.SMSCaptchaResponse": {
+            "type": "object",
+            "properties": {
+                "challenge_code": {
+                    "type": "string"
+                },
+                "challenge_time": {
+                    "type": "string"
+                }
+            }
+        },
         "vo.Suggestion": {
             "type": "object",
             "required": [
@@ -2723,7 +2744,7 @@ type swaggerInfo struct {
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
-	Version:     "0.9.9",
+	Version:     "1.0.0",
 	Host:        "",
 	BasePath:    "",
 	Schemes:     []string{},

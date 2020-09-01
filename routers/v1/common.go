@@ -2,16 +2,24 @@ package v1
 
 import (
 	"RizhaoLanshanLabourUnion/services/respcode"
+	"RizhaoLanshanLabourUnion/services/smsqueue"
+	"RizhaoLanshanLabourUnion/services/smsqueue/smsrpc"
 	"RizhaoLanshanLabourUnion/services/vo"
 	"RizhaoLanshanLabourUnion/utils"
+	"bytes"
+	"crypto/sha256"
 	"encoding/base64"
+	"fmt"
+	"github.com/dchest/captcha"
 	"github.com/gin-gonic/gin"
 	"os"
 	"strconv"
+	"text/template"
 	"time"
 )
 
 var ContentAccept = make(map[string]string)
+var SMSCache = utils.NewLRUCache(32768)
 
 func init() {
 	ContentAccept["application/pdf"] = ".pdf"
@@ -73,8 +81,8 @@ func UploadAssets(ctx *gin.Context) {
 	// store
 	now := time.Now()
 	targetDir := "/static/" + strconv.Itoa(int(now.Year())) + "/" + strconv.Itoa(int(now.Month())) + "/" + strconv.Itoa(int(now.Day()))
-	os.MkdirAll("runtime"+targetDir,0777)
-	targetFile := targetDir +  "/" + base64.StdEncoding.EncodeToString([]byte("1111"+file.Filename)) + ext
+	os.MkdirAll("runtime"+targetDir, 0777)
+	targetFile := targetDir + "/" + base64.StdEncoding.EncodeToString([]byte("1111"+file.Filename)) + ext
 	err = ctx.SaveUploadedFile(file, "runtime"+targetFile)
 
 	if err != nil {
@@ -87,6 +95,83 @@ func UploadAssets(ctx *gin.Context) {
 		Data: gin.H{
 			"filename": file.Filename,
 			"path":     targetFile,
+		},
+	})
+}
+
+// User-End Triggered Captcha Sender
+// @Summary 发送短信验证码，验证信息
+// @Tags message
+// @Accept json
+// @Produce json
+// @Param email body vo.SMSCaptchaRequest true  "请求"
+// @Success 200 {object} vo.SMSCaptchaResponse "正常业务处理"
+// @Failure 401 {object} vo.Common "未验证"
+// @Failure 422 {object} vo.Common "表单绑定失败"
+// @Failure 500 {object} vo.Common "表单绑定失败"
+// @Router /api/auth/employer/register [post]
+func SendShortMessages(ctx *gin.Context) {
+
+	var form vo.SMSCaptchaRequest
+
+	if err := ctx.ShouldBindJSON(&form); err != nil {
+		ctx.JSON(respcode.HttpBindingFailed, vo.GenerateCommonResponseHead(respcode.FormBindingFailed, "bind form failed"+err.Error()))
+		return
+	}
+
+	// 需要查询手机号存不存在发送条件
+	sendTime, err := SMSCache.Get(form.Phone)
+	if err == nil && time.Now().Sub(sendTime.(time.Time)) < time.Duration(time.Minute-2*time.Second) {
+		// 能获取到缓存、且距离上次发送时间不到58秒。
+		ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "操作过于频繁，请稍后再试！"))
+		return
+	}
+	// 尝试发送短信验证码
+	// 生成短信验证码 6 位数字
+	captchaCode := captcha.RandomDigits(6)
+
+	// TODO 仅供初期实验代码，由于耦合度过高，需要将以下代码剥离出去。
+
+	tpl, err := template.New("captcha").Parse(smsqueue.SMSContentCaptcha)
+	if err != nil {
+		ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "验证码模板失效，请联系管理员！"))
+		return
+	}
+
+	// compile template
+	var buf bytes.Buffer
+
+	_ = tpl.Execute(&buf, struct {
+		Code string
+	}{
+		Code: fmt.Sprintf(
+			"%d%d%d%d%d%d", captchaCode[0],
+			captchaCode[1],
+			captchaCode[2],
+			captchaCode[3],
+			captchaCode[4],
+			captchaCode[5]),
+	})
+	// generate challenge
+
+	sendNowTime := time.Now()
+
+	hash := sha256.New()
+	hash.Write([]byte(sendNowTime.Format(time.RFC3339) + form.Phone + string(captchaCode) + utils.SMSSetting.Password))
+	hashResult := hash.Sum(nil)
+	challengeCode := base64.StdEncoding.EncodeToString(hashResult)
+
+	// 异步发送成功
+	smsrpc.SendMessage(utils.SMSSetting.Account, utils.SMSSetting.Password, form.Phone, buf.String())
+	respTime := utils.Time(sendNowTime)
+
+	// 注入数据
+	SMSCache.Put(form.Phone, sendNowTime)
+	ctx.JSON(respcode.HttpOK, vo.CommonData{
+		Common: vo.GenerateCommonResponseHead(respcode.GenericSuccess, "验证码已发送"),
+		Data: vo.SMSCaptchaResponse{
+			Identifier: challengeCode,
+			Timestamp:  &respTime,
 		},
 	})
 }

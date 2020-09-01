@@ -31,6 +31,7 @@ func InitApiAuthRouters(apiAuth *gin.RouterGroup) {
 	apiAuth.GET("/logout", jwt.AuthMiddleWare.LogoutHandler)
 	apiAuth.GET("/refresh_token", jwt.AuthMiddleWare.RefreshHandler)
 	apiAuth.GET("/captcha/:id", v1.GetCaptcha)
+	apiAuth.POST("/sms/captcha/request", v1.SendShortMessages)
 
 }
 
