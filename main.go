@@ -29,7 +29,7 @@ import (
 // @contact.email lvzh@hafrans.com
 func main() {
 
-	println("Build Time: ", "2020-09-01 23:19")
+	println("Build Time: ", "2020-09-15 16:39")
 
 	// init all components
 	utils.InitSettings()

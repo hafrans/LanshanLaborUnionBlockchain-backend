@@ -12,7 +12,9 @@ import (
 	"fmt"
 	"github.com/dchest/captcha"
 	"github.com/gin-gonic/gin"
+	"log"
 	"os"
+	"path"
 	"strconv"
 	"text/template"
 	"time"
@@ -80,10 +82,18 @@ func UploadAssets(ctx *gin.Context) {
 
 	// store
 	now := time.Now()
-	targetDir := "/static/" + strconv.Itoa(int(now.Year())) + "/" + strconv.Itoa(int(now.Month())) + "/" + strconv.Itoa(int(now.Day()))
-	os.MkdirAll("runtime"+targetDir, 0777)
-	targetFile := targetDir + "/" + base64.StdEncoding.EncodeToString([]byte("1111"+file.Filename)) + ext
-	err = ctx.SaveUploadedFile(file, "runtime"+targetFile)
+	targetDir := path.Join([]string{
+		"static",
+		strconv.Itoa(int(now.Year())),
+		strconv.Itoa(int(now.Month())),
+		strconv.Itoa(int(now.Day())),
+	}...)
+
+	os.MkdirAll(targetDir, 0777)
+	targetFile := targetDir + "/" + base64.StdEncoding.EncodeToString([]byte(strconv.Itoa(time.Now().Second())+file.Filename)) + ext
+
+	log.Println("save file:", path.Join("runtime", targetFile))
+	err = ctx.SaveUploadedFile(file, path.Join("runtime", targetFile))
 
 	if err != nil {
 		ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, err.Error()))
