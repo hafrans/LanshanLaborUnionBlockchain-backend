@@ -58,6 +58,7 @@ func CreateNewCaseByApplicant(ctx *gin.Context) {
 
 	if err := ctx.ShouldBindJSON(&form); err != nil {
 		// 表单绑定失败
+		log.Println(err.Error())
 		ctx.JSON(respcode.HttpBindingFailed, vo.GenerateCommonResponseHead(respcode.GenericFailed, err.Error()))
 		return
 	}
@@ -153,6 +154,13 @@ func UpdateCaseByApplicant(ctx *gin.Context) {
 
 		newCase := utils.PopulateCaseBasicFromFormToModel(&form, claims.Id, "371100")
 		currentCase, err := dao.GetCaseNotPreloadModelById(int64(id))
+
+		if err != nil {
+			log.Println(err)
+			ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "case not found"+err.Error()))
+			return
+		}
+
 		newCase.Model = currentCase.Model
 		newCase.UserID = currentCase.UserID
 		newCase.CaseID = currentCase.CaseID
@@ -350,9 +358,9 @@ func GetCaseList(ctx *gin.Context) {
 	} else if claims.UserType == models.USER_TYPE_EMPLOYER { // 单位用户
 		user, _ := dao.GetUserById(claims.Id)
 		model, totalCount, err = dao.GetCasesAllPaginatedByCaseIdAndUSSC(&caseId,
-			                                                             pageNum,
-			                                                             pageCount,
-			                                                             &user.UserProfile.EmployerUniformSocialCreditCode)
+			pageNum,
+			pageCount,
+			&user.UserProfile.EmployerUniformSocialCreditCode)
 	} else {
 		model, totalCount, err = dao.GetCasesAllPaginatedByCaseId(&caseId, pageNum, pageCount, nil)
 	}

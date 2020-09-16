@@ -141,6 +141,7 @@ func CreateLaborArbitrationForm(ctx *gin.Context) {
 	} else {
 		model, err := utils2.PopulateLaborArbitrationVOToModel(&form)
 		if err != nil {
+			log.Println(err.Error())
 			ctx.JSON(respcode.HttpBindingFailed, vo.GenerateCommonResponseHead(respcode.GenericFailed, err.Error()))
 			return
 		}

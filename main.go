@@ -29,7 +29,7 @@ import (
 // @contact.email lvzh@hafrans.com
 func main() {
 
-	println("Build Time: ", "2020-09-15 16:39")
+	println("Build Time: ", "2020-09-16 10:27")
 
 	// init all components
 	utils.InitSettings()
@@ -119,7 +119,7 @@ func pingHandler(ctx *gin.Context) {
 	//dao.GetExternalDB().CreateTable(&models.Comment{})
 	//dao.GetExternalDB().CreateTable(&models.Meeting{})
 	// dao.GetExternalDB().CreateTable(&models.MeetingPersonnel{})
-	resp2, _:= serviceimpl.GetTwoParticipantsOfCase("3711002020071217413815945468986090287")
+	resp2, _ := serviceimpl.GetTwoParticipantsOfCase("3711002020071217413815945468986090287")
 
 	resp, _ := json.Marshal(resp2)
 	log.Println(string(resp))

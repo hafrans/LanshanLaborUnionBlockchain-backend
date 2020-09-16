@@ -89,7 +89,7 @@ func UploadAssets(ctx *gin.Context) {
 		strconv.Itoa(int(now.Day())),
 	}...)
 
-	os.MkdirAll(targetDir, 0777)
+	os.MkdirAll("runtime"+"/"+targetDir, 0777)
 	targetFile := targetDir + "/" + base64.StdEncoding.EncodeToString([]byte(strconv.Itoa(time.Now().Second())+file.Filename)) + ext
 
 	log.Println("save file:", path.Join("runtime", targetFile))
