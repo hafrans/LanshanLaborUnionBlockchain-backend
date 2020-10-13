@@ -8,6 +8,7 @@ import (
 	"RizhaoLanshanLabourUnion/services/qqmeeting"
 	"RizhaoLanshanLabourUnion/services/respcode"
 	"RizhaoLanshanLabourUnion/services/serviceimpl"
+	"RizhaoLanshanLabourUnion/services/smsqueue/smsrpc"
 	"RizhaoLanshanLabourUnion/services/vo"
 	"database/sql"
 	"github.com/gin-gonic/gin"
@@ -181,10 +182,15 @@ func CancelMeeting(ctx *gin.Context) {
 			ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericSuccess, "会议取消成功"))
 		} else {
 			res := err.(qqmeeting.MeetingError)
+
 			if res.Code == qqmeeting.ErrMeetingNotExists || res.Code == qqmeeting.ErrCancelMeetingDestroyed {
+				// 先发着短信
+				go smsrpc.SendMeetingCancelNotification(meeting)
 				dao.DeleteMeetingByID(int64(meetingId))
 				ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericSuccess, "会议取消成功"))
 			} else if res.Code == qqmeeting.ErrNoPermission {
+				// 先发着短信
+				go smsrpc.SendMeetingCancelNotification(meeting)
 				dao.DeleteMeetingByID(int64(meetingId))
 				ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericSuccess, "会议取消成功"))
 			} else {
@@ -304,6 +310,7 @@ func CreateMeeting(ctx *gin.Context) {
 
 							// 重新获取已加载的会议信息
 							mod, err = dao.GetMeetingByID(mod.ID)
+							go smsrpc.SendCreateMeetingInfo(mod)
 							ctx.JSON(respcode.HttpOK, vo.CommonData{
 								Common: vo.GenerateCommonResponseHead(respcode.GenericSuccess, "会议创建成功"),
 								Data:   utils.PopulateMeetingFromModelToVO(mod),

@@ -7,6 +7,7 @@ import (
 	"RizhaoLanshanLabourUnion/services/models"
 	"RizhaoLanshanLabourUnion/services/models/utils"
 	"RizhaoLanshanLabourUnion/services/respcode"
+	"RizhaoLanshanLabourUnion/services/smsqueue/smsrpc"
 	"RizhaoLanshanLabourUnion/services/vo"
 	utils2 "RizhaoLanshanLabourUnion/utils"
 	"database/sql"
@@ -215,7 +216,8 @@ func UpdateCaseByApplicant(ctx *gin.Context) {
 			} else {
 				// 记录
 				blockchain.CreateHistoryByCase("修改调解案件", result, claims.Id)
-
+				// 发送信息
+				go smsrpc.SendCaseInfoChanged(newCase)
 				ctx.JSON(respcode.HttpOK, vo.CommonData{
 					Common: vo.GenerateCommonResponseHead(respcode.GenericSuccess, "success"),
 					Data:   utils.PopulateCaseFullModelToFullForm(result),
@@ -452,7 +454,13 @@ func DeleteCaseById(ctx *gin.Context) {
 
 // Update Status case by id
 // @Summary 修改调解案件的状态
-// @Description 申请人只可以确认、拒绝状态；管理人员可以设置任何状态 StatusSubmitted= 0 已提交；StatusPending = 1 正在处理；StatusResultConfirming = 2 当事人等待确认调解结果；StatusRefused =3 拒绝调解；StatusConfirmed=4 确认调解；StatusCompleted=5；结束调解               // 调解结束
+// @Description 申请人只可以确认、拒绝状态；管理人员可以设置任何状态
+// StatusSubmitted= 0 已提交；
+// StatusPending = 1 正在处理；
+// StatusResultConfirming = 2 当事人等待确认调解结果；
+// StatusRefused =3 拒绝调解；
+// StatusConfirmed=4 确认调解；
+// StatusCompleted=5；结束调解
 // @Tags case
 // @Accept json
 // @Produce json
@@ -510,7 +518,21 @@ func ChangeCaseStatusById(ctx *gin.Context) {
 			if dao.UpdateCase(cases) {
 				// 记录
 				blockchain.CreateHistoryByCase("修改调解案件状态", cases, claims.Id)
-
+				// 比较复杂，因为普通用户的与管理员、部门人员的所有状态都在这里修改。
+				switch cases.Status {
+				case models.StatusPending: // 管理员和部门管理员 修改
+					go smsrpc.SendCaseAccepted(cases) // 发送案件接受信息
+				case models.StatusResultConfirming: // 等待用户确认调解
+					go smsrpc.SendResultConfirming(cases)
+				case models.StatusConfirmed:
+					go smsrpc.SendResultConfirming(cases)
+				case models.StatusCompleted:
+					go smsrpc.SendCaseCompleted(cases)
+				case models.StatusRefused:
+					go smsrpc.SendCaseRejected(cases)
+				default:
+					go smsrpc.SendCaseInfoChanged(cases)
+				}
 				ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericSuccess, "状态修改成功"))
 			} else {
 				ctx.JSON(200, vo.GenerateCommonResponseHead(respcode.GenericFailed, "状态修改失败"))

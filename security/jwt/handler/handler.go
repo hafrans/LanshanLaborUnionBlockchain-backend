@@ -74,6 +74,7 @@ func IdentityHandler(context *gin.Context) interface{} {
 		Iss:      claims["iss"].(string),
 		Realm:    claims["realm"].(string),
 		UserType: int(claims["type"].(float64)),
+		Checked:  claims["checked"].(bool),
 	}
 }
 
@@ -90,6 +91,7 @@ func PayloadHandler(data interface{}) jwt.MapClaims {
 			"iss":                         userClaims.Iss,
 			"realm":                       userClaims.Realm,
 			"type":                        userClaims.UserType,
+			"checked":                     userClaims.Checked,
 		}
 	} else {
 		log.Println("payload function encountered an exception!")

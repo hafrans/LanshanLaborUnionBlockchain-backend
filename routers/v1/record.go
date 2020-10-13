@@ -7,6 +7,7 @@ import (
 	"RizhaoLanshanLabourUnion/services/models"
 	"RizhaoLanshanLabourUnion/services/models/utils"
 	"RizhaoLanshanLabourUnion/services/respcode"
+	"RizhaoLanshanLabourUnion/services/smsqueue/smsrpc"
 	"RizhaoLanshanLabourUnion/services/vo"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -64,7 +65,8 @@ func AddRecord(ctx *gin.Context) {
 
 					// 记录
 					blockchain.CreateHistoryByUsingModel(myCase.CaseID, "添加笔录", record, claims.Id)
-
+					// 发送短信息
+					go smsrpc.SendRecord(myCase)
 					ctx.JSON(respcode.HttpOK, vo.CommonData{
 						Common: vo.GenerateCommonResponseHead(respcode.GenericSuccess, "success"),
 						Data:   utils.PopulateRecordFromModelToVO(record),

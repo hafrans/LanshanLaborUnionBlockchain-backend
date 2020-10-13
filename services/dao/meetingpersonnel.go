@@ -84,3 +84,30 @@ func UpdateMeetingPersonnel(model *models.MeetingPersonnel) bool {
 		return true
 	}
 }
+
+func GetMeetingPersonnelsWithUserByMeetingID(id int64)([]*models.MeetingPersonnel, error){
+
+	var personnels []*models.MeetingPersonnel
+
+	result := db.Set("gorm:auto_preload", true).Model(&models.MeetingPersonnel{}).Where("meeting_id = ?", id).Find(&personnels)
+	if result.Error != nil {
+		log.Println(result.Error)
+		return nil, result.Error
+	} else {
+		return personnels, nil
+	}
+}
+
+
+func GetMeetingPersonnelsByMeetingID(id int64)([]*models.MeetingPersonnel, error){
+
+	var personnels []*models.MeetingPersonnel
+
+	result := db.Model(&models.MeetingPersonnel{}).Where("meeting_id = ?", id).Find(&personnels)
+	if result.Error != nil {
+		log.Println(result.Error)
+		return nil, result.Error
+	} else {
+		return personnels, nil
+	}
+}

@@ -7,6 +7,7 @@ import (
 	"RizhaoLanshanLabourUnion/services/models"
 	"RizhaoLanshanLabourUnion/services/models/utils"
 	"RizhaoLanshanLabourUnion/services/respcode"
+	"RizhaoLanshanLabourUnion/services/smsqueue/smsrpc"
 	"RizhaoLanshanLabourUnion/services/vo"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -38,9 +39,10 @@ func CreateSuggestion(ctx *gin.Context) {
 		log.Println(err)
 		ctx.JSON(respcode.HttpBindingFailed, vo.GenerateCommonResponseHead(respcode.FormBindingFailed, err.Error()))
 	} else {
-
+		var _case *models.Case
+		var cErr error
 		// find case
-		if _, cErr := dao.GetCaseNotPreloadedModelByCaseID(form.CaseID); cErr != nil {
+		if _case, cErr = dao.GetCaseNotPreloadedModelByCaseID(form.CaseID); cErr != nil {
 			if cErr == gorm.ErrRecordNotFound {
 				ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "关联案件号不存在"))
 			} else {
@@ -63,6 +65,8 @@ func CreateSuggestion(ctx *gin.Context) {
 			} else {
 				// 记录
 				blockchain.CreateHistoryByUsingModel(suggestion.CaseID, "创建部门建议", suggestion, claims.Id)
+				// 推送消息
+				go smsrpc.SendSuggestion(_case)
 				ctx.JSON(respcode.HttpOK, vo.CommonData{
 					Common: vo.GenerateCommonResponseHead(respcode.GenericSuccess, "success"),
 					Data:   utils.PopulateSuggestionFromModelToVO(suggestion),

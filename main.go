@@ -111,6 +111,7 @@ func Cors() gin.HandlerFunc {
 		c.Next()
 	}
 }
+
 func pingHandler(ctx *gin.Context) {
 	// test here.
 

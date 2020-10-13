@@ -1,6 +1,8 @@
 definitions:
   jwtmodel.UserClaims:
     properties:
+      checked:
+        type: boolean
       id:
         type: integer
       iss:
@@ -648,9 +650,20 @@ definitions:
     type: object
   vo.SMSCaptchaRequest:
     properties:
+      captcha_challenge:
+        example: asbduiasdvasilvdiwlqdulisbdaiauldvil==
+        type: string
+      captcha_code:
+        example: "123456"
+        type: string
+      captcha_time:
+        type: string
       phone:
         type: string
     required:
+    - captcha_challenge
+    - captcha_code
+    - captcha_time
     - phone
     type: object
   vo.SMSCaptchaResponse:
@@ -659,6 +672,13 @@ definitions:
         type: string
       challenge_time:
         type: string
+    type: object
+  vo.SelfCheckPhone:
+    properties:
+      phone_captcha:
+        type: string
+    required:
+    - phone_captcha
     type: object
   vo.Suggestion:
     properties:
@@ -918,6 +938,39 @@ paths:
       summary: 用户登录
       tags:
       - user
+  /api/auth/sms/captcha/request:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求
+        in: body
+        name: email
+        required: true
+        schema:
+          $ref: '#/definitions/vo.SMSCaptchaRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 正常业务处理
+          schema:
+            $ref: '#/definitions/vo.SMSCaptchaResponse'
+        "401":
+          description: 未验证
+          schema:
+            $ref: '#/definitions/vo.Common'
+        "422":
+          description: 表单绑定失败
+          schema:
+            $ref: '#/definitions/vo.Common'
+        "500":
+          description: 表单绑定失败
+          schema:
+            $ref: '#/definitions/vo.Common'
+      summary: 发送短信验证码，验证信息
+      tags:
+      - message
   /api/v1/:
     get:
       consumes:

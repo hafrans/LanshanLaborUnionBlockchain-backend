@@ -5,6 +5,7 @@ import "RizhaoLanshanLabourUnion/utils"
 // 申请验证码
 type SMSCaptchaRequest struct {
 	Phone string `json:"phone" binding:"required,len=11"`
+	Captcha `binding:"required,dive"`
 }
 
 

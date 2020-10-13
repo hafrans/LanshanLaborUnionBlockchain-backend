@@ -119,13 +119,20 @@ func UploadAssets(ctx *gin.Context) {
 // @Failure 401 {object} vo.Common "未验证"
 // @Failure 422 {object} vo.Common "表单绑定失败"
 // @Failure 500 {object} vo.Common "表单绑定失败"
-// @Router /api/auth/employer/register [post]
+// @Router /api/auth/sms/captcha/request [post]
 func SendShortMessages(ctx *gin.Context) {
 
 	var form vo.SMSCaptchaRequest
 
 	if err := ctx.ShouldBindJSON(&form); err != nil {
 		ctx.JSON(respcode.HttpBindingFailed, vo.GenerateCommonResponseHead(respcode.FormBindingFailed, "bind form failed"+err.Error()))
+		return
+	}
+
+	// check captcha
+
+	if !utils.CheckCaptchaWithForm("captcha", form) {
+		ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "验证码无效"))
 		return
 	}
 

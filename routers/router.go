@@ -98,4 +98,7 @@ func InitApiV1Routers(apiV1 *gin.RouterGroup) {
 	apiMeeting.GET("/list", v1.GetMyMeetingList)
 	apiMeeting.GET("/cancel/:id", v1.CancelMeeting)
 
+
+	//apiAdmin := apiV1.Group("/admin", middlewares.CheckAdmin())
+
 }

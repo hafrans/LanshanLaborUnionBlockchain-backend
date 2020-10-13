@@ -28,5 +28,6 @@ type MeetingPersonnel struct {
 	Username    string `json:"username"`
 	Userid      string `json:"meeting_userid"` // 对应腾讯会议的userid，一般是手机号
 	UserID      int64  `json:"user_id"`
+	User        User
 	MeetingRole int    `json:"meeting_role"` // 对应的会议的角色
 }

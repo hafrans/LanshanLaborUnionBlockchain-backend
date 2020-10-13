@@ -247,6 +247,57 @@ var doc = `{
                 }
             }
         },
+        "/api/auth/sms/captcha/request": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "message"
+                ],
+                "summary": "发送短信验证码，验证信息",
+                "parameters": [
+                    {
+                        "description": "请求",
+                        "name": "email",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.SMSCaptchaRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "正常业务处理",
+                        "schema": {
+                            "$ref": "#/definitions/vo.SMSCaptchaResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "未验证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    },
+                    "422": {
+                        "description": "表单绑定失败",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    },
+                    "500": {
+                        "description": "表单绑定失败",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/": {
             "get": {
                 "description": "测试在登录情况下是否可以访问",
@@ -1713,6 +1764,9 @@ var doc = `{
         "jwtmodel.UserClaims": {
             "type": "object",
             "properties": {
+                "checked": {
+                    "type": "boolean"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -2569,9 +2623,23 @@ var doc = `{
         "vo.SMSCaptchaRequest": {
             "type": "object",
             "required": [
+                "captcha_challenge",
+                "captcha_code",
+                "captcha_time",
                 "phone"
             ],
             "properties": {
+                "captcha_challenge": {
+                    "type": "string",
+                    "example": "asbduiasdvasilvdiwlqdulisbdaiauldvil=="
+                },
+                "captcha_code": {
+                    "type": "string",
+                    "example": "123456"
+                },
+                "captcha_time": {
+                    "type": "string"
+                },
                 "phone": {
                     "type": "string"
                 }
@@ -2584,6 +2652,17 @@ var doc = `{
                     "type": "string"
                 },
                 "challenge_time": {
+                    "type": "string"
+                }
+            }
+        },
+        "vo.SelfCheckPhone": {
+            "type": "object",
+            "required": [
+                "phone_captcha"
+            ],
+            "properties": {
+                "phone_captcha": {
                     "type": "string"
                 }
             }

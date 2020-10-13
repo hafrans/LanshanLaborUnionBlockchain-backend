@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"github.com/dchest/captcha"
 	"html/template"
+	"log"
 	"time"
 )
 
@@ -28,16 +29,18 @@ func SendCaptcha(Phone string) (*vo.SMSCaptchaResponse, error) {
 	if err != nil {
 		return nil, err
 	}
+	code := fmt.Sprintf(
+		"%d%d%d%d%d%d", captchaCode[0],
+		captchaCode[1],
+		captchaCode[2],
+		captchaCode[3],
+		captchaCode[4],
+		captchaCode[5])
+
 	tpl.Execute(&buf, struct {
 		Code string
 	}{
-		Code: fmt.Sprintf(
-			"%d%d%d%d%d%d", captchaCode[0],
-			captchaCode[1],
-			captchaCode[2],
-			captchaCode[3],
-			captchaCode[4],
-			captchaCode[5]),
+		Code: code,
 	})
 	sendNowTime := time.Now()
 
@@ -57,4 +60,21 @@ func SendCaptcha(Phone string) (*vo.SMSCaptchaResponse, error) {
 		Timestamp:  &respTime,
 	}, nil
 
+}
+
+func SendTemplateMessage(phone, tplstring string, values interface{}) error {
+
+	tpl, err := template.New("tpl").Parse(tplstring)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	var buf bytes.Buffer
+	err = tpl.Execute(&buf, values)
+	if err != nil {
+		return err
+	}
+	// 异步发送成功
+	SendMessage(utils.SMSSetting.Account, utils.SMSSetting.Password, phone, buf.String())
+	return nil
 }

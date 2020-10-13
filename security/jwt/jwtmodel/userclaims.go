@@ -15,6 +15,7 @@ type UserClaims struct {
 	Iss      string        `json:"iss"`
 	Realm    string        `json:"realm"`
 	UserType int           `json:"type"`
+	Checked  bool          `json:"checked"`
 }
 
 func ExtractUserClaimsFromGinContext(ctx *gin.Context) *UserClaims {
@@ -27,6 +28,7 @@ func ExtractUserClaimsFromGinContext(ctx *gin.Context) *UserClaims {
 		Iss:      claims["iss"].(string),
 		Realm:    claims["realm"].(string),
 		UserType: int(claims["type"].(float64)),
+		Checked:  claims["checked"].(bool),
 	}
 }
 
@@ -49,6 +51,7 @@ func PopulateUserToUserClaims(user *models.User) *UserClaims {
 		Iss:      "hafrans",
 		Realm:    utils.JWTSettings.Realm,
 		UserType: user.UserType,
+		Checked:  user.PhoneChecked,
 	}
 
 }

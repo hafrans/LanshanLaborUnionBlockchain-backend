@@ -10,6 +10,7 @@ import (
 	"github.com/dchest/captcha"
 	"log"
 	"math"
+	"reflect"
 	"time"
 )
 
@@ -97,13 +98,34 @@ func CreateCaptcha(id string) *PendingCaptcha {
 }
 
 func CheckCaptcha(id, plainText, timeStr, challenge string) bool {
+	log.Println(id, ">>", plainText, "<<", timeStr, challenge)
 	tx, err := time.ParseInLocation(timeFormat, timeStr, time.Local)
 	if err != nil {
 		return false
 	}
-	if math.Abs(time.Now().Sub(tx).Minutes()) > 1 {
+	if math.Abs(time.Now().Sub(tx).Minutes()) > 3 {
 		log.Println("some one use expired captcha", CurrentTimeString(), Time(tx).FormattedString(), time.Now().Sub(tx).String())
 		return false
 	}
 	return challenge == fmt.Sprintf("%x", sha256.Sum256([]byte(plainText+id+"\""+timeStr+"\"")))
+}
+
+// CheckCaptchaWithForm is a function which can simplify
+// checking captcha procedure just need id and form struct (not a struct's pointer)
+// the STRUCT must satisfy that has vo.Captcha defined field.
+func CheckCaptchaWithForm(id string, form interface{}) bool {
+	val := reflect.ValueOf(form)
+	if val.Kind() == reflect.Struct {
+		if val.FieldByName("Captcha").IsZero() {
+			return false
+		} else {
+			// check captcha
+			return CheckCaptcha(id,
+				val.FieldByName("Captcha").Field(0).String(),
+				val.FieldByName("Captcha").Field(1).String(),
+				val.FieldByName("Captcha").Field(2).String())
+
+		}
+	}
+	return false
 }
