@@ -22,6 +22,7 @@ import (
 
 var ContentAccept = make(map[string]string)
 var SMSCache = utils.NewLRUCache(32768)
+var SMSCodeCache = utils.NewLRUCache(32768)
 
 func init() {
 	ContentAccept["application/pdf"] = ".pdf"
@@ -184,6 +185,13 @@ func SendShortMessages(ctx *gin.Context) {
 
 	// 注入数据
 	SMSCache.Put(form.Phone, sendNowTime)
+	SMSCodeCache.Put(form.Phone,fmt.Sprintf(
+		"%d%d%d%d%d%d", captchaCode[0],
+		captchaCode[1],
+		captchaCode[2],
+		captchaCode[3],
+		captchaCode[4],
+		captchaCode[5]) )
 	ctx.JSON(respcode.HttpOK, vo.CommonData{
 		Common: vo.GenerateCommonResponseHead(respcode.GenericSuccess, "验证码已发送"),
 		Data: vo.SMSCaptchaResponse{

@@ -45,6 +45,7 @@ func InitApiV1Routers(apiV1 *gin.RouterGroup) {
 	apiUser.GET("/info", v1.GetUserInfo)
 	apiUser.POST("/reset_password", v1.ResetUserPassword)
 	apiUser.POST("/update_info", v1.UpdateUserInfo)
+	apiUser.POST("/check_phone", v1.SelfCheckPhone)
 
 	apiLabor := apiV1.Group("/labor")
 	apiLabor.POST("/create", v1.CreateLaborArbitrationForm)

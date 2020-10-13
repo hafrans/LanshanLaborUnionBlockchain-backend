@@ -21,7 +21,7 @@ import (
 // @Failure 401 {object} vo.Common "未验证"
 // @Failure 422 {object} vo.Common "表单绑定失败"
 // @Failure 500 {object} vo.Common "表单绑定失败"
-// @Router /api/auth/employer/register [post]
+// @Router /api/v1/user/check_phone [post]
 func SelfCheckPhone(ctx *gin.Context){
 	claims := jwtmodel.ExtractUserClaimsFromGinContext(ctx)
 	var form vo.SelfCheckPhone
@@ -32,12 +32,12 @@ func SelfCheckPhone(ctx *gin.Context){
 		// get user entity
 		user, _ := dao.GetUserById(claims.Id)
 		// check sms captcha
-		captcha,err :=  SMSCache.Get(user.Phone)
+		captcha,err :=  SMSCodeCache.Get(user.Phone)
 		if err != nil {
 			ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericFailed, "验证异常，请稍后再试"))
 		}else{
 			// check captcha is equal to captcha in form
-			if form.PhoneCaptcha == captcha{
+			if form.PhoneCaptcha == captcha.(string){
 				// manipulation procedure
 				dao.SetUserEmailAndPhoneConfirmedFlag(user, true, user.EmailChecked)
 				ctx.JSON(respcode.HttpOK, vo.GenerateCommonResponseHead(respcode.GenericSuccess, "实名认证成功"))

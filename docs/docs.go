@@ -582,7 +582,7 @@ var doc = `{
         },
         "/api/v1/case/status_change/:id": {
             "post": {
-                "description": "申请人只可以确认、拒绝状态；管理人员可以设置任何状态 StatusSubmitted= 0 已提交；StatusPending = 1 正在处理；StatusResultConfirming = 2 当事人等待确认调解结果；StatusRefused =3 拒绝调解；StatusConfirmed=4 确认调解；StatusCompleted=5；结束调解               // 调解结束",
+                "description": "申请人只可以确认、拒绝状态；管理人员可以设置任何状态",
                 "consumes": [
                     "application/json"
                 ],
@@ -1604,6 +1604,59 @@ var doc = `{
                     },
                     "401": {
                         "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/check_phone": {
+            "post": {
+                "description": "实名制认证，系统发送一个验证码，用户提交验证码后，如果验证通过，则将用户手机号实名标记设置为true",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user",
+                    "selfserivce"
+                ],
+                "summary": "自服务，实名制认证自己的手机号",
+                "parameters": [
+                    {
+                        "description": "请求",
+                        "name": "email",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vo.SelfCheckPhone"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "正常业务处理",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    },
+                    "401": {
+                        "description": "未验证",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    },
+                    "422": {
+                        "description": "表单绑定失败",
+                        "schema": {
+                            "$ref": "#/definitions/vo.Common"
+                        }
+                    },
+                    "500": {
+                        "description": "表单绑定失败",
                         "schema": {
                             "$ref": "#/definitions/vo.Common"
                         }
