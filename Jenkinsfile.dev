@@ -70,8 +70,8 @@ podTemplate(
                       image: ${registry}/hafrans/lanshan-blockchain-backend:t${tag}
                       resources:
                         limits:
-                        memory: "128Mi"
-                        cpu: "500m"
+                        memory: "256Mi"
+                        cpu: "768m"
                       livenessProbe:
                         httpGet:
                         port: 8088
