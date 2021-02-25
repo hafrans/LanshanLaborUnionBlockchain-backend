@@ -47,7 +47,7 @@ podTemplate(
 
         stage('Deploy Job') {
             def k8sTemplate = """\
-            # lanshan backend
+            # lanshan dev backend
             apiVersion: apps/v1
             kind: Deployment
             metadata:
