@@ -38,8 +38,8 @@ podTemplate(
                     sh """
                     ls -al
                     docker login -u \$user -p \$pwd \$reg
-                    docker build -t ${registry}/hafrans/lanshan-blockchain-backend:t${tag}  .
-                    docker push ${registry}/hafrans/lanshan-blockchain-backend:t${tag}
+                    docker build -t ${registry}/hafrans/lanshan-blockchain-backend:dev-${tag}  .
+                    docker push ${registry}/hafrans/lanshan-blockchain-backend:dev-${tag}
                     """
                 }
             }
@@ -67,7 +67,7 @@ spec:
         - name: aliyun
       containers:
         - name: lanshan-blockchain-backend
-          image: registry.cn-hangzhou.aliyuncs.com/hafrans/lanshan-blockchain-backend:${tag}
+          image: registry.cn-hangzhou.aliyuncs.com/hafrans/lanshan-blockchain-backend:dev-${tag}
           resources:
             limits:
               memory: "128Mi"
@@ -90,7 +90,7 @@ spec:
             secretName: lanshan-dev-secret
         - name: static-assets
           emptyDir: {}
-""".stripIndent()
+            """.stripIndent()
 
             container('kubectl') {
                 stage('Deploy Backend Project') {
