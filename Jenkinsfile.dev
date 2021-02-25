@@ -47,50 +47,50 @@ podTemplate(
 
         stage('Deploy Job') {
             def k8sTemplate = """\
-            # lanshan backend
-            apiVersion: apps/v1
-            kind: Deployment
-            metadata:
-              name: lanshan-blockchain-backend
-              namespace: devops
-            spec:
-              replicas: 1
-              selector:
-                matchLabels:
-                  app: lanshan-blockchain-backend
-              template:
-                metadata:
-                  labels:
-                    app: lanshan-blockchain-backend
-                spec:
-                  imagePullSecrets:
-                    - name: aliyun
-                  containers:
-                    - name: lanshan-blockchain-backend
-                      image: ${registry}/hafrans/lanshan-blockchain-backend:t${tag}
-                      resources:
-                        limits:
-                          memory: "128Mi"
-                          cpu: "500m"
-                      livenessProbe:
-                        httpGet:
-                          port: 8088
-                          path: /ping
-                        initialDelaySeconds: 15
-                      ports:
-                        - containerPort: 8088
-                      volumeMounts:
-                        - name: configuration
-                          mountPath: /app/conf/
-                        - name: static-assets
-                          mountPath: /app/runtime/static/
-                  volumes:
-                    - name: configuration
-                      secret:
-                        secretName: lanshan-dev-secret
-                    - name: static-assets
-                      emptyDir: {}
-            """.stripIndent()
+# lanshan backend
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lanshan-blockchain-backend
+  namespace: devops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lanshan-blockchain-backend
+  template:
+    metadata:
+      labels:
+        app: lanshan-blockchain-backend
+    spec:
+      imagePullSecrets:
+        - name: aliyun
+      containers:
+        - name: lanshan-blockchain-backend
+          image: registry.cn-hangzhou.aliyuncs.com/hafrans/lanshan-blockchain-backend:${tag}
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              port: 8088
+              path: /ping
+            initialDelaySeconds: 15
+          ports:
+            - containerPort: 8088
+          volumeMounts:
+            - name: configuration
+              mountPath: /app/conf/
+            - name: static-assets
+              mountPath: /app/runtime/static/
+      volumes:
+        - name: configuration
+          secret:
+            secretName: lanshan-dev-secret
+        - name: static-assets
+          emptyDir: {}
+""".stripIndent()
 
             container('kubectl') {
                 stage('Deploy Backend Project') {
