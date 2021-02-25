@@ -1,0 +1,106 @@
+import java.util.*;
+def tag = new Date().format("yyMMddHHmmss")
+def registry = "registry.cn-hangzhou.aliyuncs.com"
+
+podTemplate(
+    containers:[
+                containerTemplate(  name: 'docker', 
+                                    image: 'docker:latest',
+                                    ttyEnabled: true, 
+                                    command: 'cat', 
+                                    envVars: [
+                                        secretEnvVar(key: 'user', secretName: 'aliyuncs-up', secretKey: 'user'),
+                                        secretEnvVar(key: 'pwd' , secretName: 'aliyuncs-up', secretKey: 'pwd'),
+                                        secretEnvVar(key: 'reg' , secretName: 'aliyuncs-up', secretKey: 'reg')
+                                    ]
+                                    ),
+                containerTemplate(  name: 'kubectl', 
+                                    image: 'roffe/kubectl:latest', 
+                                    ttyEnabled: true, 
+                                    command: 'cat',
+                                    envVars: [
+                                        secretEnvVar(key: 'user', secretName: 'aliyuncs-up', secretKey: 'user'),
+                                        secretEnvVar(key: 'pwd' , secretName: 'aliyuncs-up', secretKey: 'pwd'),
+                                        secretEnvVar(key: 'reg' , secretName: 'aliyuncs-up', secretKey: 'reg')
+                                    ])
+                ],
+    volumes: [
+        hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock'),
+        secretVolume(mountPath: '/root/.kube/', secretName: 'kubectl'),
+    ],
+    imagePullSecrets:["aliyun"]
+){
+  node(POD_LABEL) {
+        stage('Get Project and Push to lab') {
+            git 'https://github.com/hafrans/LanshanLaborUnionBlockchain-backend.git'
+            container('docker') {
+                stage('Build a Docker Project') {
+                    sh """
+                    ls -al
+                    docker login -u \$user -p \$pwd \$reg
+                    docker build -t ${registry}/hafrans/lanshan-blockchain-backend:t${tag}  .
+                    docker push ${registry}/hafrans/lanshan-blockchain-backend:t${tag}
+                    """
+                }
+            }
+        }
+
+        stage('Deploy Job') {
+            def k8sTemplate = """\
+            # lanshan backend
+            apiVersion: apps/v1
+            kind: Deployment
+            metadata:
+            name: lanshan-blockchain-backend
+            namespace: devops
+            spec:
+            replicas: 1
+            selector:
+                matchLabels:
+                app: lanshan-blockchain-backend
+            template:
+                metadata:
+                labels:
+                    app: lanshan-blockchain-backend
+                spec:
+                imagePullSecrets:
+                    - name: aliyun
+                containers:
+                    - name: lanshan-blockchain-backend
+                    image: ${registry}/hafrans/lanshan-blockchain-backend:t${tag}
+                    resources:
+                        limits:
+                        memory: "128Mi"
+                        cpu: "500m"
+                    livenessProbe:
+                        httpGet:
+                        port: 8088
+                        path: /ping
+                        initialDelaySeconds: 15
+                    ports:
+                        - containerPort: 8088
+                    volumeMounts:
+                        - name: configuration
+                        mountPath: /app/conf/
+                        - name: static-assets
+                        mountPath: /app/runtime/static/
+                volumes:
+                    - name: configuration
+                      secret:
+                        secretName: lanshan-dev-secret
+                    - name: static-assets
+                      emptyDir: {}
+            """.stripIndent()
+
+            container('kubectl') {
+                stage('Deploy Backend Project') {
+                    sh """kubectl apply -f - <<EOF
+${k8sTemplate}
+EOF
+                    """
+                }
+            }
+        }
+
+    }
+}
