@@ -17,7 +17,6 @@ ENV GOARCH=amd64
 
 ENV GOPROXY=https://goproxy.cn
 
-
 RUN go mod download -x && go mod verify 
 
 RUN go build -ldflags="-w -s" -o main ./main.go
