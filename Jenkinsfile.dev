@@ -85,11 +85,11 @@ podTemplate(
                         - name: static-assets
                           mountPath: /app/runtime/static/
                 volumes:
-                    - name: configuration
-                      secret:
-                        secretName: lanshan-dev-secret
-                    - name: static-assets
-                      emptyDir: {}
+                  - name: configuration
+                    secret:
+                      secretName: lanshan-dev-secret
+                  - name: static-assets
+                    emptyDir: {}
             """.stripIndent()
 
             container('kubectl') {
