@@ -51,39 +51,39 @@ podTemplate(
             apiVersion: apps/v1
             kind: Deployment
             metadata:
-            name: lanshan-blockchain-backend
-            namespace: devops
+              name: lanshan-blockchain-backend
+              namespace: devops
             spec:
-            replicas: 1
-            selector:
+              replicas: 1
+              selector:
                 matchLabels:
-                app: lanshan-blockchain-backend
-            template:
+                  app: lanshan-blockchain-backend
+              template:
                 metadata:
-                labels:
+                  labels:
                     app: lanshan-blockchain-backend
                 spec:
-                imagePullSecrets:
+                  imagePullSecrets:
                     - name: aliyun
-                containers:
+                  containers:
                     - name: lanshan-blockchain-backend
-                    image: ${registry}/hafrans/lanshan-blockchain-backend:t${tag}
-                    resources:
+                      image: ${registry}/hafrans/lanshan-blockchain-backend:t${tag}
+                      resources:
                         limits:
                         memory: "128Mi"
                         cpu: "500m"
-                    livenessProbe:
+                      livenessProbe:
                         httpGet:
                         port: 8088
                         path: /ping
                         initialDelaySeconds: 15
-                    ports:
+                      ports:
                         - containerPort: 8088
-                    volumeMounts:
+                      volumeMounts:
                         - name: configuration
-                        mountPath: /app/conf/
+                          mountPath: /app/conf/
                         - name: static-assets
-                        mountPath: /app/runtime/static/
+                          mountPath: /app/runtime/static/
                 volumes:
                     - name: configuration
                       secret:
